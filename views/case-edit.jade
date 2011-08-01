@@ -1,0 +1,9 @@
+body
+  -each radio in radios
+    .stack(style='background-image: url("/images/#{radio.url}.jpg"); top: #{radio.y}; left: #{radio.x}; class="draggable")
+  -each text in texts
+    .md(style='top: #{text.y}; left: #{text.x}')
+      =text.content
+  script(type='text/javascript')
+    :plain
+      $(.stack).draggable({snap: true});

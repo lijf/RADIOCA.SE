@@ -1,0 +1,19 @@
+body
+  #content
+    #column1
+      -each column1piece in column1pieces
+        -if(column1piece.type === "image")
+            .stack(style='background-image: url("/images/#{column1piece.id}.jpg")')         
+        -else if(column1.piece.type === "text")
+            .textfield
+              =column1.piece.content
+    #column2
+      -each column2piece in column1pieces
+        -if(column2piece.type === "image")
+            .stack(style='background-image: url("/images/#{column2piece.id}.jpg")')         
+        -else if(column2.piece.type === "text")
+            .textfield
+              =column2.piece.content
+ 
+    -each radio in radios
+      .stack(style='background-image: url("/images/#{radio}.jpg")')
