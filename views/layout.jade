@@ -1,0 +1,11 @@
+!!!
+html
+  head
+    title= title || 'Title not set.'
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    -each script in scripts
+      script(type='text/javascript', src='/javascripts/#{script}')
+  body
+    #header 
+      h1 Header.
+    #content!= body // this renders the body of an individual view

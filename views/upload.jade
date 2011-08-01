@@ -1,0 +1,6 @@
+html
+  head
+  body
+    form(action="image/#{imageid}", enctype="multipart/form-data", method="post")
+      input(type="file", name="upload", multiple="multiple")
+      input(type="submit", value="Upload file")
