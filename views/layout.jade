@@ -3,6 +3,7 @@ html
   head
     title= title || 'Title not set.'
     link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src = 'http://code.jquery.com/jquery-latest.js')
     -each script in scripts
       script(type='text/javascript', src='/javascripts/#{script}')
   body

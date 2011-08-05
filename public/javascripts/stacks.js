@@ -1,10 +1,5 @@
-$(function() {
-//  var xpos=0;
-//  var ypos=0;
-//  $('.stack').draggable();
-//  $('.md').draggable();
-
-  $('.stack').mousewheel(function(event, delta) {
+function scrollfunction(){
+  $('.stack').mousewheel(function(event, delta){
     if (delta > 0) {
     $(this).css('background-position', parseInt($(this).css('background-position')) - parseInt($(this).css('width')));
     } else if (delta < 0) {
@@ -12,6 +7,14 @@ $(function() {
     }
     event.preventDefault();
   });
+}
+
+$(function() {
+  scrollfunction();
+//  var xpos=0;
+//  var ypos=0;
+//  $('.stack').draggable();
+//  $('.md').draggable();
 //  $('.stack').dblclick(function(event) {
 //    if (!$(this).hasClass('maximized')){
 //      $(this).css('height', $(window).height());

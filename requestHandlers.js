@@ -5,13 +5,15 @@ var formidable = require('formidable'),
     fs = require('fs');
 
 function postImage(req, res){
-  var d = req.params.id;
+//  var d = req.params.id;
+  var day = new Date();
+  var d = day.getTime().toString();
   console.log(d);
   var form = new formidable.IncomingForm();
   form.parse(req, function(err, fields, files){
-    console.log(err);
-    console.log(fields);
-    console.log(files);
+//    console.log(err);
+//    console.log(fields);
+//    console.log(files);
     if(files.userfile.type == 'application/zip'){
       fs.mkdir(d,0755, function (){
       var child1 = exec('unzip -d ' + d + ' ' + files.userfile.path, // unzips the upload
@@ -31,7 +33,7 @@ function postImage(req, res){
           if (error !== null) {
             console.log('exec error: ' + error);
           }
-            var child4 = exec('gm montage -geometry 512 -tile 100000x1 ./' + d + '/*.jpg ' + __dirname + '/public/images/' + d + '.jpg', // makes a montage of uploaded images
+            var child4 = exec('gm montage -geometry 512 -tile 100000x1 ./' + d + '/*.jpg ' + __dirname + '/img/' + d + '.jpg', // makes a montage of uploaded images
             function (error, stdout, stderr) {
             if (error !== null) {
               console.log('exec error: ' + error);
@@ -41,7 +43,7 @@ function postImage(req, res){
               if (error !== null) {
                 console.log('exec error: ' + error);
               }
-              res.write('OK, image done');
+              res.send(d,200);
             });
            });
          });

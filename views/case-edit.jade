@@ -13,12 +13,12 @@ body
   script(type='text/javascript')
     $(function(){
       $("#upload").click(function(){
-        var d = new Date();
-        var t = d.getTime().toString();
+        //      var d = new Date();
+        //      var t = d.getTime().toString();
         var userFile = $('#userfile').val();
         var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
         $('#iframe').append(iframe);
-        $('#uploadform').attr("action", "/image/" + t);
+        $('#uploadform').attr("action", "/image/");
         $('#uploadform').attr("method", "post");
         $('#uploadform').attr("userfile", userFile);
         $('#uploadform').attr("enctype", "multipart/form-data");
@@ -26,12 +26,14 @@ body
         $('#uploadform').attr("target", "postframe");
         $('#uploadform').submit();
         // create the new div, when image processed, set it as background
-        $('#leftcolumn').append("<div class='stack' id='" + t + "'></div>");
+        $('#leftcolumn').append("<div class='stack'></div>");
         $('#postframe').load(
             function(){
+              var imgid = $("iframe")[0].contentDocument.body.innerHTML;
          //             iframeContents = $("iframe")[0].contentDocument.body.innerHTML;
          //             if (iframeContents === "OK, image done"){
-             $("#" + t).css('background-image: url("/images/' + t + '")');
+              $('.stack:last').css('background-image', 'url("/image/' + imgid + '")');
+              scrollfunction();
          //             }
             });
       });

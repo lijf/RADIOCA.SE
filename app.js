@@ -83,7 +83,7 @@ app.get('/case/:id/:page', function(req, res){
   res.render('case', {
       title: theCase.title,
       layout: theCase.layout,
-      scripts: ['jquery.min.js', 'jquery.mousewheel.min.js', 'stacks.js'],
+      scripts: ['jquery.mousewheel.min.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });
@@ -97,7 +97,7 @@ app.get('/case/:id/:page/edit', function(req, res){
   res.render('case-edit', {
       title: theCase.title,
       layout: theCase.layout,
-      scripts: ['jquery.min.js', 'jquery.mousewheel.min.js', 'ui/jquery.ui.core.js', 'ui/jquery.ui.widget.js', 'ui/jquery.ui.mouse.js', 'ui/jquery.ui.draggable.js', 'stacks.js'],
+      scripts: ['jquery.mousewheel.min.js','ui/jquery.ui.core.js', 'ui/jquery.ui.widget.js', 'ui/jquery.ui.mouse.js', 'ui/jquery.ui.draggable.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });
@@ -124,7 +124,7 @@ app.get('/upload', function(req, res){
   });
 });
 
-app.post('/image/:id', function(req, res){
+app.post('/image/', function(req, res){
   requestHandlers.postImage(req, res);
 });
 
