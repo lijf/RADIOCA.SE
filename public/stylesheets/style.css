@@ -6,15 +6,12 @@ div.stack {
   background-size: auto 100%;
   overflow: hidden;
   min-height: 512px;
-  position: absolute;
 }
 .maximized {
   top: 0px;
   left: 0px;
 }
-.md {
-  position: absolute;
-}
+.md,
 body {
   margin: 0 auto;
   font-family: Georgia, Palatino, serif;

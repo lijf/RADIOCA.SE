@@ -1,6 +1,9 @@
 $(function() {
-  var xpos=0;
-  var ypos=0;
+//  var xpos=0;
+//  var ypos=0;
+//  $('.stack').draggable();
+//  $('.md').draggable();
+
   $('.stack').mousewheel(function(event, delta) {
     if (delta > 0) {
     $(this).css('background-position', parseInt($(this).css('background-position')) - parseInt($(this).css('width')));
