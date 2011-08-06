@@ -49,7 +49,7 @@ redisClient.on("error", function(err) {
     "title": "case1",
     "radios": [{"x": "0px", "y": "0px", "url": "123"},
                {"x": "0px", "y": "0px", "url": "123"}],
-    "texts": [{"x": "0px", "y": "0px", "content": "Text 1"},
+    "texts": [{"x": "0px", "y": "0px", "content": "__Text 1__ "},
               {"x": "0px", "y": "0px", "content": "Text 2"}]
     };
  redisClient.set("case:1:page:1", JSON.stringify(case1));
@@ -97,7 +97,7 @@ app.get('/case/:id/:page/edit', function(req, res){
   res.render('case-edit', {
       title: theCase.title,
       layout: theCase.layout,
-      scripts: ['jquery.mousewheel.min.js','ui/jquery.ui.core.js', 'ui/jquery.ui.widget.js', 'ui/jquery.ui.mouse.js', 'ui/jquery.ui.draggable.js', 'stacks.js'],
+      scripts: ['jquery.mousewheel.min.js','ui/jquery.ui.core.js', 'ui/jquery.ui.widget.js', 'ui/jquery.ui.mouse.js', 'ui/jquery.ui.draggable.js', 'showdown.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });

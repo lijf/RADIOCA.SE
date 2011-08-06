@@ -1,4 +1,4 @@
-div.stack {
+.stack {
   width: 512px;
   height: 512px;
   padding: 0;
@@ -11,7 +11,11 @@ div.stack {
   top: 0px;
   left: 0px;
 }
-.md,
+.hidden {
+  width: 0px;
+  height: 0px;
+  visibility: none;
+}
 body {
   margin: 0 auto;
   font-family: Georgia, Palatino, serif;
