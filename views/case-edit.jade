@@ -1,24 +1,80 @@
 body
-  #wrap(style='width: 1024px')
-    #controls(style='width: 100%; height: 30px')
+  #wrap
+    #controls
+      form(id ='savepage')
+        input(id='save', type='submit', value='Save page', style='float: right')
       form(id ='uploadform')
         input(type='file', name='userfile', id='userfile', multiple='multiple')
         input(id='upload', type='submit', value='Upload file')
-    #leftcolumn(style='width: 512px; float: left')
+    #leftcolumn
       -each radio in radios
-        .stack(style='background-image: url("/images/#{radio.url}.jpg"); top: #{radio.y}; left: #{radio.x}')
-    #rightcolumn(style='width: 512px, float:right')
+        .stack(url='#{radio.url}', style='background-image: url("/images/#{radio.url}.jpg"); top: #{radio.y}; left: #{radio.x}')
+    #rightcolumn
       -each text in texts
         .txt
-          textarea.mdtxt
+          textarea.mdtxt(style='display:none')
             #{text.content}
           .md
-    #iframe(style='width: 0px; height: 0px; visibility:none')
+    #iframe(style='width: 0px; height: 0px; display:none')
+
     script(type='text/javascript')
       $(function(){
+        //function sz(t) {
+        //  var a = t.value.split("\\n");
+        //  var b=1;
+        //  for (x=0;x < a.length; x++) { if (a[x].length >= t.cols) b+= Math.floor(a[x].length/t.cols);
+        //  }
+        //  b+= a.length;
+        //  if (b > t.rows) t.rows = b;
+        //}
+        
+        var converter = new Showdown.converter();
+        function render2(md){
+          var html = converter.makeHtml(md.siblings(".mdtxt").val());
+          alert(html);
+          md.html(html);
+        }
+
+        function rendermd(){ 
+            $(".txt>.md").html(function(){
+            var markdown = $(this).siblings(".mdtxt").val();
+            // alert(markdown);
+            var html = converter.makeHtml(markdown);
+            return html;
+            });
+          }
+        rendermd(); // renders the markdown textareas.
+
+        $(".md").live({
+          dblclick: function() {
+            $(this).hide();
+            $(this).siblings(".mdtxt").show().focus();
+          }
+          }); // shows the textbox for editing upon doubleclick
+        
+        $(".mdtxt").live({
+        //  onkeyup: sz(this),
+          blur: function() {
+            $(this).hide();
+            rendermd();
+            $(this).siblings(".md").show();
+          }
+        }); // hides the textbox and renders the markdown
+
+        $("#save").click(function() {
+          var stacks = [];
+          stacks += $(".stack").map(function(){
+              return($(this).attr("url"));
+          }).get();
+          alert(stacks);
+          var txt = [];
+          txt += $(".mdtxt").map(function(){
+              return($(this).val());
+            }).get();
+          alert(txt);  
+          });
+
         $("#upload").click(function(){
-          //      var d = new Date();
-          //      var t = d.getTime().toString();
           var userFile = $('#userfile').val();
           var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
           $('#iframe').append(iframe);
@@ -34,11 +90,8 @@ body
           $('#postframe').load(
               function(){
                 var imgid = $("iframe")[0].contentDocument.body.innerHTML;
-           //             iframeContents = $("iframe")[0].contentDocument.body.innerHTML;
-           //             if (iframeContents === "OK, image done"){
                 $('.stack:last').css('background-image', 'url("/image/' + imgid + '")');
                 scrollfunction();
-           //             }
               });
         });
       });
