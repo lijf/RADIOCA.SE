@@ -104,13 +104,16 @@ app.get('/case/:id/:page/edit', function(req, res){
   });
 });
 
-//app.post('/case/:id:page/edit', function(req, res){
+app.post('/case/:id:page/edit', function(req, res){
+  console.log(req.params.radios);
+  console.log(req.params.texts);
 //  var thisCase {
 //     "title" : req.params.title,
-//     "
+//     "radios" : req.params.radios,
+//     "texts" : req.params.texts
 //  }
-//
-// });
+
+ });
 
 app.get('/image/:id', function(req, res){
   var image = __dirname + '/img/' + req.params.id + '.jpg';
