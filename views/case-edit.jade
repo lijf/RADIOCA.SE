@@ -8,17 +8,18 @@ body
         input(id='upload', type='submit', value='Upload file')
     #leftcolumn
       -each radio in radios
-        .stack(url='#{radio.url}', style='background-image: url("/images/#{radio.url}.jpg"); top: #{radio.y}; left: #{radio.x}')
+        .stack(url='#{radio}', style='background-image: url("/images/#{radio}.jpg")')
     #rightcolumn
       -each text in texts
         .txt
           textarea.mdtxt(style='display:none')
-            #{text.content}
+            #{text}
           .md
     #iframe(style='width: 0px; height: 0px; display:none')
 
     script(type='text/javascript')
       $(function(){
+        var pathname = window.location.pathname;
         //function sz(t) {
         //  var a = t.value.split("\\n");
         //  var b=1;
@@ -67,23 +68,39 @@ body
               return($(this).attr("url"));
           }).get();
           alert(stacks);
+
           var txt = [];
           txt += $(".mdtxt").map(function(){
               return($(this).val());
             }).get();
           alert(txt);  
+          
+          $('#savepage').attr({
+            action: window.location.pathname,
+            method: "post",
+            enctype: "multipart/form-data",
+            encoding: "multipart/form-data",
+            target: "postframe",
+            radios: stacks,
+            text: txt
           });
+          $('#savepage').submit();
+
+        });
 
         $("#upload").click(function(){
           var userFile = $('#userfile').val();
           var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
           $('#iframe').append(iframe);
-          $('#uploadform').attr("action", "/image/");
-          $('#uploadform').attr("method", "post");
-          $('#uploadform').attr("userfile", userFile);
-          $('#uploadform').attr("enctype", "multipart/form-data");
-          $('#uploadform').attr("encoding", "multipart/form-data");
-          $('#uploadform').attr("target", "postframe");
+
+          $('#uploadform').attr({
+            action: "/image/",
+            method: "post",
+            userfile: userFile,
+            enctype: "multipart/form-data",
+            encoding: "multipart/form-data",
+            target: "postframe"
+          });
           $('#uploadform').submit();
           // create the new div, when image processed, set it as background
           $('#leftcolumn').append("<div class='stack'></div>");

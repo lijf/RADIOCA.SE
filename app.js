@@ -47,10 +47,8 @@ redisClient.on("error", function(err) {
 
  var case1 = {
     "title": "case1",
-    "radios": [{"x": "0px", "y": "0px", "url": "123"},
-               {"x": "0px", "y": "0px", "url": "123"}],
-    "texts": [{"x": "0px", "y": "0px", "content": "__Text 1__ "},
-              {"x": "0px", "y": "0px", "content": "Text 2"}]
+    "radios": ["123", "123"],
+    "texts": ["__Text 1__ ", "Text 2"]
     };
  redisClient.set("case:1:page:1", JSON.stringify(case1));
 
@@ -81,6 +79,8 @@ app.get('/case/:id/:page', function(req, res){
   redisClient.get(findCase, function( err, data) {
   var theCase = JSON.parse( data.toString() );
   res.render('case', {
+      caseid: req.params.id,
+      page: req.params.page,
       title: theCase.title,
       layout: theCase.layout,
       scripts: ['jquery.mousewheel.min.js', 'stacks.js'],
@@ -103,6 +103,14 @@ app.get('/case/:id/:page/edit', function(req, res){
     });
   });
 });
+
+//app.post('/case/:id:page/edit', function(req, res){
+//  var thisCase {
+//     "title" : req.params.title,
+//     "
+//  }
+//
+// });
 
 app.get('/image/:id', function(req, res){
   var image = __dirname + '/img/' + req.params.id + '.jpg';
