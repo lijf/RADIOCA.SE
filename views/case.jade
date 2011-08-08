@@ -1,6 +1,40 @@
 body
-  -each radio in radios
-    .stack(style='background-image: url("/images/#{radio.url}.jpg"); top: #{radio.y}; left: #{radio.x}')
-  -each text in texts
-    .md(style='top: #{text.y}; left: #{text.x}')
-      =text.content
+  #wrap
+    #page.hidden
+      #{page}
+    #caseid.hidden
+      #{caseid}
+    button(id='editbutton', style='float: left')
+      | edit page
+    br
+    br
+    #leftcolumn
+      -each radio in radios
+        .stack(url='#{radio}', style='background-image: url("/images/#{radio}.jpg")')
+    #rightcolumn
+      -each text in texts
+          .txt
+            textarea.mdtxt(style='display:none')
+                #{text}
+            .md
+  #editbar
+  script(type='text/javascript')
+    $(function(){
+      var converter = new Showdown.converter();
+        
+      function rendermd(){ 
+          $(".txt>.md").html(function(){
+          var markdown = $(this).siblings(".mdtxt").val();
+          // alert(markdown);
+          var html = converter.makeHtml(markdown);
+          return html;
+          });
+      }
+      rendermd(); // renders the markdown textareas.
+
+      $('#editbutton').click(function(){
+        
+        
+        
+        });
+    });

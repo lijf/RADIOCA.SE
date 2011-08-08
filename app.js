@@ -9,9 +9,12 @@ var express = require('express'),
     spawn = require('child_process').spawn,
     url = require('url'),
     fs = require('fs'),
+    formidable = require('formidable'),
     requestHandlers = require("./requestHandlers"),
+    sys = require('sys'),
     redis = require('redis'),
     redisClient = redis.createClient();
+
 
  
 
@@ -47,10 +50,14 @@ redisClient.on("error", function(err) {
 
  var case1 = {
     "title": "case1",
+    "caseid": "1",
+    "page": "1",
     "radios": ["123", "123"],
     "texts": ["__Text 1__ ", "Text 2"]
     };
- redisClient.set("case:1:page:1", JSON.stringify(case1));
+ console.log('caseid:' + case1.caseid);
+ console.log('page:' + case1.page);
+ redisClient.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
 
 
 // redisClient.set("string key", "string val", redis.print);
@@ -79,11 +86,10 @@ app.get('/case/:id/:page', function(req, res){
   redisClient.get(findCase, function( err, data) {
   var theCase = JSON.parse( data.toString() );
   res.render('case', {
-      caseid: req.params.id,
-      page: req.params.page,
+      caseid: theCase.caseid,
+      page: theCase.page,
       title: theCase.title,
-      layout: theCase.layout,
-      scripts: ['jquery.mousewheel.min.js', 'stacks.js'],
+      scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });
@@ -96,7 +102,8 @@ app.get('/case/:id/:page/edit', function(req, res){
   var theCase = JSON.parse( data.toString() );
   res.render('case-edit', {
       title: theCase.title,
-      layout: theCase.layout,
+      caseid: theCase.caseid,
+      page: theCase.page,
       scripts: ['jquery.mousewheel.min.js','ui/jquery.ui.core.js', 'ui/jquery.ui.widget.js', 'ui/jquery.ui.mouse.js', 'ui/jquery.ui.draggable.js', 'showdown.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
@@ -104,16 +111,26 @@ app.get('/case/:id/:page/edit', function(req, res){
   });
 });
 
-app.post('/case/:id:page/edit', function(req, res){
-  console.log(req.params.radios);
-  console.log(req.params.texts);
+app.post('/case', function(req, res){
+  console.log('POST /case was called');
+  console.log(req.body);
+  console.log(req.body.caseid);
+});
+
+//  console.log(form);
+
+//  form
+//    .on('field', function(field, value) {
+//      console.log(field, value);
+//    })
+//    .on('end', function() {
+//      console.log('-> post done');
+//    });
 //  var thisCase {
 //     "title" : req.params.title,
 //     "radios" : req.params.radios,
 //     "texts" : req.params.texts
 //  }
-
- });
 
 app.get('/image/:id', function(req, res){
   var image = __dirname + '/img/' + req.params.id + '.jpg';
