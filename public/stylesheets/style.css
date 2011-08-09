@@ -18,14 +18,14 @@
 }
 #editbutton {
   position: fixed;
-  bottom: 5px;
+  top: 5px;
   right: 5px;
 }
 #editbar {
   position: fixed;
-  bottom: 0px;
+  top: 0px;
   left: 0px;
-  margin-top: -30px;
+  margin-top: 0px;
   height: 30px;
   width: 100%;
   clear: both;

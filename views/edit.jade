@@ -1,86 +1,10 @@
 #controls
   form(id ='savepage', style='position:absolute; :top: 5px; right: 5px')
-    input(id='save', type='submit', value='Save page')
-    input(id='done', type='submit', value='Done')
+    input(type='hidden', name='_method', value='put')
+    input(id='save', type='submit', value='Save page', action='/case/#{caseid}/#{page}')
+    button(id='done', type='button')
+      | Done
   form(id ='uploadform', style='position: absolute; top: 5px; left: 5px')
     input(type='file', name='userfile', id='userfile', multiple='multiple')
     input(id='upload', type='submit', value='Upload file')
 #iframe(style='width: 0px; height: 0px; display:none')
-
-script(type='text/javascript')
-
-  $(function(){
-    var pathname = window.location.pathname;
-    $(".md").live({
-      dblclick: function() {
-        $(this).hide();
-        $(this).siblings(".mdtxt").show().focus();
-      }
-      }); // shows the textbox for editing upon doubleclick
-    
-    $(".mdtxt").live({
-      blur: function() {
-        $(this).hide();
-        rendermd();
-        $(this).siblings(".md").show();
-      }
-    }); // hides the textbox and renders the markdown
-
-    $("#save").click(function(event){
-      event.preventDefault();
-      $.ajax({
-        method: "PUT",
-        url: "/case/#{caseid}/#{page}", // caseid and page are interpolated 
-        "caseid" : caseidVal,
-        "page" : pageVal
-        });
-
-      var txt = [];
-      txt += $(".mdtxt").map(function(){
-          return($(this).val());
-        }).get();
-      $("#texts").val(txt);
-      //          alert(txt);  
-      var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
-      $('#iframe').append(iframe);
-
-      
-      $('#savepage').attr({
-        action: "/case/",
-        method: "post",
-        caseid: caseid,
-        page: "1",
-        target: "postframe"
-      });
-
-      $('#savepage').submit();
-    });
-
-    //$('form').submit(function() {
-    //  alert($(this).serialize());
-    //});
-
-    $("#upload").click(function(){
-      var userFile = $('#userfile').val();
-      var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
-      $('#iframe').append(iframe);
-
-      $('#uploadform').attr({
-        action: "/image/",
-        method: "post",
-        userfile: userFile,
-        enctype: "multipart/form-data",
-        encoding: "multipart/form-data",
-        target: "postframe"
-      });
-      $('#uploadform').submit();
-      // create the new div, when image processed, set it as background
-      $('#leftcolumn').append("<div class='stack'></div>");
-      $('#postframe').load(
-          function(){
-            var imgid = $("iframe")[0].contentDocument.body.innerHTML;
-            $('.stack:last').css('background-image', 'url("/image/' + imgid + '")');
-            scrollfunction();
-          });
-      });
-    });

@@ -91,21 +91,12 @@ app.get('/case/:id/:page', function(req, res){
   redisClient.get(findCase, function( err, data) {
   var theCase = JSON.parse( data.toString() );
   res.render('case', {
-      caseid: theCase.caseid,
-      page: theCase.page,
       title: theCase.title,
       styles: ['style.css'],
-      scripts: ['jquery.js','jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
+      scripts: ['jquery.min.js','jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });
-  });
-});
-
-app.get('/case/edit', function(req, res){
-  res.render('edit', {
-    scripts: [''],
-    styles: ['style.css']
   });
 });
 
@@ -116,24 +107,9 @@ app.get('/case/:id/:page/edit', function(req, res){
   });
 });
 
-app.post('/case/:id/:page', function(req, res){
-  console.log('POST /case was called');
+app.put('/case/:id/:page', function(req, res){
+  console.log('PUT /case was called');
 });
-
-//  console.log(form);
-
-//  form
-//    .on('field', function(field, value) {
-//      console.log(field, value);
-//    })
-//    .on('end', function() {
-//      console.log('-> post done');
-//    });
-//  var thisCase {
-//     "title" : req.params.title,
-//     "radios" : req.params.radios,
-//     "texts" : req.params.texts
-//  }
 
 app.get('/image/:id', function(req, res){
   var image = __dirname + '/img/' + req.params.id + '.jpg';
@@ -145,13 +121,6 @@ app.get('/image/:id', function(req, res){
       res.write(file, "binary");
       res.end();
     }
-  });
-});
-
-app.get('/upload', function(req, res){
-  res.render('upload', {
-    imageid: '123', 
-    title: 'upload'
   });
 });
 
