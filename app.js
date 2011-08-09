@@ -4,12 +4,10 @@
  */
 
 var express = require('express'),
-    formidable = require('formidable'),
     exec = require('child_process').exec,
     spawn = require('child_process').spawn,
     url = require('url'),
     fs = require('fs'),
-    formidable = require('formidable'),
     requestHandlers = require("./requestHandlers"),
     sys = require('sys'),
     redis = require('redis'),
@@ -54,9 +52,8 @@ redisClient.on("error", function(err) {
     "page": "1",
     "radios": ["123", "123"],
     "texts": ["__Text 1__ ", "Text 2"]
-    };
- console.log('caseid:' + case1.caseid);
- console.log('page:' + case1.page);
+    }
+
  redisClient.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
 
 
@@ -93,7 +90,7 @@ app.get('/case/:id/:page', function(req, res){
   res.render('case', {
       title: theCase.title,
       styles: ['style.css'],
-      scripts: ['jquery.min.js','jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
+      scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });

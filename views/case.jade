@@ -9,23 +9,24 @@
       .txt
         textarea.mdtxt(style='display:none')
           #{text}
-      .md
+        .md
 #editbar
 script(type='text/javascript')
   $(function(){
 
     $('#editbar').hide();
+
     var converter = new Showdown.converter();
-    //    alert(editurl);
     
     function rendermd(){ 
-        $(".txt>.md").html(function(){
+      debugger;
+      $('.txt>.md').html(function(){
+        debugger;
         var markdown = $(this).siblings(".mdtxt").val();
-        // alert(markdown);
         var html = converter.makeHtml(markdown);
         alert(html);
         return html;
-        });
+      });
     }
 
     rendermd(); // renders the markdown textareas.
@@ -58,5 +59,30 @@ script(type='text/javascript')
           }
         }
       });
+    });
+
+    $("#upload").live({
+      click: function(){
+        var userFile = $('#userfile').val();
+        var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
+        $('#iframe').append(iframe);
+
+        $('#uploadform').attr({
+           action: "/image/",
+           method: "post",
+           userfile: userFile,
+           enctype: "multipart/form-data",
+           encoding: "multipart/form-data",
+           target: "postframe"
+        });
+        $('#uploadform').submit();
+        // create the new div, when image processed, set it as background
+        $('#leftcolumn').append("<div class='stack'></div>");
+        $('#postframe').load(function(){
+             var imgid = $("iframe")[0].contentDocument.body.innerHTML;
+             $('.stack:last').css('background-image', 'url("/image/' + imgid + '")');
+             scrollfunction();
+        });
+      }
     });
   });
