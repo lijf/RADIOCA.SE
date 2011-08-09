@@ -81,6 +81,11 @@ app.get('/', function(req, res){
   });
 });
 
+app.get('/test', function(req, res){
+  res.send('<html><body><p>Test</body></html>');
+});
+
+
 app.get('/case/:id/:page', function(req, res){
   var findCase="case:"+req.params.id+":page:"+req.params.page;
   redisClient.get(findCase, function( err, data) {
@@ -89,32 +94,30 @@ app.get('/case/:id/:page', function(req, res){
       caseid: theCase.caseid,
       page: theCase.page,
       title: theCase.title,
-      scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
+      styles: ['style.css'],
+      scripts: ['jquery.js','jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });
+  });
+});
+
+app.get('/case/edit', function(req, res){
+  res.render('edit', {
+    scripts: [''],
+    styles: ['style.css']
   });
 });
 
 app.get('/case/:id/:page/edit', function(req, res){
-  var findCase="case:"+req.params.id+":page:"+req.params.page;
-  redisClient.get(findCase, function( err, data) {
-  var theCase = JSON.parse( data.toString() );
-  res.render('case-edit', {
-      title: theCase.title,
-      caseid: theCase.caseid,
-      page: theCase.page,
-      scripts: ['jquery.mousewheel.min.js','ui/jquery.ui.core.js', 'ui/jquery.ui.widget.js', 'ui/jquery.ui.mouse.js', 'ui/jquery.ui.draggable.js', 'showdown.js', 'stacks.js'],
-      radios: theCase.radios,
-      texts: theCase.texts
-    });
+  res.partial('edit', {
+      caseid: req.params.id,
+      page: req.params.page
   });
 });
 
-app.post('/case', function(req, res){
+app.post('/case/:id/:page', function(req, res){
   console.log('POST /case was called');
-  console.log(req.body);
-  console.log(req.body.caseid);
 });
 
 //  console.log(form);

@@ -1,40 +1,41 @@
-body
-  #wrap
-    #page.hidden
-      #{page}
-    #caseid.hidden
-      #{caseid}
-    button(id='editbutton', style='float: left')
-      | edit page
-    br
-    br
-    #leftcolumn
-      -each radio in radios
-        .stack(url='#{radio}', style='background-image: url("/images/#{radio}.jpg")')
-    #rightcolumn
-      -each text in texts
-          .txt
-            textarea.mdtxt(style='display:none')
-                #{text}
-            .md
-  #editbar
-  script(type='text/javascript')
-    $(function(){
-      var converter = new Showdown.converter();
-        
-      function rendermd(){ 
-          $(".txt>.md").html(function(){
-          var markdown = $(this).siblings(".mdtxt").val();
-          // alert(markdown);
-          var html = converter.makeHtml(markdown);
-          return html;
-          });
-      }
-      rendermd(); // renders the markdown textareas.
-
-      $('#editbutton').click(function(){
-        
-        
-        
+#wrap
+  button(id='editbutton')
+    | edit page
+  #leftcolumn
+    -each radio in radios
+      .stack(url='#{radio}', style='background-image: url("/images/#{radio}.jpg")')
+  #rightcolumn
+    -each text in texts
+        .txt
+          textarea.mdtxt(style='display:none')
+              #{text}
+          .md
+#editbar
+script(type='text/javascript')
+  $(function(){
+    $('#editbar').hide();
+    var converter = new Showdown.converter();
+    var editurl = window.location.pathname + "edit";
+    alert(editurl);
+    
+    function rendermd(){ 
+        $(".txt>.md").html(function(){
+        var markdown = $(this).siblings(".mdtxt").val();
+        // alert(markdown);
+        var html = converter.makeHtml(markdown);
+        return html;
         });
+    }
+    rendermd(); // renders the markdown textareas.
+
+    $('#editbutton').click(function(){
+      $('#editbar').show();
+      $.ajax({
+        url: window.location.pathname + "edit",
+        success: function(data){
+          alert(data);
+          document.getElementByID("editbar").appendChild(data);
+        }
+      });
     });
+  });

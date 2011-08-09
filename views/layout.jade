@@ -1,12 +1,10 @@
 !!!
 html
   head
-    title= title || 'Title not set.'
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    -each style in styles
+      link(rel='stylesheet', href='/stylesheets/#{style}')
     script(src = 'http://code.jquery.com/jquery-latest.js')
     -each script in scripts
       script(type='text/javascript', src='/javascripts/#{script}')
   body
-    #header 
-      h1 Header.
-    #content!= body // this renders the body of an individual view
+    != body // this renders the body of an individual view
