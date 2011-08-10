@@ -90,7 +90,7 @@ app.get('/case/:id/:page', function(req, res){
   res.render('case', {
       title: theCase.title,
       styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'stacks.js'],
+      scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'client.js'],
       radios: theCase.radios,
       texts: theCase.texts
     });
@@ -98,7 +98,9 @@ app.get('/case/:id/:page', function(req, res){
 });
 
 app.get('/case/:id/:page/edit', function(req, res){
-  res.partial('edit', {
+  res.render('edit', {
+      styles: ['style.css'],
+      scripts: ['jquery.mousewheel.min.js','showdown.js','client.js'], 
       caseid: req.params.id,
       page: req.params.page
   });
@@ -122,6 +124,7 @@ app.get('/image/:id', function(req, res){
 });
 
 app.post('/image/', function(req, res){
+  console.log("POST /image/ called");
   requestHandlers.postImage(req, res);
 });
 

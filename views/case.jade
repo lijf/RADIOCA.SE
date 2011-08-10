@@ -1,94 +1,38 @@
 #wrap
   button(id='editbutton')
     | edit page
-  #leftcolumn
-    -each radio in radios
-      .stack(url='#{radio}', style='background-image: url("/images/#{radio}.jpg")')
-  #rightcolumn
-    -each text in texts
-      .txt
-        textarea.mdtxt(style='display:none')
-          #{text}
-        .md
-#editbar
+  #columnwrapper
+    #columns
+      #column
+        -each radio in radios
+          .stack(url='#{radio}', style='background-image: url("/images/#{radio}.jpg")')
+      #column
+        -each text in texts
+          .txt
+            textarea.mdtxt(rows=6, style='display:none')
+              #{text}
+            .md
+iframe(id='editbar', src='about:none')
 script(type='text/javascript')
   $(function(){
 
     $('#editbar').hide();
 
-    var converter = new Showdown.converter();
-    
-    function rendermd(){ 
-      $('.txt>.md').html(function(){
-        var markdown = $(this).siblings(".mdtxt").val();
-        var html = converter.makeHtml(markdown);
-        return html;
-      });
-    }
-
     rendermd(); // renders the markdown textareas.
 
-    $('#editbutton').click(function(){
-      $('#editbar').show();
-      $.ajax({
-        url: window.location.pathname + "edit",
-        method: "GET",
-        success: function(response){
-          if(!response){
-            $('#editbar').html('Denied');
-            }
-          else{ 
-            $('#editbar').html(response);
-            $(".md").live({
-            dblclick: function() {
-              $(this).hide();
-              $(this).siblings(".mdtxt").show().focus();
-            }
-            }); // shows the textbox for editing upon doubleclick
-          
-            $(".mdtxt").live({
-              blur: function() {
-                $(this).hide();
-                rendermd();
-                $(this).siblings(".md").show();
-              }
-            }); // hides the textbox and renders the markdown
-          }
-        }
-      });
-    });
+    $(".mdtxt").live({
+       blur: function() {
+           $(this).hide();
+           rendermd();
+           $(this).siblings(".md").show();
+       }
+    }); // hides the textbox and renders the markdown
 
-    $('#done').live({
+
+    $('#editbutton').live({
       click: function(){
-         $(".md").die();
-         $(".mdtxt").die();
-         $("#editbar").html("");
-         $("#editbar").hide();
+      $('#editbar').show().attr('src', window.location.pathname + "edit");
       }
     });
-
-    $("#upload").live({
-      click: function(){
-        var userFile = $('#userfile').val();
-        var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
-        $('#iframe').append(iframe);
-
-        $('#uploadform').attr({
-           action: "/image/",
-           method: "post",
-           userfile: userFile,
-           enctype: "multipart/form-data",
-           encoding: "multipart/form-data",
-           target: "postframe"
-        });
-        $('#uploadform').submit();
-        // create the new div, when image processed, set it as background
-        $('#leftcolumn').append("<div class='stack'></div>");
-        $('#postframe').load(function(){
-             var imgid = $("iframe")[0].contentDocument.body.innerHTML;
-             $('.stack:last').css('background-image', 'url("/image/' + imgid + '")');
-             scrollfunction();
-        });
-      }
-    });
+      
   });

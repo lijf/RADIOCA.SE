@@ -1,20 +1,21 @@
 #wrap {
-  width: 1024px;
   min-height: 100%;
   overflow: auto;
-  padding-bottom: 30px;
 }
 #controls {
   width: 100%;
   height: 30px;
 }
 #leftcolumn {
-  width: 512px;
+  position: relative;
+  left: 0px;
   float: left;
 }
 #righcolumn {
-  width: 480px;
+  position: relative;
   float: right;
+  right: 0px;
+  margin-left: 32px;
 }
 #editbutton {
   position: fixed;
@@ -31,7 +32,18 @@
   clear: both;
   background-color: #222;
 }
+.loading {
+  background-image: url("/images/loading_gif.gif");
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+.deletebutton {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
 .stack {
+  position: relative;
   width: 512px;
   height: 512px;
   padding: 0;
@@ -40,19 +52,29 @@
   overflow: hidden;
   min-height: 512px;
 }
-.maximized {
-  top: 0px;
-  left: 0px;
-}
 .hidden {
   width: 0px;
   height: 0px;
   display: none;
   padding: 30px;
 }
-.md {
-  width: 480px;
+.txt {
+  min-width: 480px;
+  max-width: 480px;
   float: right;
+}
+.md {
+  min-width: 480px;
+  max-width: 480px;
+}
+textarea {
+  right: 0px;
+  margin-top: 10px;
+  min-width: 480px;
+  max-width: 480px;
+  line-height: 1;
+  font-family: monospace;
+  font-size: 110%;
 }
 html {
   height: 100%;

@@ -1,5 +1,5 @@
 #controls
-  form(id ='savepage', style='position:fixed; :top: 5px; right: 5px')
+  form(id ='savepage', style='position:fixed; top: 5px; right: 5px')
     input(type='hidden', name='_method', value='put')
     input(id='save', type='submit', value='Save page', action='/case/#{caseid}/#{page}')
     button(id='done', type='button')
@@ -8,3 +8,7 @@
     input(type='file', name='userfile', id='userfile', multiple='multiple')
     input(id='upload', type='submit', value='Upload file')
 #iframe(style='width: 0px; height: 0px; display:none')
+script(type='text/javascript')
+  $(function(){
+    editfunctions(); //activates edit functionality when page is loaded
+  })
