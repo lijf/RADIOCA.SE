@@ -1,5 +1,4 @@
   function editpage(){
-    var pathname = window.location.pathname;
     $(".md").live({
       dblclick: function() {
         $(this).hide();

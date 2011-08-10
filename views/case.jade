@@ -19,12 +19,9 @@ script(type='text/javascript')
     var converter = new Showdown.converter();
     
     function rendermd(){ 
-      debugger;
       $('.txt>.md').html(function(){
-        debugger;
         var markdown = $(this).siblings(".mdtxt").val();
         var html = converter.makeHtml(markdown);
-        alert(html);
         return html;
       });
     }
@@ -59,6 +56,15 @@ script(type='text/javascript')
           }
         }
       });
+    });
+
+    $('#done').live({
+      click: function(){
+         $(".md").die();
+         $(".mdtxt").die();
+         $("#editbar").html("");
+         $("#editbar").hide();
+      }
     });
 
     $("#upload").live({
