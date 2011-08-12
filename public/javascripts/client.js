@@ -12,7 +12,7 @@ function scrollfunction(){
 }
 
 function rendermd(){ 
-  $('.md').html(function(){
+  $('.md', top.document).html(function(){
      var markdown = $(this).siblings(".mdtxt").val();
      var html = converter.makeHtml(markdown);
      return html;
@@ -44,7 +44,7 @@ $(function(){
 
   $('.deletebutton').live({
     click: function(){
-       $(this).parent().remove();         
+       $(this).parent().parent().remove();         
     }
   });
 
@@ -104,14 +104,21 @@ $(function(){
     });
     $('#uploadform').submit();
     // create the new div, when image processed, set it as background
-    $(top.document).append("<div class='stack'></div>");
-    $('.stack:last', top.document).addClass('loading');     
+    $('#radios',top.document).append(
+      "<div class='radio col1'><div class='stack img512'></div>" +
+      "<div class='caption'>" + 
+      "<textarea class='mdtxt' style='display:none'>" +
+      "(doubleclick to change caption) </textarea>" + 
+      "<div class='md'></div></div></div>");
+    $('.radio:last>.stack', top.document).addClass('loading');     
     $('#postframe').load(
         function(){
           var imgid = $("iframe")[0].contentDocument.body.innerHTML;
           // alert(imgid);
-          $('.stack:last', top.document).removeClass('loading').css('background-image', 'url("/image/' + imgid + '")').append($('<button type="button" class="deletebutton">Del</button>'));
+          $('.radio:last>.stack', top.document).removeClass('loading').css('background-image', 'url("/image/' + imgid + '")').append($('<button type="button" class="deletebutton">Del</button>'));
           scrollfunction();
+          editfunctions();
+          rendermd();
         });
      }
   });

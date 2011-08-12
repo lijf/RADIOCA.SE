@@ -2,20 +2,21 @@
   button(id='editbutton')
       | edit page
   #taco
-    -each radio in radios
-      .radio.col1
-        .stack(url='#{radio.img}', class='img512', style='background-image: url("/images/#{radio.img}.jpg")')
-        .caption
+    #column_1.col1
+      -each radio in radios
+        .radio
+          .stack(url='#{radio.img}', class='img512', style='background-image: url("/images/#{radio.img}.jpg")')
+          .caption
+            textarea.mdtxt(style='display:none')
+              #{radio.caption}
+            .md
+    #column_2.col2
+      -each text in texts
+        .txt
           textarea.mdtxt(style='display:none')
-            #{radio.caption}
+            #{text}
           .md
-      iframe(id='editbar', src='about:none')
-    -each text in texts
-      .txt.col2
-        textarea.mdtxt(style='display:none')
-          #{text}
-        .md
-
+  iframe(id='editbar', src='about:none')
 script(type='text/javascript')
   $(function(){
 
