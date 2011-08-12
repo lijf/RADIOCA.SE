@@ -12,7 +12,7 @@ function scrollfunction(){
 }
 
 function rendermd(){ 
-  $('.txt>.md').html(function(){
+  $('.md').html(function(){
      var markdown = $(this).siblings(".mdtxt").val();
      var html = converter.makeHtml(markdown);
      return html;
@@ -104,7 +104,7 @@ $(function(){
     });
     $('#uploadform').submit();
     // create the new div, when image processed, set it as background
-    $('#leftcolumn', top.document).append("<div class='stack'></div>");
+    $(top.document).append("<div class='stack'></div>");
     $('.stack:last', top.document).addClass('loading');     
     $('#postframe').load(
         function(){

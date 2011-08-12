@@ -1,18 +1,21 @@
 #wrap
   button(id='editbutton')
-    | edit page
-  #columnwrapper
-    #columns
-      #column
-        -each radio in radios
-          .stack(url='#{radio}', style='background-image: url("/images/#{radio}.jpg")')
-      #column
-        -each text in texts
-          .txt
-            textarea.mdtxt(rows=6, style='display:none')
-              #{text}
-            .md
-iframe(id='editbar', src='about:none')
+      | edit page
+  #taco
+    -each radio in radios
+      .radio.col1
+        .stack(url='#{radio.img}', class='img512', style='background-image: url("/images/#{radio.img}.jpg")')
+        .caption
+          textarea.mdtxt(style='display:none')
+            #{radio.caption}
+          .md
+      iframe(id='editbar', src='about:none')
+    -each text in texts
+      .txt.col2
+        textarea.mdtxt(style='display:none')
+          #{text}
+        .md
+
 script(type='text/javascript')
   $(function(){
 

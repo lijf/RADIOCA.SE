@@ -50,7 +50,10 @@ redisClient.on("error", function(err) {
     "title": "case1",
     "caseid": "1",
     "page": "1",
-    "radios": ["123", "123"],
+    "radios": [
+        {"img":"123", "caption":"EDH 1"}, 
+        {"img":"123", "caption":"EDH 2"} 
+      ],
     "texts": ["__Text 1__ ", "Text 2"]
     }
 

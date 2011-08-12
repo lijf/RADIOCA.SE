@@ -1,21 +1,13 @@
 #wrap {
   min-height: 100%;
-  overflow: auto;
+  padding: 0;
+  max-width: 1024px;
+  min-width: 512px;
+  margin: 0 auto;
 }
-#controls {
-  width: 100%;
-  height: 30px;
-}
-#leftcolumn {
-  position: relative;
-  left: 0px;
-  float: left;
-}
-#righcolumn {
-  position: relative;
-  float: right;
-  right: 0px;
-  margin-left: 32px;
+#taco {
+  margin-top: 35px;
+  overflow: hidden;
 }
 #editbutton {
   position: fixed;
@@ -29,8 +21,25 @@
   margin-top: 0px;
   height: 30px;
   width: 100%;
-  clear: both;
   background-color: #222;
+}
+.col1 {
+  float: left;
+}
+.col2 {
+  min-width: 25em;
+  max-width: 35em;
+  border-left: 512px solid #333;
+  float: left;
+  margin-left: -512px;
+}
+.radio {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.img512 {
+  height: 512px;
+  width: 512px;
 }
 .loading {
   background-image: url("/images/loading_gif.gif");
@@ -44,34 +53,21 @@
 }
 .stack {
   position: relative;
-  width: 512px;
-  height: 512px;
   padding: 0;
   border: 0;
   background-size: auto 100%;
   overflow: hidden;
-  min-height: 512px;
 }
 .hidden {
   width: 0px;
   height: 0px;
   display: none;
-  padding: 30px;
 }
 .txt {
-  min-width: 480px;
-  max-width: 480px;
-  float: right;
-}
-.md {
-  min-width: 480px;
-  max-width: 480px;
+  min-width: 10em;
+  max-width: 35em;
 }
 textarea {
-  right: 0px;
-  margin-top: 10px;
-  min-width: 480px;
-  max-width: 480px;
   line-height: 1;
   font-family: monospace;
   font-size: 110%;
@@ -80,12 +76,9 @@ html {
   height: 100%;
 }
 body {
-  margin: 0 auto;
   font-family: Georgia, Palatino, serif;
   color: #444;
   line-height: 1;
-  max-width: 960px;
-  padding: 30px;
   height: 100%;
 }
 h1,
