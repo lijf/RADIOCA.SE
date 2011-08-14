@@ -78,7 +78,7 @@ $(function(){
       type: 'PUT',
       url: url, 
       dataType: 'json',
-      data: JSON.stringify(data),
+      data: data,
       success: function(msg) {
         alert("Page Saved: " + msg);
       }

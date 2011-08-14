@@ -111,6 +111,8 @@ app.get('/case/:id/:page/edit', function(req, res){
 
 app.put('/case/:id/:page', function(req, res){
   console.log('PUT /case was called');
+  var data = (req.body);
+  console.log(req.body);
 });
 
 app.get('/image/:id', function(req, res){
