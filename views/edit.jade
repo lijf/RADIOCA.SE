@@ -1,6 +1,8 @@
 #controls
   form(id ='savepage', style='position:fixed; top: 5px; right: 5px', action='/case/#{caseid}/#{page}')
     input(type='hidden', name='_method', value='put')
+    button(id='help', type='button')
+      | Show/hide help
     input(id='save', type='submit', value='Save page')
     button(id='1col', type='button')
       | 1 col

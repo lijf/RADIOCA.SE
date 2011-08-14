@@ -54,8 +54,8 @@ redisClient.on("error", function(err) {
         {"img":"123", "caption":"EDH 1"}, 
         {"img":"123", "caption":"EDH 2"} 
       ],
-    "texts": ["__Text 1__ "]
-    }
+    "texts": ["---"]
+    };
 
  redisClient.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
 
@@ -87,14 +87,17 @@ app.get('/test', function(req, res){
 
 app.get('/case/:id/:page', function(req, res){
   var findCase="case:"+req.params.id+":page:"+req.params.page;
-  redisClient.get(findCase, function( err, data) {
-  var theCase = JSON.parse( data.toString() );
+  redisClient.mget(findCase, 'markdown-help', function( err, data) {
+  console.dir(data[1]);
+  var theCase = JSON.parse( data[0].toString());
+  var mdhelp = JSON.parse( data[1].toString());
   res.render('case', {
       title: theCase.title,
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'client.js'],
       radios: theCase.radios,
-      texts: theCase.texts
+      texts: theCase.texts,
+      mdhelp: mdhelp
     });
   });
 });
@@ -103,16 +106,18 @@ app.get('/case/:id/:page/edit', function(req, res){
   res.render('edit', {
       title: "edit",
       styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js','showdown.js','client.js'], 
+      scripts: ['jquery.mousewheel.min.js','showdown.js','client.js'],
       caseid: req.params.id,
       page: req.params.page
-  });
+    });
 });
 
 app.put('/case/:id/:page', function(req, res){
   console.log('PUT /case was called');
-  var data = (req.body);
-  console.log(req.body);
+  var data = req.body;
+    console.log(data);
+  // redisClient.set("markdown-help", JSON.stringify(req.body.texts[0]));
+  // console.log(req.body.texts[0]);
 });
 
 app.get('/image/:id', function(req, res){
@@ -125,10 +130,6 @@ app.get('/image/:id', function(req, res){
           res.end();
       }
   });
-});
-
-app.get('/mdsyntax', function(req, res){
-  res.partial('markdown-syntax');
 });
 
 app.post('/image/', function(req, res){

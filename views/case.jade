@@ -1,6 +1,6 @@
 #wrap
   button(id='editbutton')
-      | edit page
+    | edit page
   #taco
     #column_1.col1
       -each radio in radios
@@ -10,15 +10,23 @@
             textarea.mdtxt(style='display:none')
               #{radio.caption}
             .md
+
     #column_2.col2
       -each text in texts
         .txt
           textarea.mdtxt(style='display:none')
             #{text}
           .md
-  iframe(id='editbar', src='about:none')
+    #markdown-help
+      textarea.mdtxt(style='display:none')
+        #{mdhelp}
+      .md
+    iframe(id='editbar', src='about:none')
 script(type='text/javascript')
   $(function(){
+
+    $('#markdown-help').hide();
+
 
     $('#editbar').hide();
 

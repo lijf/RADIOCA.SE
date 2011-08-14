@@ -59,7 +59,6 @@ function spiderpage(){
 $(function(){
   scrollfunction();
 
-
   $('.deletebutton').live({
     click: function(){
        $(this).parent().parent().remove();         
@@ -71,9 +70,9 @@ $(function(){
     function(event){
     event.preventDefault();
     var data = spiderpage();
-    alert(JSON.stringify(data));
+    //alert(JSON.stringify(data));
     var url = $("#savepage").attr("action").toString();
-    alert(url);
+    //alert(url);
     $.ajax({
       type: 'PUT',
       url: url, 
@@ -83,6 +82,10 @@ $(function(){
         alert("Page Saved: " + msg);
       }
       });
+  });
+
+  $("#help").click(function(){
+      $("#markdown-help", top.document).toggle();
   });
 
   $('#sendstring').live({
