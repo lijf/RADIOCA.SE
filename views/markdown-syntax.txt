@@ -1,38 +1,33 @@
-  Text areas are formatted using [markdown](http://www.daringfireball.net/), created by John Gruber of Daring Fireball fame.
+Text areas are formatted using [markdown](http://www.daringfireball.net/), created by John Gruber of Daring Fireball fame.
 
-  Paragraphs are separated with one or more empty lines. If you put more than one line the rendering won't change - so no creating whitespace this way. If you double-click in this area, you can see the markdown source. 
+Paragraphs are separated with one or more empty lines. If you put more than one line the rendering won't change (so no creating whitespace this way!)
 
-  Big headlines
-  =============
+If you double-click in this area, you can see (and edit) the markdown source.
 
-  Are created by putting a row of equals signs (=) below the headline.
+# Different levels of head-
+## lines are most easily created by
+### putting a number of hashes (#) at the start
+#### of the line, corresponding to the 'headline-level'.
 
-  Smaller headlines
-  ------------
+1. By using number-period-space (1. ) you can create a numbered list. With the numbers nicely offset to the left and paragraphs lining up.
+2. Actually the exact number is irrelevant...
+1. The points will always be numbered consequentially
 
-  Are made using dashes (-), actually it's only necessary to put one = or - on the line below, but a longer line makes the markdown more legible.
+To start a new list you have to interpose at least one line without a number or other special character
 
-  Numbered lists 
-  --------------
-  1. By using number-period-space (1. )
-  2. Actually the exact number is irrelevant...
-  1. The points will always be numbered consequentially
+* Bulleted lists can be created using an asterisk (*)
+* The characters have been chosen so as to make the markdown text easier to read for humans.
+* asterisks, or underscore (_) are also used to add *emphasis* to a word (\*emphasis\* or \_emphasis\_), if you surround a word with two asterisks or underscore characters the word becomes **bold** (\*\*bold\*\*)
 
-  To start a new list you have to interpose at least one line without a number or other special character
+Control-characters can be escaped with backslash (\\) - which can be useful if you for example want to surround a phrase with \*asterisks without reformatting\* (as I just had to do).
 
-  * Bulleted lists can be created using an asterisk (*)
-  * The characters have been chosen so as to make the markdown text easier to read for humans.
-  * asterisks, or underscore (_) are also used to add *emphasis* to a word (\*emphasis\* or \_emphasis\_), if you surround a word with two asterisks or underscore characters the word becomes **bold** (\*\*bold\*\*)
+There are two main ways of creating hyperlinks.
 
-  Control-characters can be escaped with backslash (\\) - which can be useful if you for example want to surround a phrase with \*asterisks without reformatting\* (as I just had to do).
-   
-  There are two main ways of creating hyperlinks.
-   
-  1. Either you can enclose the "link-word" with brackets and then put the target and an optional title inside a parenthesis just after it \[google](http://www.google.com, "Google") renders to [google](http://www.google.com "Google").
-  2. The other option is to use a reference, where you again put the link word in brackets followed by an id in brackets [link][id], then you reference this id on a separate line further down the page like this:
+1. Either you can enclose the "link-word" with brackets and then put the target and an optional title inside a parenthesis just after it \[google](http://www.google.com, "Google") renders to [google](http://www.google.com "Google").
+2. The other option is to use a reference, where you again put the link word in brackets followed by an id in brackets [link][id], then you reference this id on a separate line further down the page like this:
 
-  \[id]: http://radiographics.rsna.org/ "Optional title"
+\[id]: http://radiographics.rsna.org/ "Optional title"
 
-  An example of a [link with reference][ref]. This has the advantage of moving the literal addresses out of the flow of the text, they can for example be put at the end of the document. 
+An example of a [link with reference][ref]. This has the advantage of moving the literal addresses out of the flow of the text, they can for example be put at the end of the document.
 
-  [ref]: http://radiographics.rsna.org "RadioGraphics" 
+[ref]: http://radiographics.rsna.org "RadioGraphics"

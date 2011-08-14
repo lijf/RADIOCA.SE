@@ -115,14 +115,13 @@ app.put('/case/:id/:page', function(req, res){
 
 app.get('/image/:id', function(req, res){
   var image = __dirname + '/img/' + req.params.id + '.jpg';
-  fs.readFile(image, "binary", function(error, file){
-    if(error) {
-    } else {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'image/jpeg');
-      res.write(file, "binary");
-      res.end();
-    }
+  fs.readFile(image, "binary", function(error, file) {
+      if (!error) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'image/jpeg');
+          res.write(file, "binary");
+          res.end();
+      }
   });
 });
 

@@ -5,10 +5,11 @@
     margin 0 auto
 #taco
     margin-top 35px
-    overflow hidden
+    position relative
 .col1
-    float left
-    clear left
+    position absolute
+    left 0px
+    top 0px
 #editbutton
     position fixed 
     top 5px
@@ -22,9 +23,9 @@
     width 100%
     background-color #222
 .col2
-    border-left 532px solid #333 
-    float left
-    margin-left -512px
+    position absolute
+    left 560px
+    top 0px
 .radio
     margin-right 10px
     margin-left 10px
@@ -50,7 +51,6 @@
     height 0px
     display none
 .txt
-    min-width 10em 
     max-width 35em
 textarea
     line-height 1

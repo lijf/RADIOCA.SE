@@ -6,11 +6,12 @@
 }
 #taco {
   margin-top: 35px;
-  overflow: hidden;
+  position: relative;
 }
 .col1 {
-  float: left;
-  clear: left;
+  position: absolute;
+  left: 0px;
+  top: 0px;
 }
 #editbutton {
   position: fixed;
@@ -27,9 +28,9 @@
   background-color: #222;
 }
 .col2 {
-  border-left: 532px solid #333;
-  float: left;
-  margin-left: -512px;
+  position: absolute;
+  left: 560px;
+  top: 0px;
 }
 .radio {
   margin-right: 10px;
@@ -62,7 +63,6 @@
   display: none;
 }
 .txt {
-  min-width: 10em;
   max-width: 35em;
 }
 textarea {

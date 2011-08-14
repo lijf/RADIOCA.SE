@@ -67,15 +67,15 @@ $(function(){
   });
 
 
-  $("#save").live({
-    click: function(event){
+  $("#save").click(
+    function(event){
     event.preventDefault();
     var data = spiderpage();
     alert(JSON.stringify(data));
     var url = $("#savepage").attr("action").toString();
     alert(url);
     $.ajax({
-      method: 'PUT',
+      type: 'PUT',
       url: url, 
       dataType: 'json',
       data: JSON.stringify(data),
@@ -83,7 +83,6 @@ $(function(){
         alert("Page Saved: " + msg);
       }
       });
-    }
   });
 
   $('#sendstring').live({
@@ -140,8 +139,8 @@ $(function(){
     });
     $('#uploadform').submit();
     // create the new div, when image processed, set it as background
-    $('#radios',top.document).append(
-      "<div class='radio col1'><div class='stack img512'></div>" +
+    $('#column_1',top.document).append(
+      "<div class='radio'><div class='stack img512'></div>" +
       "<div class='caption'>" + 
       "<textarea class='mdtxt' style='display:none'>" +
       "(doubleclick to change caption) </textarea>" + 
