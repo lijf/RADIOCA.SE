@@ -25,11 +25,11 @@ script(type='text/javascript')
     rendermd(); // renders the markdown textareas.
 
     $(".mdtxt").live({
-       blur: function() {
-           $(this).hide();
-           rendermd();
-           $(this).siblings(".md").show();
-       }
+      blur: function() {
+        $(this).hide();
+        rendermd();
+        $(this).siblings(".md").show();
+      }
     }); // hides the textbox and renders the markdown
 
 

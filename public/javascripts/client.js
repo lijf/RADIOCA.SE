@@ -14,8 +14,7 @@ function scrollfunction(){
 function rendermd(){ 
   $('.md', top.document).html(function(){
      var markdown = $(this).siblings(".mdtxt").val();
-     var html = converter.makeHtml(markdown);
-     return html;
+     return converter.makeHtml(markdown);
   });
 }
 
@@ -38,6 +37,25 @@ function editfunctions(){
   $(".stack", top.document).append($('<button type="button" class="deletebutton">Del</button>'));
 }
 
+function spiderpage(){
+
+  var jsonpage = {};
+  jsonpage.title = $("title", top.document).html();
+  // alert(jsonpage.title);
+  jsonpage.radios = $(".radio", top.document).map(function(){
+    var radio = {};
+    radio.img = $(this).children('.stack').attr("url");
+    radio.caption = $(this).children('.caption').children('.mdtxt').html();
+    // alert(JSON.stringify(radio));
+    return radio;
+  }).get();
+  jsonpage.texts = $(".txt>.mdtxt", top.document).map(function(){
+    return($(this).val());
+  }).get();
+  // alert(JSON.stringify(jsonpage));  
+  return jsonpage;
+}
+
 $(function(){
   scrollfunction();
 
@@ -52,9 +70,27 @@ $(function(){
   $("#save").live({
     click: function(event){
     event.preventDefault();
+    var data = spiderpage();
+    alert(JSON.stringify(data));
+    var url = $("#savepage").attr("action").toString();
+    alert(url);
     $.ajax({
-      method: "PUT",
-      url: "/case/#{caseid}/#{page}", // caseid and page are interpolated 
+      method: 'PUT',
+      url: url, 
+      dataType: 'json',
+      data: JSON.stringify(data),
+      success: function(msg) {
+        alert("Page Saved: " + msg);
+      }
+      });
+    }
+  });
+
+  $('#sendstring').live({
+    click: function(){
+      $.ajax({
+        url: '/put-test',
+        method: 'put'
       });
     }
   });

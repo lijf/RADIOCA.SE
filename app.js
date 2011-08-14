@@ -54,7 +54,7 @@ redisClient.on("error", function(err) {
         {"img":"123", "caption":"EDH 1"}, 
         {"img":"123", "caption":"EDH 2"} 
       ],
-    "texts": ["__Text 1__ ", "Text 2"]
+    "texts": ["__Text 1__ "]
     }
 
  redisClient.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
@@ -85,7 +85,6 @@ app.get('/test', function(req, res){
   res.send('<html><body><p>Test</body></html>');
 });
 
-
 app.get('/case/:id/:page', function(req, res){
   var findCase="case:"+req.params.id+":page:"+req.params.page;
   redisClient.get(findCase, function( err, data) {
@@ -102,6 +101,7 @@ app.get('/case/:id/:page', function(req, res){
 
 app.get('/case/:id/:page/edit', function(req, res){
   res.render('edit', {
+      title: "edit",
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js','showdown.js','client.js'], 
       caseid: req.params.id,
@@ -124,6 +124,10 @@ app.get('/image/:id', function(req, res){
       res.end();
     }
   });
+});
+
+app.get('/mdsyntax', function(req, res){
+  res.partial('markdown-syntax');
 });
 
 app.post('/image/', function(req, res){
