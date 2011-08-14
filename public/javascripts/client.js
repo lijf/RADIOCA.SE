@@ -143,7 +143,7 @@ $(function(){
     $('#uploadform').submit();
     // create the new div, when image processed, set it as background
     $('#column_1',top.document).append(
-      "<div class='radio'><div class='stack img512'></div>" +
+      "<div class='radio'><div url='', class='stack img512'></div>" +
       "<div class='caption'>" + 
       "<textarea class='mdtxt' style='display:none'>" +
       "(doubleclick to change caption) </textarea>" + 
@@ -152,6 +152,7 @@ $(function(){
     $('#postframe').load(
         function(){
           var imgid = $("iframe")[0].contentDocument.body.innerHTML;
+          $('.radio:last>.stack', top.document).attr('url', imgid);
           // alert(imgid);
           $('.radio:last>.stack', top.document).removeClass('loading').css('background-image', 'url("/image/' + imgid + '")').append($('<button type="button" class="deletebutton">Del</button>'));
           scrollfunction();
