@@ -43,7 +43,8 @@ function postImage(req, res){
               if (error !== null) {
                 console.log('exec error: ' + error);
               }
-              res.send(d,200);
+              return d;
+                // TODO: save the image to redis-db. Also fix some error handling higher up in this chain
             });
            });
          });

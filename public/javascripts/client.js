@@ -45,7 +45,7 @@ function spiderpage(){
   jsonpage.radios = $(".radio", top.document).map(function(){
     var radio = {};
     radio.img = $(this).children('.stack').attr("url");
-    radio.caption = $(this).children('.caption').children('.mdtxt').html();
+    radio.caption = $(this).children('.caption').children('.mdtxt').val();
     // alert(JSON.stringify(radio));
     return radio;
   }).get();
@@ -99,30 +99,10 @@ $(function(){
 
   $('#done').live({
     click: function(){
-     $(".md", top.document).die();
-     $(".mdtxt", top.document).die();
-     $("#editbar", top.document).hide();
-     $("#editbar", top.document).attr('src', 'about:none');
+     $(".md .mdtxt", top.document).die();
+     $("#editbar", top.document).hide().attr('src', 'about:none');
      $(".stack>.deletebutton", top.document).remove();
-    }
-  });
-
-  $("#upload1").live({
-    click: function(){
-      var userFile = $('#userfile').val();
-      alert(userFile);
-      $.ajax({
-        method: "post",
-        url: "/image/",
-        userfile: userFile,
-        enctype: "multipart/form-data",
-        encoding: "multipart/form-data",
-        success: function(response){
-          $('#leftcolumn', top.document).append($('<div class="stack"></div>'));
-          $('.stack:last', top.document).css('background-image', 'url("/image/' + response + '")');
-          scrollfunction();
-        }
-      });
+     $("#editbutton", top.document).show();
     }
   });
 
@@ -146,15 +126,15 @@ $(function(){
       "<div class='radio'><div url='', class='stack img512'></div>" +
       "<div class='caption'>" + 
       "<textarea class='mdtxt' style='display:none'>" +
-      "(doubleclick to change caption) </textarea>" + 
+      "(double-click to change caption) </textarea>" +
       "<div class='md'></div></div></div>");
     $('.radio:last>.stack', top.document).addClass('loading');     
     $('#postframe').load(
         function(){
-          var imgid = $("iframe")[0].contentDocument.body.innerHTML;
-          $('.radio:last>.stack', top.document).attr('url', imgid);
+          var url = $("iframe")[0].contentDocument.body.innerHTML;
+          $('.radio:last>.stack', top.document).attr('url', url);
           // alert(imgid);
-          $('.radio:last>.stack', top.document).removeClass('loading').css('background-image', 'url("/image/' + imgid + '")').append($('<button type="button" class="deletebutton">Del</button>'));
+          $('.radio:last>.stack', top.document).removeClass('loading').css('background-image', 'url("/image/' + url + '")').append($('<button type="button" class="deletebutton">Del</button>'));
           scrollfunction();
           editfunctions();
           rendermd();

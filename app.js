@@ -9,8 +9,7 @@ var express = require('express'),
     fs = require('fs'),
     requestHandlers = require("./requestHandlers"),
     sys = require('sys'),
-    redis = require('redis'),
-    redisClient = redis.createClient();
+    db = require('redis').createClient();
 
 
 var app = module.exports = express.createServer();
@@ -30,17 +29,23 @@ app.configure(function() {
 });
 
 app.configure('development', function() {
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    // app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function() {
     app.use(express.errorHandler());
 });
 
+app.error(function(err, req, res, next) {
+    sys.puts("APP.ERROR:" + sys.inspect(err));
+    next(err);
+});
+
+
 // Data Store
 
-redisClient.on("error", function(err) {
-    console.log("Error " + err);
+db.on("error", function(err) {
+    console.log("Redis Error " + err);
 });
 
 var case1;
@@ -84,12 +89,15 @@ app.get('/test', function(req, res) {
 });
 
 app.get('/case/:id/:page', function(req, res) {
+    console.log('GET case/' + req.params.id + '/' + req.params.page);
     var findCase = "case:" + req.params.id + ":page:" + req.params.page;
-    redisClient.mget(findCase, 'markdown-help', function(err, data) {
-        console.dir(data[1]);
+    db.mget(findCase, "markdown-help", function(err, data){
+        console.dir(data);
+        if(!data[0]){return res.send("huh?", 404);} else {
+        console.log(data[0]);
         var theCase = JSON.parse(data[0].toString());
         var mdhelp = JSON.parse(data[1].toString());
-        res.render('case', {
+        return res.render('case', {
             title: theCase.title,
             styles: ['style.css'],
             scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'client.js'],
@@ -97,8 +105,9 @@ app.get('/case/:id/:page', function(req, res) {
             texts: theCase.texts,
             mdhelp: mdhelp
         });
+        }
     });
-});
+ });
 
 app.get('/case/:id/:page/edit', function(req, res) {
     res.render('edit', {
@@ -113,16 +122,13 @@ app.get('/case/:id/:page/edit', function(req, res) {
 app.put('/case/:id/:page', function(req, res) {
     console.log('PUT /case was called');
     var data = req.body;
-    console.log(data);
-    // redisClient.set("markdown-help", JSON.stringify(req.body.texts[0]));
-    // console.log(req.body.texts[0]);
-    redisClient.set("case:" + req.params.id + ":page:" + req.params.page, JSON.stringify(data));
+    db.set("case:" + req.params.id + ":page:" + req.params.page, JSON.stringify(data));
 });
 
 app.get('/image/:id', function(req, res) {
     var image = __dirname + '/img/' + req.params.id + '.jpg';
     fs.readFile(image, "binary", function(error, file) {
-        if (!error) {
+        if (error){ return res.send("huh?", 404);} else {
             res.statusCode = 200;
             res.setHeader('Content-Type', 'image/jpeg');
             res.write(file, "binary");
@@ -134,6 +140,13 @@ app.get('/image/:id', function(req, res) {
 app.post('/image/', function(req, res) {
     console.log("POST /image/ called");
     requestHandlers.postImage(req, res);
+    filename = __dirname + '/img/' + img + '.jpg';
+    fs.readFile(filename, function(err, data){
+        if (err) throw err;
+        console.log("Read " + data.length + " bytes from filesystem");
+        id = db.incr("img");
+        db.set(id, data, redis.print);
+    });
 });
 
 app.listen(3000);

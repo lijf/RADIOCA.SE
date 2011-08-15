@@ -1,6 +1,4 @@
 #wrap
-  button(id='editbutton')
-    | edit page
   #taco
     #column_1.col1
       -each radio in radios
@@ -22,11 +20,12 @@
         #{mdhelp}
       .md
     iframe(id='editbar', src='about:none')
+  button(id='editbutton')
+    | edit page
 script(type='text/javascript')
   $(function(){
 
     $('#markdown-help').hide();
-
 
     $('#editbar').hide();
 
@@ -44,6 +43,7 @@ script(type='text/javascript')
     $('#editbutton').live({
       click: function(){
       $('#editbar').show().attr('src', window.location.pathname + "edit");
+      $(this).hide();
       }
     });
       

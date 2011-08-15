@@ -75,7 +75,7 @@
 .md {
   padding: 10px 30px;
 }
-.caption {
+.caption>.md {
   margin-top: -15px;
 }
 textarea {
