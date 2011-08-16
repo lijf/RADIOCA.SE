@@ -23,7 +23,7 @@ function postImage(req, res){
         if (error !== null) {
           console.log('exec error: ' + error);
         }
-        var child2 = exec('find ' + d + ' -type f -exec mv {} ' + d + ' \\;', 
+        var child2 = exec('find ' + d + ' -type f -exec mv {} ' + d + ' \\;',
         function (error, stdout, stderr) {
           if (error !== null) {
             console.log('exec error: ' + error);

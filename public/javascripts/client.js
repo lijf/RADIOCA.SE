@@ -99,7 +99,8 @@ $(function(){
 
   $('#done').live({
     click: function(){
-     $(".md .mdtxt", top.document).die();
+     $(".md", top.document).die();
+     $(" .mdtxt", top.document).die();
      $("#editbar", top.document).hide().attr('src', 'about:none');
      $(".stack>.deletebutton", top.document).remove();
      $("#editbutton", top.document).show();
