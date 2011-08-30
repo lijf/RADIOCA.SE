@@ -12,8 +12,8 @@ var express = require('express'),
     sys = require('sys'),
     db = require('redis').createClient(),
     zip = require('zip'),
-    easyoauth = require('easy-oauth'),
-    authCheck = require('./authCheck.js');
+    easyoauth = require('easy-oauth');
+    // authCheck = require('./authCheck.js');
 
 
 var app = module.exports = express.createServer();
@@ -83,11 +83,11 @@ case1 = {
 
 // Routes
 
-app.get('/', function(req, res) {
-    res.render('index', {
-        title: 'Express'
-    });
-});
+//app.get('/', function(req, res) {
+//    res.render('index', {
+//        title: 'Express'
+//    });
+//});
 
 app.get('/ziptest', function(req, res){
     var zipfile = fs.readFileSync(__dirname + "/SD.zip");
