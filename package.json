@@ -2,10 +2,12 @@
     "name": "express-radicase",
     "version": "0.0.1",
     "dependencies": {
+        "stylus": "0.13.7",
         "express": "2.4.3",
         "formidable": "1.0.2",
         "zip": "0.0.4",
         "redis": "0.6.7",
         "easy-oauth": "0.2.0"
+
     }
 }
