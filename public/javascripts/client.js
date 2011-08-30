@@ -59,6 +59,22 @@ function spiderpage(){
 $(function(){
   scrollfunction();
 
+  var authcallback = function(data){
+      $('.details').html('<p>You are all signed in as <strong>'
+            +data.user.username+
+            '</strong><br>...and here are some details:'
+            +JSON.stringify(data.user)+
+            '</p><a href="/logout">logout</a>').fadeIn('slow');
+    }
+
+    $('#twitbutt').click(function(){
+      openEasyOAuthBox('twitter',authcallback);
+    });
+
+    $('#facebutt').click(function(){
+       openEasyOAuthBox('facebook',authcallback);
+    });
+
   $('.deletebutton').live({
     click: function(){
        $(this).parent().parent().remove();         
@@ -101,6 +117,7 @@ $(function(){
     click: function(){
      $(".md", top.document).die();
      $(" .mdtxt", top.document).die();
+     $("#markdown-help", top.document).hide();
      $("#editbar", top.document).hide().attr('src', 'about:none');
      $(".stack>.deletebutton", top.document).remove();
      $("#editbutton", top.document).show();

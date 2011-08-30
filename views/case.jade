@@ -17,13 +17,20 @@
           .md
     #markdown-help
       textarea.mdtxt(style='display:none')
-        #{mdhelp}
+        // #{mdhelp}
       .md
+    #loginfo
     iframe(id='editbar', src='about:none')
   button(id='editbutton')
     | edit page
+  .details
+    button(id='facebutt')
+      | facebook
+    button(id='twitbutt')
+      | twitter
 script(type='text/javascript')
   $(function(){
+    $('#logininfo').hide();
 
     $('#markdown-help').hide();
 

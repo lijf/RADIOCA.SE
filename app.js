@@ -10,7 +10,10 @@ var express = require('express'),
     fs = require('fs'),
     requestHandlers = require("./requestHandlers"),
     sys = require('sys'),
-    db = require('redis').createClient();
+    db = require('redis').createClient(),
+    zip = require('zip'),
+    easyoauth = require('easy-oauth'),
+    authCheck = require('./authCheck.js');
 
 
 var app = module.exports = express.createServer();
@@ -23,8 +26,9 @@ app.configure(function() {
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(express.session({ secret: 'your secret here' }));
+    app.use(express.session({ secret: 'eventuallycloseduringnative' }));
     app.use(require('stylus').middleware({ src: __dirname + '/public' }));
+    app.use(easyoauth(require('./keys_file')));
     app.use(app.router);
     app.use(express.static(__dirname + '/public'));
 });
@@ -83,6 +87,21 @@ app.get('/', function(req, res) {
     res.render('index', {
         title: 'Express'
     });
+});
+
+app.get('/ziptest', function(req, res){
+    var zipfile = fs.readFileSync(__dirname + "/SD.zip");
+    var reader = zip.Reader(zipfile);
+    console.log(reader.readLocalFileHeader());
+    console.log(reader.readDataDescriptor());
+    var i = 0;
+    reader.forEach(function(entry){
+            var matchimage = /\.(jpg|jpeg|png|gif)$/i;
+            if(matchimage.test(entry.getName())){
+              console.log(entry.getName());
+            }
+            console.log(i++);
+        });
 });
 
 app.get('/test', function(req, res) {
