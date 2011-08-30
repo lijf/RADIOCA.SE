@@ -162,5 +162,7 @@ app.post('/image/', function(req, res) {
     requestHandlers.postImage(req,res, db);
 });
 
-app.listen(3000);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+var post = process.env.PORT || 3000;
+app.listen(port, function(){
+    console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+});
