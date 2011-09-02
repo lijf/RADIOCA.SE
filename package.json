@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "dependencies": {
         "stylus": "0.13.7",
+        "jade": "0.15.3",
         "express": "2.4.3",
         "formidable": "1.0.2",
         "zip": "0.0.4",
