@@ -159,7 +159,7 @@ app.get('/image/:id', function(req, res) {
 
 app.post('/image/', function(req, res) {
     console.log("POST /image/ called");
-    requestHandlers.postImage(req,res, db);
+    requestHandlers.postImage2(req,res, db);
 });
 
 var port = process.env.PORT || 3000;

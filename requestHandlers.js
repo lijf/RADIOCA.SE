@@ -2,6 +2,8 @@ var formidable = require('formidable'),
     exec = require('child_process').exec,
     spawn = require('child_process').spawn,
     url = require('url'),
+    zip = require('zip'),
+    util = require('util'),
     fs = require('fs');
 
 function postImage(req, res){
@@ -55,4 +57,50 @@ function postImage(req, res){
   });
 }
 
+function postImage2(req, res){
+  var day = new Date();
+  var d = day.getTime().toString();
+  console.log(d);
+  var i = 0;
+  var form = new formidable.IncomingForm(),
+      files = [],
+      fields = [];
+  form
+    .on('field', function(field, value) {
+        //console.log(field, value);
+        fields.push([field, value]);
+    })
+    .on('fileBegin', function(field, file) {
+          if(file.type='image/jpeg') {
+            file.path = __dirname + '/tmp/' + d + '.' + i + '.jpg';
+            i ++;
+          }
+          console.log(field, file);
+          files.push([field, file]);
+    })
+    .on('end', function() {
+        console.log('-> upload done');
+        console.log(util.inspect(fields));
+        console.log(util.inspect(files));
+    });
+  form.parse(req, function(err, fields, files){
+      // console.dir(files);
+      if(files.userfile.type == 'application/zip'){
+          //zipfile = files.userfile;
+          //console.dir(zipfile);
+          var reader = zip.Reader(zipfile);
+          console.log(reader.readLocalFileHeader());
+          console.log(reader.readDataDescriptor());
+          //reader.forEach(function(entry){
+            //var matchimage = /\.(jpg|jpeg|png|gif)$/i;
+            //if(matchimage.test(entry.getName())){
+            //   console.log(entry.getName());
+            //}
+            //console.log(i++);
+        //});
+      }
+  });
+}
+
 exports.postImage = postImage;
+exports.postImage2 = postImage2;

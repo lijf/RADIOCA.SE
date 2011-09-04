@@ -1,12 +1,10 @@
-!!!
+!!!5
 html
   head
     title #{title} 
     -each style in styles
       link(rel='stylesheet', href='/stylesheets/#{style}')
     script(src = 'http://code.jquery.com/jquery-latest.js')
-    script
-      !window.jQuery && document.write('<script src="javascripts/jquery-latest.js"><\/script>')
     script(src="/auth/client")
     -each script in scripts
       script(type='text/javascript', src='/javascripts/#{script}')
