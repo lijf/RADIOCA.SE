@@ -120,7 +120,7 @@ app.get('/case/:id/:page', function(req, res) {
         return res.render('case', {
             title: theCase.title,
             styles: ['style.css'],
-            scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'client.js'],
+            scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'client.js', 'spin.min.js'],
             radios: theCase.radios,
             texts: theCase.texts,
             mdhelp: mdhelp

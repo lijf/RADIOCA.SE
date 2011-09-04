@@ -1,4 +1,15 @@
 var converter = new Showdown.converter();
+
+var spinneropts = {
+  lines: 12, // The number of lines to draw
+  length: 7, // The length of each line
+  width: 5, // The line thickness
+  radius: 10, // The radius of the inner circle
+  color: '#000', // #rbg or #rrggbb
+  speed: 1, // Rounds per second
+  trail: 100, // Afterglow percentage
+  shadow: true // Whether to render a shadow
+};
     
 function scrollfunction(){
   $('.stack', top.document).mousewheel(function(event, delta){
@@ -133,7 +144,7 @@ $(function(){
     $('#uploadform').attr({
       action: "/image/",
       method: "POST",
-      userfile: userFile,
+      userfile: $('#userfile').val(),
       enctype: "multipart/form-data",
       encoding: "multipart/form-data",
       target: "postframe"
@@ -146,7 +157,7 @@ $(function(){
       "<textarea class='mdtxt' style='display:none'>" +
       "(double-click to change caption) </textarea>" +
       "<div class='md'></div></div></div>");
-    $('.radio:last>.stack', top.document).addClass('loading');     
+    var spinner = new Spinner(spinopts).spin($('.radio:last>.stack', top.document));
     $('#postframe').load(
         function(){
           var url = $("iframe")[0].contentDocument.body.innerHTML;
