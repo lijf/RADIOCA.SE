@@ -1,15 +1,31 @@
 var converter = new Showdown.converter();
 
-var spinneropts = {
+var opts = {
   lines: 12, // The number of lines to draw
   length: 7, // The length of each line
-  width: 5, // The line thickness
+  width: 4, // The line thickness
   radius: 10, // The radius of the inner circle
-  color: '#000', // #rbg or #rrggbb
+  color: '#fff', // #rbg or #rrggbb
   speed: 1, // Rounds per second
-  trail: 100, // Afterglow percentage
+  trail: 33, // Afterglow percentage
   shadow: true // Whether to render a shadow
 };
+
+$.fn.spin = function(opts) {
+    this.each(function() {
+      var $this = $(this),
+          data = $this.data();
+
+      if (data.spinner) {
+        data.spinner.stop();
+        delete data.spinner;
+      }
+      if (opts !== false) {
+        data.spinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
+      }
+    });
+    return this;
+  };
     
 function scrollfunction(){
   $('.stack', top.document).mousewheel(function(event, delta){
@@ -36,7 +52,7 @@ function editfunctions(){
       $(this).siblings(".mdtxt").show().focus().autogrow();
     }
   }); // shows the textbox for editing upon doubleclick
-  
+
   $(".mdtxt", top.document).live({
     blur: function() {
       $(this).hide();
@@ -67,24 +83,16 @@ function spiderpage(){
   return jsonpage;
 }
 
+var authcallback = function(data) {
+    $('.details').html('<p>You are all signed in as <strong>'
+       + data.user.username +
+       '</strong><br>...and here are some details:'
+       + JSON.stringify(data.user) +
+       '</p><a href="/logout">logout</a>').fadeIn('slow');
+};
+
 $(function(){
   scrollfunction();
-
-  var authcallback = function(data){
-      $('.details').html('<p>You are all signed in as <strong>'
-            +data.user.username+
-            '</strong><br>...and here are some details:'
-            +JSON.stringify(data.user)+
-            '</p><a href="/logout">logout</a>').fadeIn('slow');
-    }
-
-    $('#twitbutt').click(function(){
-      openEasyOAuthBox('twitter',authcallback);
-    });
-
-    $('#facebutt').click(function(){
-       openEasyOAuthBox('facebook',authcallback);
-    });
 
   $('.deletebutton').live({
     click: function(){
@@ -92,6 +100,10 @@ $(function(){
     }
   });
 
+  $('.stack').live('toggleSpinner', function(){
+          alert('toggleSpinner triggered');
+          $(this).spin(opts);
+  });
 
   $("#save").click(
     function(event){
@@ -157,13 +169,14 @@ $(function(){
       "<textarea class='mdtxt' style='display:none'>" +
       "(double-click to change caption) </textarea>" +
       "<div class='md'></div></div></div>");
-    var spinner = new Spinner(spinopts).spin($('.radio:last>.stack', top.document));
+
+    $('.radio:last>.stack', top.document).spin();
     $('#postframe').load(
         function(){
           var url = $("iframe")[0].contentDocument.body.innerHTML;
           $('.radio:last>.stack', top.document).attr('url', url);
           // alert(imgid);
-          $('.radio:last>.stack', top.document).removeClass('loading').css('background-image', 'url("/image/' + url + '")').append($('<button type="button" class="deletebutton">Del</button>'));
+          $('.radio:last>.stack', top.document).append($('<button type="button" class="deletebutton">Del</button>'));
           scrollfunction();
           editfunctions();
           rendermd();

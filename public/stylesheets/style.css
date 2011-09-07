@@ -73,6 +73,8 @@
   border: 0;
   background-size: auto 100%;
   overflow: hidden;
+  color: #fff;
+  background-color: #222;
 }
 .hidden {
   width: 0px;

@@ -12,11 +12,15 @@ var express = require('express'),
     sys = require('sys'),
     db = require('redis').createClient(),
     zip = require('zip'),
+    //oauth = require('oauth');
     easyoauth = require('easy-oauth');
     // authCheck = require('./authCheck.js');
 
 
 var app = module.exports = express.createServer();
+
+var _twitterConsumerKey ="";
+var _twitterConsumerSecret = "";
 
 // Configuration
 
@@ -120,7 +124,7 @@ app.get('/case/:id/:page', function(req, res) {
         return res.render('case', {
             title: theCase.title,
             styles: ['style.css'],
-            scripts: ['jquery.mousewheel.min.js', 'showdown.js', 'client.js', 'spin.min.js'],
+            scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
             radios: theCase.radios,
             texts: theCase.texts,
             mdhelp: mdhelp
@@ -133,7 +137,7 @@ app.get('/case/:id/:page/edit', function(req, res) {
     res.render('edit', {
         title: "edit",
         styles: ['style.css'],
-        scripts: ['jquery.mousewheel.min.js','showdown.js','client.js'],
+        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
         caseid: req.params.id,
         page: req.params.page
     });

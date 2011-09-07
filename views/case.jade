@@ -38,6 +38,14 @@ script(type='text/javascript')
 
     rendermd(); // renders the markdown textareas.
 
+    $('#twitbutt').click(function(){
+      openEasyOAuthBox('twitter',authcallback);
+    });
+
+    $('#facebutt').click(function(){
+      openEasyOAuthBox('facebook',authcallback);
+    });
+    
     $(".mdtxt").live({
       blur: function() {
         $(this).hide();
