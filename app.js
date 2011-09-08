@@ -134,18 +134,27 @@ app.get('/case/:id/:page', function(req, res) {
  });
 
 app.get('/case/:id/:page/edit', function(req, res) {
-    console.dir(req.isAuthenticated());
-    console.dir(req.getAuthDetails().user.user_id);
-    db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data){
-        console.dir(JSON.parse(data.toString()).users);
-    });
-        res.render('edit', {
-            title: "edit",
-            styles: ['style.css'],
-            scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
-            caseid: req.params.id,
-            page: req.params.page
+    //console.dir(req.isAuthenticated());
+    //console.dir(req.getAuthDetails().user.user_id);
+    if (req.isAuthenticated()) {
+        db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data) {
+            if (!data[0]) {
+                return res.send("huh?", 404);
+            }
+            else if (JSON.parse(data.toString()).users === req.getAuthDetails().user.user_id) {
+                //console.dir(JSON.parse(data.toString()).users);
+                res.render('edit', {
+                    title: "edit",
+                    styles: ['style.css'],
+                    scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+                    caseid: req.params.id,
+                    page: req.params.page
+                });
+            }
+            else {res.send("You are not allowed to edit this page but you can ask the author to add you as an editor", 200)}
         });
+    }
+    else {res.send("Please log in to edit pages", 200)}
 });
 
 app.put('/case/:id/:page', function(req, res) {

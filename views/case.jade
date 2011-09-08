@@ -19,19 +19,12 @@
       textarea.mdtxt(style='display:none')
         #{mdhelp}
       .md
-    #loginfo
     iframe(id='editbar', src='about:none')
-  button(id='editbutton')
-    | edit page
-  .details
-    button(id='facebutt')
-      | facebook
+  .loginbar
     button(id='twitbutt')
       | twitter
 script(type='text/javascript')
   $(function(){
-    $('#logininfo').hide();
-
     $('#markdown-help').hide();
 
     $('#editbar').hide();
