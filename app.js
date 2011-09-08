@@ -134,19 +134,28 @@ app.get('/case/:id/:page', function(req, res) {
  });
 
 app.get('/case/:id/:page/edit', function(req, res) {
-    res.render('edit', {
-        title: "edit",
-        styles: ['style.css'],
-        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
-        caseid: req.params.id,
-        page: req.params.page
+    console.dir(req.isAuthenticated());
+    console.dir(req.getAuthDetails().user.user_id);
+    db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data){
+        console.dir(JSON.parse(data.toString()).users);
     });
+        res.render('edit', {
+            title: "edit",
+            styles: ['style.css'],
+            scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+            caseid: req.params.id,
+            page: req.params.page
+        });
 });
 
 app.put('/case/:id/:page', function(req, res) {
     console.log('PUT /case was called');
     var data = req.body;
     db.set("case:" + req.params.id + ":page:" + req.params.page, JSON.stringify(data));
+});
+
+app.get('/logout', function(req, res, params){
+    req.logout();
 });
 
 app.get('/image/:id', function(req, res) {

@@ -79,6 +79,8 @@ function spiderpage(){
   jsonpage.texts = $(".txt>.mdtxt", top.document).map(function(){
     return($(this).val());
   }).get();
+  //jsonpage.users = [];
+  //jsonpage.users += '56831686';
   // alert(JSON.stringify(jsonpage));  
   return jsonpage;
 }
@@ -93,6 +95,14 @@ var authcallback = function(data) {
 
 $(function(){
   scrollfunction();
+
+  $('#twitbutt').click(function(){
+      openEasyOAuthBox('twitter',authcallback);
+    });
+
+    $('#facebutt').click(function(){
+      openEasyOAuthBox('facebook',authcallback);
+    });   
 
   $('.deletebutton').live({
     click: function(){

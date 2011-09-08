@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/public/javascripts/client.js" line="125" mnemonic="8" />
+    <bookmark url="file://$PROJECT_DIR$/public/javascripts/client.js" line="135" mnemonic="8" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/keys_file.js" afterPath="$PROJECT_DIR$/keys_file.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/javascripts/client.js" afterPath="$PROJECT_DIR$/public/javascripts/client.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/case.jade" afterPath="$PROJECT_DIR$/views/case.jade" />
     </list>
     <ignored path="express-radicase.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,7 +34,7 @@
       <file leaf-file-name="client.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/javascripts/client.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="91" column="2" selection-start="2726" selection-end="2726" vertical-scroll-proportion="0.0">
+            <state line="82" column="31" selection-start="2434" selection-end="2442" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -59,16 +61,16 @@
       <file leaf-file-name="case.jade" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/case.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="40" column="36" selection-start="946" selection-end="946" vertical-scroll-proportion="0.0">
+            <state line="53" column="21" selection-start="1332" selection-end="1332" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="app.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="0" selection-start="507" selection-end="507" vertical-scroll-proportion="0.0">
+            <state line="139" column="54" selection-start="4154" selection-end="4154" vertical-scroll-proportion="0.730663">
               <folding />
             </state>
           </provider>
@@ -101,10 +103,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="keys_file.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="keys_file.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/keys_file.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="3" selection-start="315" selection-end="315" vertical-scroll-proportion="0.2238806">
+            <state line="11" column="3" selection-start="315" selection-end="315" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -144,11 +146,11 @@
         <option value="$PROJECT_DIR$/public/javascripts/kocase.html" />
         <option value="$PROJECT_DIR$/views/kocase.jade" />
         <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/views/layout.jade" />
+        <option value="$PROJECT_DIR$/keys_file.js" />
         <option value="$PROJECT_DIR$/views/case.jade" />
         <option value="$PROJECT_DIR$/public/javascripts/client.js" />
-        <option value="$PROJECT_DIR$/keys_file.js" />
+        <option value="$PROJECT_DIR$/app.js" />
       </list>
     </option>
   </component>
@@ -426,13 +428,6 @@
         <state line="0" column="13" selection-start="13" selection-end="13" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/stylesheets/style.styl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="25" selection-start="1094" selection-end="1094" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requestHandlers.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="72" column="35" selection-start="2476" selection-end="2476" vertical-scroll-proportion="0.0" />
@@ -459,30 +454,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/case.jade">
+    <entry file="file://$PROJECT_DIR$/keys_file.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="36" selection-start="946" selection-end="946" vertical-scroll-proportion="0.0">
+        <state line="11" column="3" selection-start="315" selection-end="315" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/client.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="91" column="2" selection-start="2726" selection-end="2726" vertical-scroll-proportion="0.0">
+        <state line="82" column="31" selection-start="2434" selection-end="2442" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/stylesheets/style.styl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="25" selection-start="1094" selection-end="1094" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/case.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="53" column="21" selection-start="1332" selection-end="1332" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="0" selection-start="507" selection-end="507" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/keys_file.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="3" selection-start="315" selection-end="315" vertical-scroll-proportion="0.2238806">
+        <state line="139" column="54" selection-start="4154" selection-end="4154" vertical-scroll-proportion="0.730663">
           <folding />
         </state>
       </provider>
