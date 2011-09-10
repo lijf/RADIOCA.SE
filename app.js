@@ -134,14 +134,15 @@ app.get('/case/:id/:page', function(req, res) {
  });
 
 app.get('/case/:id/:page/edit', function(req, res) {
-    //console.dir(req.isAuthenticated());
-    //console.dir(req.getAuthDetails().user.user_id);
+    console.dir(req.isAuthenticated());
+    console.dir(req.getAuthDetails().user.user_id);
     if (req.isAuthenticated()) {
         db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data) {
             if (!data[0]) {
                 return res.send("huh?", 404);
             }
-            else if (JSON.parse(data.toString()).users === req.getAuthDetails().user.user_id) {
+            else if (JSON.parse(data.toString()).users == req.getAuthDetails().user.user_id) {
+                console.dir("user allowed")
                 //console.dir(JSON.parse(data.toString()).users);
                 res.render('edit', {
                     title: "edit",
@@ -158,13 +159,14 @@ app.get('/case/:id/:page/edit', function(req, res) {
 });
 
 app.put('/case/:id/:page', function(req, res) {
-    console.log('PUT /case was called');
-    var data = req.body;
-    db.set("case:" + req.params.id + ":page:" + req.params.page, JSON.stringify(data));
+    console.log('PUT /case was called');;
+    var data = req.body;;
+    db.set("case:" + req.params.id + ":page:" + req.params.page, JSON.stringify(data));;
 });
 
-app.get('/logout', function(req, res, params){
+app.get('/sign_out', function(req, res, params){
     req.logout();
+    res.send('<button id="twitbutt">Sign in with twitter</button>');
 });
 
 app.get('/image/:id', function(req, res) {

@@ -86,15 +86,41 @@ function spiderpage(){
 }
 
 var authcallback = function(data) {
-    $('.loginbar').html('<button id="editbuton">Edit page</button><p>User: <strong>'
-       + data.user.username + '</strong><a href="/logout">logout</a>');
+    $('#session').html('signed in as ' + data.user.username + ' <button id="sign_out">Sign out</button>');
 };
 
 $(function(){
   scrollfunction();
 
-  $('#twitbutt').click(function(){
-      openEasyOAuthBox('twitter',authcallback);
+  $('#sign_out').live({
+      click: function(){
+            window.open('http://twitter.com/#!/logout');
+          $.ajax({
+                url: '/sign_out',
+                success: function(data){
+                    $('#session').html(data);
+                }
+            });
+        }
+  });
+
+  $('#sign_out2').live({
+      click: function(){
+        alert('sign_out');
+        $.ajax({
+            url: '/sign_out',
+            success: function(data){
+                $('#session').html(data);
+            }
+        })
+      }
+  });
+
+  $('#twitbutt').live({
+      click: function(){
+        openEasyOAuthBox('twitter',authcallback);
+        $(this).hide();
+  }
   });
 
   $('#facebutt').click(function(){
@@ -121,7 +147,7 @@ $(function(){
     //alert(url);
     $.ajax({
       type: 'PUT',
-      url: url, 
+      url: url,
       dataType: 'json',
       data: data,
       success: function(msg) {
@@ -143,10 +169,18 @@ $(function(){
     }
   });
 
+  $('#editbutton').live({
+      click: function(){
+      path=top.document.location.pathname.split("/");
+      $('#loginbar', top.document).attr('src', "/" + path[1] + "/" + path[2] + "/" + path[3] + "/edit");
+      $(this).hide();
+      }
+  });
+
   $('#done').live({
     click: function(){
      $(".md", top.document).die();
-     $(" .mdtxt", top.document).die();
+     $(".mdtxt", top.document).die();
      $("#markdown-help", top.document).hide();
      $("#editbar", top.document).hide().attr('src', 'about:none');
      $(".stack>.deletebutton", top.document).remove();

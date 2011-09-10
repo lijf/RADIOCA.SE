@@ -20,22 +20,12 @@
   left: 0px;
   top: 0px;
 }
-#editbutton {
+#session {
   position: fixed;
   top: 5px;
   right: 5px;
 }
-.details {
-  position: fixed;
-  top: 35px;
-  right: 200px;
-}
-#logininfo {
-  position: fixed;
-  top: 50%;
-  right: 50%;
-}
-#editbar {
+#loginbar {
   position: fixed;
   top: 0px;
   left: 0px;
@@ -43,6 +33,11 @@
   height: 30px;
   width: 100%;
   background-color: #222;
+}
+#editbutton {
+  position: fixed;
+  top: 5px;
+  right: 5px;
 }
 .col2 {
   position: absolute;
@@ -104,7 +99,7 @@ html {
 }
 body {
   font-family: Georgia, Palatino, serif;
-  color: #444;
+  color: #888;
   background-color: #bbb;
   background-image: url("/images/Dark-Metal-Grid-Patterns_04.jpg");
   background-size: 200px;

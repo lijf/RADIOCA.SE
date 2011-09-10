@@ -19,15 +19,15 @@
       textarea.mdtxt(style='display:none')
         #{mdhelp}
       .md
-    iframe(id='editbar', src='about:none')
-  .loginbar
-    button(id='twitbutt')
-      | twitter
+    iframe(id='loginbar', src='about:none')
+    #session
+      button(id='twitbutt')
+        | Sign in with twitter
 script(type='text/javascript')
   $(function(){
     $('#markdown-help').hide();
 
-    $('#editbar').hide();
+    $('#loginbar').hide();
 
     rendermd(); // renders the markdown textareas.
     
@@ -38,14 +38,5 @@ script(type='text/javascript')
         $(this).siblings(".md").show();
       }
     }); // hides the textbox and renders the markdown
-
-
-    $('#editbutton').live({
-      click: function(){
-      path=location.pathname.split("/");
-      $('#editbar').show().attr('src', path[0] + "/" + path[1] + "/" + path[2] + "/" + path[3] + "/edit");
-      $(this).hide();
-      }
-    });
       
   });
