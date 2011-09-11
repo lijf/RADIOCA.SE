@@ -8,7 +8,11 @@
             textarea.mdtxt(style='display:none')
               #{radio.caption}
             .md
-
+      #pageinfo
+        | by:
+        -each user in users
+          a(href='https://twitter.com/intent/user?screen_name=#{user}')
+            @#{user}
     #column_2.col2
       -each text in texts
         .txt
@@ -19,15 +23,20 @@
       textarea.mdtxt(style='display:none')
         #{mdhelp}
       .md
-    iframe(id='loginbar', src='about:none')
+    button(id='editbutton')
+      | Edit page
+    iframe(id='editbar', src='about:none')
+    #info
     #session
-      button(id='twitbutt')
+      button.but1(id='twitbutt')
         | Sign in with twitter
 script(type='text/javascript')
   $(function(){
     $('#markdown-help').hide();
+    $('#info').hide();
 
-    $('#loginbar').hide();
+    $('#editbar').hide();
+    $('#editbutton').hide();
 
     rendermd(); // renders the markdown textareas.
     

@@ -63,13 +63,13 @@ case1 = {
     "caseid": "1",
     "page": "1",
     "radios": [
-        {"img":"123", "caption":"EDH 1"},
-        {"img":"123", "caption":"EDH 2"}
+        {"img":"1313337540668", "caption":"EDH 1"}
     ],
-    "texts": ["---"]
+    "texts": ["---"],
+    "users": ["lijf"]
 };
 
-// redisClient.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
+//db.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
 
 
 // redisClient.set("string key", "string val", redis.print);
@@ -127,21 +127,36 @@ app.get('/case/:id/:page', function(req, res) {
             scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
             radios: theCase.radios,
             texts: theCase.texts,
+            users: theCase.users,
             mdhelp: mdhelp
         });
         }
     });
  });
 
+app.get('/signed_in', function(req, res){
+   var uid =  req.getAuthDetails().user.user_id;
+   var userdata = JSON.stringify(req.getAuthDetails());
+   db.set('user:' + uid, userdata, function(err, data){
+       db.sismember('users', uid, function(err, data){
+           if(!data){
+               db.sadd('users', uid);
+               res.send("new user", 200);
+           }
+       });
+   });
+});
+
 app.get('/case/:id/:page/edit', function(req, res) {
     console.dir(req.isAuthenticated());
     console.dir(req.getAuthDetails().user.user_id);
+    console.dir(req.getAuthDetails());
     if (req.isAuthenticated()) {
         db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data) {
             if (!data[0]) {
                 return res.send("huh?", 404);
             }
-            else if (JSON.parse(data.toString()).users == req.getAuthDetails().user.user_id) {
+            else if (JSON.parse(data.toString()).users == req.getAuthDetails().user.username) {
                 console.dir("user allowed")
                 //console.dir(JSON.parse(data.toString()).users);
                 res.render('edit', {
@@ -160,7 +175,7 @@ app.get('/case/:id/:page/edit', function(req, res) {
 
 app.put('/case/:id/:page', function(req, res) {
     console.log('PUT /case was called');;
-    var data = req.body;;
+    var data = req.body;
     db.set("case:" + req.params.id + ":page:" + req.params.page, JSON.stringify(data));;
 });
 

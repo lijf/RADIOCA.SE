@@ -86,7 +86,16 @@ function spiderpage(){
 }
 
 var authcallback = function(data) {
-    $('#session').html('signed in as ' + data.user.username + ' <button id="sign_out">Sign out</button>');
+    $('#session').html('<button id="sign_out">Sign out ' + data.user.username + '</button>');
+    $.ajax({
+       url: '/signed_in',
+       success: function(data){
+           if(data=='new user'){
+               $('#info').html('new user').show();
+           }
+       }
+    });
+    $('#editbutton').show();
 };
 
 $(function(){
@@ -98,22 +107,11 @@ $(function(){
           $.ajax({
                 url: '/sign_out',
                 success: function(data){
+                    $('#editbutton').hide();
                     $('#session').html(data);
                 }
             });
         }
-  });
-
-  $('#sign_out2').live({
-      click: function(){
-        alert('sign_out');
-        $.ajax({
-            url: '/sign_out',
-            success: function(data){
-                $('#session').html(data);
-            }
-        })
-      }
   });
 
   $('#twitbutt').live({
@@ -172,7 +170,7 @@ $(function(){
   $('#editbutton').live({
       click: function(){
       path=top.document.location.pathname.split("/");
-      $('#loginbar', top.document).attr('src', "/" + path[1] + "/" + path[2] + "/" + path[3] + "/edit");
+      $('#editbar', top.document).attr('src', "/" + path[1] + "/" + path[2] + "/" + path[3] + "/edit").show();
       $(this).hide();
       }
   });
