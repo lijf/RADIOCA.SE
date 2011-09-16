@@ -27,36 +27,43 @@
 }
 #editbar {
   position: fixed;
-  bottom: 0px;
+  border: none;
+  top: 0px;
   left: 0px;
   margin-top: 0px;
   height: 30px;
   width: 100%;
   background-color: #222;
 }
-#editbutton {
-  position: fixed;
-  bottom: 5px;
-  left: 5px;
+#addstack {
+  position: absolute;
+  left: 15px;
+  bottom: 20px;
 }
 #pageinfo1 {
   position: fixed;
   bottom: 5px;
   left: 5px;
-  writing-mode: bt-lr;
 }
 #controls {
   position: relative;
 }
 #savepage {
   position: fixed;
-  left: 5px;
+  left: 380px;
   top: 5px;
 }
-#uploadform {
+#uploadarea {
   position: fixed;
-  right: 5px;
-  top: 5px;
+  left: 17%;
+  top: 30%;
+  background: #222;
+  padding: 8px;
+  border: 5px;
+  border-style: solid;
+  border-color: #ccc;
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px;
 }
 #info {
   color: bbb;

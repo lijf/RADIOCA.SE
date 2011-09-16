@@ -61,7 +61,22 @@ function editfunctions(){
     }
   }); // hides the textbox and renders the markdown
 
-  $(".stack", top.document).append($('<button type="button" class="deletebutton">Del</button>'));
+  $(".stack", top.document).append($('<button type="button" class="deletebutton">X</button>'));
+    // adds deletebutton to stacks
+  $("#addstack", top.document).show();
+  $('#newpage', top.document).show();
+}
+
+function editclose(){
+ $(".md", top.document).die();
+ $(".mdtxt", top.document).die();
+ $("#markdown-help", top.document).hide();
+ $("#addstack", top.document).hide();
+ $("#uploadarea", top.document).hide();
+ $("#editbar", top.document).hide().attr('src', 'about:none');
+ $(".stack>.deletebutton", top.document).remove();
+ $("#editbutton", top.document).show();
+ $("#newpage").hide();
 }
 
 function spiderpage(){
@@ -85,8 +100,13 @@ function spiderpage(){
   return jsonpage;
 }
 
+function sessionButton(user){
+    $('#session').html('<button id="sign_out">Sign out ' + user + '</button>');
+}
+
+
 var authcallback = function(data) {
-    $('#session').html('<button id="sign_out">Sign out ' + data.user.username + '</button>');
+    sessionButton(data.user.username);
     $.ajax({
        url: '/signed_in',
        success: function(data){
@@ -95,7 +115,7 @@ var authcallback = function(data) {
            }
        }
     });
-    $('#editbutton').show();
+    $('#feedbackbutton').attr("id","editbutton").html("Edit");
 };
 
 $(function(){
@@ -107,18 +127,61 @@ $(function(){
           $.ajax({
                 url: '/sign_out',
                 success: function(data){
+                    editclose();
                     $('#editbutton').hide();
                     $('#session').html(data);
                 }
             });
+        $('#editbutton').attr("id","feedbackbutton").html("Feedback");
+        $('#feedbackbutton').show();
         }
+  });
+
+  $("#newpage").live({
+      click: function(){
+        var pathname=window.location.pathname.split('/');
+        var json = {};
+        json.title = $("title", top.document).html();
+        var pageno=parseInt(pathname[3])+1;
+        var targeturl = '/case/' + pathname[2] + '/' + pageno;
+        $.ajax({
+            url: targeturl,
+            type: 'PUT',
+            dataType: 'text/html',
+            data: json,
+            statusCode: {
+                404: function() {
+                    alert('page not found')},
+                200: function() {
+                    alert('OK - created new page');
+                    window.location=targeturl;
+                    },
+                403: function(){
+                    alert('Forbidden')
+                }
+
+            }
+        });
+      }
+  });
+
+  $("#addstack", top.document).live({
+    click: function(){
+        $("#uploadarea").show();
+    }
   });
 
   $('#twitbutt').live({
       click: function(){
         openEasyOAuthBox('twitter',authcallback);
         $(this).hide();
-  }
+    }
+  });
+
+  $('#cancelupload').live({
+      click: function(){
+          $("#uploadarea").hide();
+      }
   });
 
   $('#facebutt').click(function(){
@@ -155,7 +218,13 @@ $(function(){
   });
 
   $("#help").click(function(){
-      $("#markdown-help", top.document).toggle();
+      $("#markdown-help", top.document).show();
+  });
+
+  $("#closehelp").live({
+      click: function(){
+      $("#markdown-help", top.document).hide();
+      }
   });
 
   $('#sendstring').live({
@@ -177,19 +246,15 @@ $(function(){
 
   $('#done').live({
     click: function(){
-     $(".md", top.document).die();
-     $(".mdtxt", top.document).die();
-     $("#markdown-help", top.document).hide();
-     $("#editbar", top.document).hide().attr('src', 'about:none');
-     $(".stack>.deletebutton", top.document).remove();
-     $("#editbutton", top.document).show();
+        editclose();
     }
   });
 
   $("#upload").live({
     click: function(){
+    $('#uploadarea').hide();
     var userFile = $('#userfile').val();
-    var iframe = $( '<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
+    var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
     $('#iframe').append(iframe);
 
     $('#uploadform').attr({
@@ -202,12 +267,14 @@ $(function(){
     });
     $('#uploadform').submit();
     // create the new div, when image processed, set it as background
-    $('#column_1',top.document).append(
+    $('#radios', top.document).append(
       "<div class='radio'><div url='', class='stack img512'></div>" +
       "<div class='caption'>" + 
       "<textarea class='mdtxt' style='display:none'>" +
       "(double-click to change caption) </textarea>" +
       "<div class='md'></div></div></div>");
+    rendermd();
+    $('.radio:last>.stack', top.document).append($('<button type="button" class="deletebutton">X</button>'));
 
     $('.radio:last>.stack', top.document).spin();
     $('#postframe').load(
@@ -215,10 +282,8 @@ $(function(){
           var url = $("iframe")[0].contentDocument.body.innerHTML;
           $('.radio:last>.stack', top.document).attr('url', url);
           // alert(imgid);
-          $('.radio:last>.stack', top.document).append($('<button type="button" class="deletebutton">Del</button>'));
           scrollfunction();
-          editfunctions();
-          rendermd();
+          //editfunctions();
         });
      }
   });

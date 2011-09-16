@@ -1,15 +1,11 @@
 #controls
   form(id='savepage', action='/case/#{caseid}/#{page}')
     input.input1(type='hidden', name='_method', value='put')
+    button.but1(id='help', type='button')
+      | ?
+    input.input1(id='save', type='submit', value='Save page')
     button.but1(id='done', type='button')
       | Done
-    button.but1(id='help', type='button')
-      | Show/hide help
-    input.input1(id='save', type='submit', value='Save page')
-  form(id ='uploadform')
-    input.input1(type='file', name='userfile', id='userfile', multiple='multiple')
-    input.input1(id='upload', type='submit', value='Upload file(s)')
-#iframe(style='width: 0px; height: 0px; display:none')
 
 script(type='text/javascript')
   $(function(){

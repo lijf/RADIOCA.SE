@@ -1,18 +1,26 @@
 #wrap
   #taco
     #column_1.col1
-      -each radio in radios
-        .radio
-          .stack(url='#{radio.img}', class='img512', style='background-image: url("/image/#{radio.img}")')
-          .caption
-            textarea.mdtxt(style='display:none')
-              #{radio.caption}
-            .md
+      #radios
+        -each radio in radios
+          .radio
+            .stack(url='#{radio.img}', class='img512', style='background-image: url("/image/#{radio.img}")')
+            .caption
+              textarea.mdtxt(style='display:none')
+                #{radio.caption}
+              .md
+      button(id='addstack')
+        | +
       #pageinfo
+        br
         | by:
         -each user in users
           a(href='https://twitter.com/intent/user?screen_name=#{user}')
             @#{user}
+        button(id='#{edit_or_feedback}')
+          #{editfeedbacktext}
+        button(id='newpage', type='button')
+          | New Page
     #column_2.col2
       -each text in texts
         .txt
@@ -20,23 +28,37 @@
             #{text}
           .md
     #markdown-help
+      button(id='closehelp')
+        | X
       textarea.mdtxt(style='display:none')
         #{mdhelp}
       .md
-    button(id='editbutton')
-      | Edit page
     iframe(id='editbar', src='about:none')
     #info
     #session
       button.but1(id='twitbutt')
         | Sign in with twitter
+    #uploadarea
+      | Please choose image(s) to upload.
+      br
+      | If multiple images are uploaded together they will be combined to a stack.
+      br
+      br
+      form(id ='uploadform')
+        input.input1(type='file', name='userfile', id='userfile', multiple='multiple')
+        input.input1(id='upload', type='submit', value='Upload file(s)')
+      button(id='cancelupload')
+        | cancel
+    #iframe(style='width: 0px; height: 0px; display:none')
 script(type='text/javascript')
   $(function(){
     $('#markdown-help').hide();
     $('#info').hide();
-
+    $('#addstack').hide();
+    $('#uploadarea').hide();
     $('#editbar').hide();
-    $('#editbutton').hide();
+    $('#newpage').hide();
+    //$('#editbutton').hide();
 
     rendermd(); // renders the markdown textareas.
     
@@ -47,5 +69,7 @@ script(type='text/javascript')
         $(this).siblings(".md").show();
       }
     }); // hides the textbox and renders the markdown
-      
+    var user = '#{user}';
+    if(#{signed_in}){sessionButton('#{user}')};
+    //if(#{editor}){alert('editor')}
   });

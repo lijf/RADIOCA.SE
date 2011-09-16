@@ -69,6 +69,10 @@ case1 = {
     "users": ["lijf"]
 };
 
+function include(arr,obj) {
+    return (arr.indexOf(obj) != -1);
+}
+
 //db.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
 
 
@@ -112,25 +116,54 @@ app.get('/test', function(req, res) {
     res.send('<html><body><p>Test</body></html>');
 });
 
+app.get('/newpage', function(req, res){
+
+});
+
 app.get('/case/:id/:page', function(req, res) {
     console.log('GET case/' + req.params.id + '/' + req.params.page);
     var findCase = "case:" + req.params.id + ":page:" + req.params.page;
-    db.mget(findCase, "markdown-help", function(err, data){
-        // console.dir(data);
-        if(!data[0]){return res.send("huh?", 404);} else {
-        // console.log(data[0]);
-        var theCase = JSON.parse(data[0].toString());
-        var mdhelp = JSON.parse(data[1].toString());
-        return res.render('case', {
-            title: theCase.title,
-            styles: ['style.css'],
-            scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
-            radios: theCase.radios,
-            texts: theCase.texts,
-            users: theCase.users,
-            mdhelp: mdhelp
-        });
+    var uid = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.user_id}
+        else {return "0"}};
+    var username = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+        else {return "0"}};
+    db.smembers('case:' + req.params.id + ':users', function(err, editors){
+        console.log(editors);
+        var editor=0;
+        var edit_or_feedback;
+        var editfeedbacktext = "Feedback";
+        if(include(editors, uid())){
+            console.log('found in editors');
+            edit_or_feedback="editbutton";
+            editfeedbacktext="Edit";
+            editor=1;
+        } else {
+            edit_or_feedback="feedbackbutton"
         }
+        db.mget(findCase, "markdown-help", function(err, data){
+            // console.dir(data);
+            if(!data[0]){return res.send("huh?", 404);} else {
+            // console.log(data[0]);
+            var theCase = JSON.parse(data[0].toString());
+            var mdhelp = JSON.parse(data[1].toString());
+            return res.render('case', {
+                title: theCase.title || 'untitled',
+                styles: ['style.css'],
+                scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+                radios: theCase.radios || '',
+                texts: theCase.texts || '',
+                users: theCase.users || '',
+                mdhelp: mdhelp,
+                edit_or_feedback: edit_or_feedback,
+                editfeedbacktext: editfeedbacktext,
+                signed_in: req.isAuthenticated(),
+                user: username(),
+                editor: editor
+            });
+            }
+          });
     });
  });
 
@@ -156,7 +189,11 @@ app.get('/case/:id/:page/edit', function(req, res) {
             if (!data[0]) {
                 return res.send("huh?", 404);
             }
-            else if (JSON.parse(data.toString()).users == req.getAuthDetails().user.username) {
+            else db.sismember('case:' + req.params.id + ':users',
+                req.getAuthDetails().user.user_id,
+                function(err, editor){
+                console.dir(editor);
+                if(editor){
                 console.dir("user allowed")
                 //console.dir(JSON.parse(data.toString()).users);
                 res.render('edit', {
@@ -166,17 +203,24 @@ app.get('/case/:id/:page/edit', function(req, res) {
                     caseid: req.params.id,
                     page: req.params.page
                 });
-            }
-            else {res.send("You are not allowed to edit this page but you can ask the author to add you as an editor", 200)}
+                }
+                else {res.send("You are not allowed to edit this page but you can ask the author to add you as an editor", 200)}
+            });
         });
     }
     else {res.send("Please log in to edit pages", 200)}
 });
 
 app.put('/case/:id/:page', function(req, res) {
-    console.log('PUT /case was called');;
-    var data = req.body;
-    db.set("case:" + req.params.id + ":page:" + req.params.page, JSON.stringify(data));;
+    db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
+            if(editor){
+                var data = req.body;
+                db.set('case:' + req.params.id + ':page:' + req.params.page, JSON.stringify(data));
+                console.log('saved page');
+                res.send('OK', 200)
+            }
+            else{res.send('FORBIDDEN', 403)};
+    });
 });
 
 app.get('/sign_out', function(req, res, params){
@@ -198,7 +242,10 @@ app.get('/image/:id', function(req, res) {
 
 app.post('/image/', function(req, res) {
     console.log("POST /image/ called");
-    requestHandlers.postImage2(req,res, db);
+    if(req.isAuthenticated()){
+        requestHandlers.postImage2(req,res, db);
+    }
+    else {res.send("not logged in", 200)}
 });
 
 var port = process.env.PORT || 3000;

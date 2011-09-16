@@ -82,6 +82,7 @@ function postImage2(req, res){
         console.log('-> upload done');
         console.log(util.inspect(fields));
         console.log(util.inspect(files));
+          // TODO: fix the image montage.
     });
   form.parse(req, function(err, fields, files){
       // console.dir(files);
