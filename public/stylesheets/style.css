@@ -20,6 +20,9 @@
   left: 0px;
   top: 0px;
 }
+.imgload {
+  display: none;
+}
 #session {
   position: fixed;
   top: 5px;

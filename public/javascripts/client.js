@@ -121,6 +121,17 @@ var authcallback = function(data) {
 $(function(){
   scrollfunction();
 
+//  $('.radio')
+//      .load(function(){
+//       alert(this.attr('src'));
+//       //$(this).parent.attr('url',$(this).attr('src'));
+//       })
+//      .each(function(){
+//      if( this.complete && this.naturalWidth !== 0) {
+//          $(this).trigger('load');
+//      }
+//   });
+
   $('#sign_out').live({
       click: function(){
             window.open('http://twitter.com/#!/logout');
