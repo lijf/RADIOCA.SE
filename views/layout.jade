@@ -10,4 +10,7 @@ html
     -each script in scripts
       script(type='text/javascript', src='/javascripts/#{script}')
   body
+    #session
+      button(id='twitbutt')
+        | Sign in with twitter
     != body // this renders the body of an individual view

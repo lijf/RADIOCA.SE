@@ -97,6 +97,42 @@ function include(arr,obj) {
 //    });
 //});
 
+app.get('/', function(req, res){
+    res.render('index', {
+        title: 'RadioCase',
+        styles: ['reset.css','style.css'],
+        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+    });
+});
+
+app.get('/newcase', function(req, res){
+  res.render ('newcase',{
+      title: 'RadioCase - create new case',
+      styles: ['reset.css','style.css'],
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+  });
+});
+
+app.post('/newcase', function(req, res){
+   if(req.isAuthenticated()){
+      var data = req.body;
+      console.log(data);
+      db.incr('number_of_cases', function(err, casenumber){
+        var caseurl = 'case:' + casenumber;
+        db.mset(
+            caseurl + ':page:1', JSON.stringify(data),
+            caseurl + ':users', req.getAuthDetails().user.user_id,
+            function(err){
+                if(!err){
+                    console.log('created case ' + caseurl);
+                    res.send('/case/' + casenumber +'/1',200);
+                }
+        });
+    });
+   }
+   else{res.send('FORBIDDEN', 403)};
+});
+
 app.get('/ziptest', function(req, res){
     var zipfile = fs.readFileSync(__dirname + "/SD.zip");
     var reader = zip.Reader(zipfile);
@@ -114,10 +150,6 @@ app.get('/ziptest', function(req, res){
 
 app.get('/test', function(req, res) {
     res.send('<html><body><p>Test</body></html>');
-});
-
-app.get('/newpage', function(req, res){
-
 });
 
 app.get('/case/:id/:page', function(req, res) {
@@ -145,12 +177,12 @@ app.get('/case/:id/:page', function(req, res) {
         db.mget(findCase, "markdown-help", function(err, data){
             // console.dir(data);
             if(!data[0]){return res.send("huh?", 404);} else {
-            // console.log(data[0]);
+            console.log(data[0]);
             var theCase = JSON.parse(data[0].toString());
             var mdhelp = JSON.parse(data[1].toString());
             return res.render('case', {
                 title: theCase.title || 'untitled',
-                styles: ['style.css'],
+                styles: ['reset.css','style.css'],
                 scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                 radios: theCase.radios || '',
                 texts: theCase.texts || '',
@@ -249,6 +281,7 @@ app.post('/image/', function(req, res) {
 });
 
 var port = process.env.PORT || 3000;
+
 app.listen(port, function(){
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });

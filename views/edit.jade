@@ -1,12 +1,13 @@
 #controls
   form(id='savepage', action='/case/#{caseid}/#{page}')
-    input.input1(type='hidden', name='_method', value='put')
-    button.but1(id='help', type='button')
+    input(type='hidden', name='_method', value='put')
+    button(id='help', type='button')
       | ?
-    input.input1(id='save', type='submit', value='Save page')
-    button.but1(id='done', type='button')
+    input(id='save', type='submit', value='Save page')
+    button(id='newpage', type='button')
+      | New Page
+    button(id='done', type='button')
       | Done
-
 script(type='text/javascript')
   $(function(){
     editfunctions(); //activates edit functionality when page is loaded

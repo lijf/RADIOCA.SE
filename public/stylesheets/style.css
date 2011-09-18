@@ -1,32 +1,50 @@
-#wrap {
-  min-height: 100%;
-  padding: 0;
-  min-width: 512px;
+#container {
+  margin: 0 auto;
+  width: 90%;
+  padding-top: 30px;
+}
+#radios {
+  float: left;
   margin: 0 auto;
 }
-#taco {
-  margin-top: 35px;
+.stack {
   position: relative;
+  overflow: hidden;
+  width: 512px;
+}
+.imgload {
+  visibility: hidden;
+}
+.deletebutton {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.caption>.md {
+  margin-top: -15px;
+  color: #888;
+}
+#texts {
+  margin-left: 512px;
+}
+.txt {
+  background-image: url("/images/paper/Texture0213.jpg");
+}
+textarea {
+  width: 100%;
+  line-height: 1.2;
+  font-family: monospace;
+  font-size: 100%;
+}
+.md {
+  padding: 10px 20px;
 }
 #markdown-help {
   position: absolute;
-  left: 10px;
-  top: 0px;
+  left: 5%;
+  top: 30px;
   width: 512px;
   background-image: url("/images/paper/Texture0214.jpg");
-}
-.col1 {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-}
-.imgload {
-  display: none;
-}
-#session {
-  position: fixed;
-  top: 5px;
-  right: 5px;
 }
 #editbar {
   position: fixed;
@@ -36,25 +54,29 @@
   margin-top: 0px;
   height: 30px;
   width: 100%;
-  background-color: #222;
-}
-#addstack {
-  position: absolute;
-  left: 15px;
-  bottom: 20px;
-}
-#pageinfo1 {
-  position: fixed;
-  bottom: 5px;
-  left: 5px;
 }
 #controls {
   position: relative;
 }
 #savepage {
   position: fixed;
-  left: 380px;
+  left: 355px;
   top: 5px;
+}
+#info {
+  color: bbb;
+  position: fixed;
+  left: 5px;
+  top: 5px;
+}
+#session {
+  position: fixed;
+  top: 5px;
+  right: 5%;
+}
+#pageinfo {
+  position: absolute;
+  top: -10px;
 }
 #uploadarea {
   position: fixed;
@@ -67,30 +89,6 @@
   border-color: #ccc;
   -moz-border-radius: 12px;
   -webkit-border-radius: 12px;
-}
-#info {
-  color: bbb;
-  position: fixed;
-  left: 5px;
-  top: 5px;
-}
-.col2 {
-  position: absolute;
-  left: 532px;
-  top: 0px;
-}
-.radio {
-  margin-right: 10px;
-  margin-left: 10px;
-}
-.img512 {
-  height: 512px;
-  width: 512px;
-}
-.loading {
-  background-image: url("/images/loading_gif.gif");
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
 }
 button {
   background-color: #222;
@@ -107,42 +105,10 @@ input {
 .input1 {
   background-color: #222;
 }
-.deletebutton {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-}
-.stack {
-  position: relative;
-  padding: 0;
-  border: 0;
-  background-size: auto 100%;
-  overflow: hidden;
-  color: #fff;
-  background-color: #222;
-}
 .hidden {
   width: 0px;
   height: 0px;
   display: none;
-}
-.txt {
-  background-image: url("/images/paper/Texture0213.jpg");
-  max-width: 35em;
-  min-width: 20em;
-}
-.md {
-  padding: 10px 30px;
-}
-.caption>.md {
-  margin-top: -15px;
-  color: #888;
-}
-textarea {
-  width: 100%;
-  line-height: 1.2;
-  font-family: monospace;
-  font-size: 100%;
 }
 html {
   height: 100%;
@@ -150,9 +116,7 @@ html {
 body {
   font-family: Georgia, Palatino, serif;
   color: #888;
-  background-color: #bbb;
-  background-image: url("/images/Dark-Metal-Grid-Patterns_04.jpg");
-  background-size: 200px;
+  background-color: #333;
   line-height: 1;
   height: 100%;
 }

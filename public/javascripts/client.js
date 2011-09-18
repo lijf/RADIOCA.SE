@@ -27,12 +27,15 @@ $.fn.spin = function(opts) {
     return this;
   };
     
+function change_url(url){ document.location=url; }
+
 function scrollfunction(){
   $('.stack', top.document).mousewheel(function(event, delta){
+    var movex = parseInt($(this).css('width'),10);
     if (delta > 0) {
-    $(this).css('background-position', parseInt($(this).css('background-position'),10) - parseInt($(this).css('width'),10));
+    $(this).css('background-position', parseInt($(this).css('background-position'),10) - movex);
     } else if (delta < 0) {
-    $(this).css('background-position', parseInt($(this).css('background-position'),10) + parseInt($(this).css('width'),10));
+    $(this).css('background-position', parseInt($(this).css('background-position'),10) + movex);
     }
     event.preventDefault();
   });
@@ -64,7 +67,7 @@ function editfunctions(){
   $(".stack", top.document).append($('<button type="button" class="deletebutton">X</button>'));
     // adds deletebutton to stacks
   $("#addstack", top.document).show();
-  $('#newpage', top.document).show();
+  // $('#newpage', top.document).show();
 }
 
 function editclose(){
@@ -78,6 +81,8 @@ function editclose(){
  $("#editbutton", top.document).show();
  $("#newpage").hide();
 }
+
+function stacksizes(){ $('.stack', top.document) }
 
 function spiderpage(){
 
@@ -104,9 +109,9 @@ function sessionButton(user){
     $('#session').html('<button id="sign_out">Sign out ' + user + '</button>');
 }
 
-
 var authcallback = function(data) {
     sessionButton(data.user.username);
+    $('#twitbutt', top.document).hide();
     $.ajax({
        url: '/signed_in',
        success: function(data){
@@ -150,7 +155,7 @@ $(function(){
 
   $("#newpage").live({
       click: function(){
-        var pathname=window.location.pathname.split('/');
+        var pathname=parent.window.location.pathname.split('/');
         var json = {};
         json.title = $("title", top.document).html();
         var pageno=parseInt(pathname[3])+1;
@@ -165,7 +170,7 @@ $(function(){
                     alert('page not found')},
                 200: function() {
                     alert('OK - created new page');
-                    window.location=targeturl;
+                    parent.change_url(targeturl);
                     },
                 403: function(){
                     alert('Forbidden')
@@ -176,6 +181,22 @@ $(function(){
       }
   });
 
+  $("#createcase").click(function(){
+      var json = {};
+      json.title = $('#title').val();
+      json.icd = $('#icd').val();
+      alert(JSON.stringify(json));
+      $.ajax({
+          url: '/newcase',
+          type: 'POST',
+          data: json,
+          statusCode: {
+              403 : function(){alert('Forbidden - are you logged in?')},
+              200 : function(msg){document.location=msg}
+          }
+      });
+  });
+
   $("#addstack", top.document).live({
     click: function(){
         $("#uploadarea").show();
@@ -184,8 +205,7 @@ $(function(){
 
   $('#twitbutt').live({
       click: function(){
-        openEasyOAuthBox('twitter',authcallback);
-        $(this).hide();
+        openEasyOAuthBox('twitter',authcallback)
     }
   });
 
@@ -220,12 +240,11 @@ $(function(){
     $.ajax({
       type: 'PUT',
       url: url,
-      dataType: 'json',
       data: data,
       success: function(msg) {
         alert("Page Saved: " + msg);
       }
-      });
+    });
   });
 
   $("#help").click(function(){
