@@ -27,9 +27,8 @@
   #pageinfo
     br
     | by:
-    -each user in users
-      a(href='https://twitter.com/intent/user?screen_name=#{user}')
-        @#{user}
+    a(href='https://twitter.com/intent/user?screen_name=#{creator}')
+      @#{creator}
     button(id='#{edit_or_feedback}')
       #{editfeedbacktext}
     button(id='newpage', type='button')

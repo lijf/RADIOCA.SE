@@ -82,8 +82,6 @@ function editclose(){
  $("#newpage").hide();
 }
 
-function stacksizes(){ $('.stack', top.document) }
-
 function spiderpage(){
 
   var jsonpage = {};
@@ -185,7 +183,7 @@ $(function(){
       var json = {};
       json.title = $('#title').val();
       json.icd = $('#icd').val();
-      alert(JSON.stringify(json));
+      // alert(JSON.stringify(json));
       $.ajax({
           url: '/newcase',
           type: 'POST',
@@ -255,15 +253,6 @@ $(function(){
       click: function(){
       $("#markdown-help", top.document).hide();
       }
-  });
-
-  $('#sendstring').live({
-    click: function(){
-      $.ajax({
-        url: '/put-test',
-        method: 'put'
-      });
-    }
   });
 
   $('#editbutton').live({

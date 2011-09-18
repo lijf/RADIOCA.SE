@@ -16,11 +16,7 @@ var express = require('express'),
     easyoauth = require('easy-oauth');
     // authCheck = require('./authCheck.js');
 
-
 var app = module.exports = express.createServer();
-
-var _twitterConsumerKey ="";
-var _twitterConsumerSecret = "";
 
 // Configuration
 
@@ -66,7 +62,7 @@ case1 = {
         {"img":"1313337540668", "caption":"EDH 1"}
     ],
     "texts": ["---"],
-    "users": ["lijf"]
+    "creator" : "lijf"
 };
 
 function include(arr,obj) {
@@ -91,17 +87,11 @@ function include(arr,obj) {
 
 // Routes
 
-//app.get('/', function(req, res) {
-//    res.render('index', {
-//        title: 'Express'
-//    });
-//});
-
 app.get('/', function(req, res){
     res.render('index', {
         title: 'RadioCase',
         styles: ['reset.css','style.css'],
-        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
     });
 });
 
@@ -109,24 +99,24 @@ app.get('/newcase', function(req, res){
   res.render ('newcase',{
       title: 'RadioCase - create new case',
       styles: ['reset.css','style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
   });
 });
 
 app.post('/newcase', function(req, res){
    if(req.isAuthenticated()){
       var data = req.body;
+      data.creator = req.getAuthDetails().user.username;
       console.log(data);
       db.incr('number_of_cases', function(err, casenumber){
         var caseurl = 'case:' + casenumber;
-        db.mset(
-            caseurl + ':page:1', JSON.stringify(data),
-            caseurl + ':users', req.getAuthDetails().user.user_id,
+        db.set(caseurl + ':page:1', JSON.stringify(data),
             function(err){
-                if(!err){
-                    console.log('created case ' + caseurl);
+                db.sadd(caseurl + ':users', req.getAuthDetails().user.user_id,
+                    function(){
+                    console.log('created ' + caseurl);
                     res.send('/case/' + casenumber +'/1',200);
-                }
+                });
         });
     });
    }
@@ -162,7 +152,7 @@ app.get('/case/:id/:page', function(req, res) {
         if(req.isAuthenticated()){return req.getAuthDetails().user.username}
         else {return "0"}};
     db.smembers('case:' + req.params.id + ':users', function(err, editors){
-        console.log(editors);
+        console.log('case editors ' + editors);
         var editor=0;
         var edit_or_feedback;
         var editfeedbacktext = "Feedback";
@@ -186,7 +176,7 @@ app.get('/case/:id/:page', function(req, res) {
                 scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                 radios: theCase.radios || '',
                 texts: theCase.texts || '',
-                users: theCase.users || '',
+                creator: theCase.creator || '',
                 mdhelp: mdhelp,
                 edit_or_feedback: edit_or_feedback,
                 editfeedbacktext: editfeedbacktext,
