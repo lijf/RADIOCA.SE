@@ -30,6 +30,27 @@ $.fn.spin = function(opts) {
 function change_url(url){ document.location=url; }
 
 function scrollfunction(){
+    $('.stack > img', top.document).mousewheel(function(event, delta){
+        $(this).hide();
+        if(delta > 0) {
+            if($(this).nextSibling()){
+                $(this).nextSibling().show();
+            } else {
+                $(this).parent().firstChild().show();
+            }
+        } else if(delta < 0){
+            if($(this).previousSibling()){
+               $(this).previousSibling().show();
+            } else {
+                $(this).parent().lastChild().show();
+            }
+        }
+        event.preventDefault();
+    });
+
+}
+
+function scrollfunction_old(){
   $('.stack', top.document).mousewheel(function(event, delta){
     var movex = parseInt($(this).css('width'),10);
     if (delta > 0) {

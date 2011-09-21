@@ -2,8 +2,9 @@
   #radios
     -each radio in radios
       .radio
-        .stack(url='#{radio.img}', style='background-image: url("/image/#{radio.img}")')
-          img.imgload(src='/image/#{radio.img}')
+        .stack
+          -each radio.image in radio.images
+            img(src='/image/#{radio.image}')
         .caption
           textarea.mdtxt(style='display:none')
             #{radio.caption}
