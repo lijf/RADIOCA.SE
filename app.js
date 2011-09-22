@@ -58,9 +58,14 @@ case1 = {
     "title": "case1",
     "caseid": "1",
     "page": "1",
-    "radios": [
-        {"img":"1313337540668", "caption":"EDH 1"}
-    ],
+    "radios":
+      [{"images":[
+         'S1-01.jpg','S1-02.jpg','S1-03.jpg',
+         'S1-04.jpg','S1-05.jpg','S1-06.jpg',
+         'S1-07.jpg','S1-08.jpg','S1-09.jpg',
+         'S1-10.jpg','S1-11.jpg','S1-12.jpg'],
+        "caption":"EDH 1"
+      }],
     "texts": ["---"],
     "creator" : "lijf"
 };
@@ -152,7 +157,7 @@ app.get('/case/:id/:page', function(req, res) {
         if(req.isAuthenticated()){return req.getAuthDetails().user.username}
         else {return "0"}};
     db.smembers('case:' + req.params.id + ':users', function(err, editors){
-        console.log('case editors ' + editors);
+        //console.log('case editors ' + editors);
         var editor=0;
         var edit_or_feedback;
         var editfeedbacktext = "Feedback";
@@ -165,9 +170,9 @@ app.get('/case/:id/:page', function(req, res) {
             edit_or_feedback="feedbackbutton"
         }
         db.mget(findCase, "markdown-help", function(err, data){
-            // console.dir(data);
+            //console.dir(data);
             if(!data[0]){return res.send("huh?", 404);} else {
-            console.log(data[0]);
+            //console.log(data[0]);
             var theCase = JSON.parse(data[0].toString());
             var mdhelp = JSON.parse(data[1].toString());
             return res.render('case', {
@@ -273,6 +278,6 @@ app.post('/image/', function(req, res) {
 var port = process.env.PORT || 3000;
 
 app.listen(port, function(){
-    console.dir(process.env);
+    //console.dir(process.env);
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });

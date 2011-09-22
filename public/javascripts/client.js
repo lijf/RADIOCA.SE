@@ -29,7 +29,7 @@ $.fn.spin = function(opts) {
     
 function change_url(url){ document.location=url; }
 
-function scrollfunction(){
+function scrollfunction_new(){
     $('.stack > img', top.document).mousewheel(function(event, delta){
         $(this).hide();
         if(delta > 0) {
@@ -50,7 +50,7 @@ function scrollfunction(){
 
 }
 
-function scrollfunction_old(){
+function scrollfunction(){
   $('.stack', top.document).mousewheel(function(event, delta){
     var movex = parseInt($(this).css('width'),10);
     if (delta > 0) {

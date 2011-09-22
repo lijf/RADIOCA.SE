@@ -1,16 +1,16 @@
 #container
   #radios
-    -each radio in radios
+    - each r in radios
       .radio
         .stack
-          -each radio.image in radio.images
-            img(src='/image/#{radio.image}')
+          - each i in r.images
+            img(src='#{i}')
         .caption
           textarea.mdtxt(style='display:none')
-            #{radio.caption}
+            #{r.caption}
           .md
-    button(id='addstack')
-      | +
+        button(id='addstack')
+          | +
   #texts
     -each text in texts
       .txt
