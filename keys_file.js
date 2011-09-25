@@ -8,6 +8,6 @@ module.exports = {
   twitter: {
     consumerkey: 'wnzFhTkWJbjVLKuGuR08g',
     consumersecret: 'dAzpAuPkOKqsxiBFpqVapyME5klC3x3ARBgUnoz2A',
-    callback: 'http://local.host:3000/auth/twitter_callback'
+    callback: 'http://radioca.se:3000/auth/twitter_callback'
   }
 }
