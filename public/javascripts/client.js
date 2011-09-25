@@ -29,7 +29,48 @@ $.fn.spin = function(opts) {
     
 function change_url(url){ document.location=url; }
 
+function stack_height(){
+    $('.stack').css('height', parseInt($(this).children(':first').children(':first').css('height')))
+}
+
+function scrollfunction_3(){
+    $('.stack_window', top.document).mousewheel(function(event, delta){
+       movey = $(this).children(':first').css('height');
+       console.log(movey);
+       if(delta > 0) {
+           $(this).css('top', parseInt($(this).css('top'), 10) + movey);
+           console.log($(this).css('top'));
+       }
+        else if(delta < 0){
+           $(this).css('top', parseInt($(this).css('top'), 10) - movey);
+       }
+       console.log(delta);
+       event.preventDefault();
+    });
+
+}
+
 function scrollfunction(){
+    $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
+        if(delta > 0) {
+            if($(this).next().length > 0){
+                $(this).next().show();
+                $(this).hide();
+            }
+
+        } else if (delta < 0){
+            if($(this).prev().length > 0){
+               $(this).prev().show();
+               $(this).hide();
+            }
+        }
+        //console.log(delta);
+        event.preventDefault();
+    });
+
+}
+
+function scrollfunction_old(){
   $('.stack', top.document).mousewheel(function(event, delta){
     var movex = parseInt($(this).css('width'),10);
     if (delta > 0) {
@@ -123,8 +164,11 @@ var authcallback = function(data) {
 
 $(function(){
   scrollfunction();
+  $('.stack').children(':first').show();
 
-//  $('.radio')
+  //$('.stack').css('height', parseInt($(this).children(':first').css('height')))
+
+  //  $('.radio')
 //      .load(function(){
 //       alert(this.attr('src'));
 //       //$(this).parent.attr('url',$(this).attr('src'));
@@ -311,7 +355,9 @@ $(function(){
      * Auto-growing textareas; technique ripped from Facebook
      */
     $.fn.autogrow = function(options) {
-        
+
+
+
         this.filter('textarea', top.document).each(function() {
             
             var $this       = $(this),
