@@ -1,22 +1,22 @@
 #container
-  #radios
-    - each r in radios
-      .radio
-        .stack
-          - each i in r.images
-            img(src='#{i}')
-        .caption
-          textarea.mdtxt(style='display:none')
-            #{r.caption}
-          .md
-        button(id='addstack')
-          | +
   #texts
     -each text in texts
       .txt
         textarea.mdtxt(style='display:none')
           #{text}
         .md
+  #radios
+    - each r in radios
+      .radio
+        .stack
+          - each i in r.images
+            img.stack_image(src='/image/#{i}')
+        .caption
+          textarea.mdtxt(style='display:none')
+            #{r.caption}
+          .md
+        button(id='addstack')
+          | +
   #markdown-help
     button(id='closehelp')
       | X
@@ -54,6 +54,7 @@ script(type='text/javascript')
     $('#uploadarea').hide();
     $('#editbar').hide();
     $('#newpage').hide();
+    $('.stack').children(':first').children(':first').show();
     //$('#editbutton').hide();
 
     rendermd(); // renders the markdown textareas.

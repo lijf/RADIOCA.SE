@@ -5,12 +5,19 @@
 }
 #radios {
   float: left;
-  margin: 0 auto;
+  width: 50%;
 }
 .stack {
   position: relative;
   overflow: hidden;
-  width: 512px;
+}
+.stack_window {
+  position: absolute;
+  overflow: hidden;
+}
+.stack_image {
+  display: none;
+  width: 100%;
 }
 .imgload {
   visibility: hidden;
@@ -25,10 +32,27 @@
   color: #888;
 }
 #texts {
-  margin-left: 512px;
+  width: 50%;
+  float: right;
 }
 .txt {
   background-image: url("/images/paper/Texture0213.jpg");
+}
+@media screen and (max-width: 320px) {
+  #radios {
+    width: 100%;
+  }
+  #texts {
+    width: 100%;
+  }
+}
+@media screen and (min-width: 1024px) {
+  #radios {
+    width: 65%;
+  }
+  #texts {
+    width: 35%;
+  }
 }
 textarea {
   width: 100%;
