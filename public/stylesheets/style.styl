@@ -1,9 +1,31 @@
 #container
     margin 0 auto
     width 90%
-    padding-top 30px
+    padding-top 5px
+.big_logo
+    color #bbb
+    font-family "bank gothic"
+    font-weight bold
+    font-size 50pt
+.small_logo
+    font-family calibri
+    font-weight bold
+    text-decoration none
+    float left
+    margin 4px
+    color #bbb
+#footer
+    padding 30px 0
+    clear both
+#session
+    padding 2px
+    float right
+#pageinfo
+    padding 2px
+    float left
 #radios
     float left
+    clear left
     width 50%
 .stack
     position relative
@@ -26,9 +48,18 @@
 #texts
     width 50%
     float right
+    clear left
 .txt
     background-image url("/images/paper/Texture0213.jpg")
-@media screen and (max-width: 320px)
+@media screen and (max-width: 450px)
+    #container
+        padding-top 60px
+    #session
+        top 5px
+        margin 0 auto
+    #pageinfo
+        top 15px
+        margin 0 auto
     #radios
         width 100%
     #texts
@@ -65,18 +96,6 @@ textarea
     position fixed
     left 355px
     top 5px
-#info
-    color bbb
-    position fixed
-    left 5px
-    top 5px
-#session
-    position fixed
-    top 5px
-    right 5%
-#pageinfo
-    position absolute
-    top -10px
 #uploadarea
     position fixed
     left 17%

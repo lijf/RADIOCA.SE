@@ -94,7 +94,7 @@ function include(arr,obj) {
 
 app.get('/', function(req, res){
     res.render('index', {
-        title: 'RadioCase',
+        title: 'RADIOCA.SE',
         styles: ['reset.css','style.css'],
         scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
     });
@@ -253,6 +253,23 @@ app.put('/case/:id/:page', function(req, res) {
 app.get('/sign_out', function(req, res, params){
     req.logout();
     res.send('<button id="twitbutt">Sign in with twitter</button>');
+});
+
+app.get('/readme', function(req, res){
+   res.render('readme',{
+      title: "readme",
+      styles: ['style.css'],
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+   });
+});
+
+
+app.get('/about', function(req, res){
+   res.render('about',{
+      title: "About",
+      styles: ['style.css'],
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+   });
 });
 
 app.get('/image/:id', function(req, res) {

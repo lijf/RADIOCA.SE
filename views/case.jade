@@ -1,50 +1,48 @@
-#container
-  #texts
-    -each text in texts
-      .txt
+#pageinfo
+  | by:
+  a(href='https://twitter.com/intent/user?screen_name=#{creator}')
+    @#{creator}
+  button(id='#{edit_or_feedback}')
+    #{editfeedbacktext}
+  button(id='newpage', type='button')
+    | New Page
+#texts
+  -each text in texts
+    .txt
+      textarea.mdtxt(style='display:none')
+        #{text}
+      .md
+#radios
+  - each r in radios
+    .radio
+      .stack
+        - each i in r.images
+          img.stack_image(src='/image/#{i}')
+      .caption
         textarea.mdtxt(style='display:none')
-          #{text}
+          #{r.caption}
         .md
-  #radios
-    - each r in radios
-      .radio
-        .stack
-          - each i in r.images
-            img.stack_image(src='/image/#{i}')
-        .caption
-          textarea.mdtxt(style='display:none')
-            #{r.caption}
-          .md
-        button(id='addstack')
-          | +
-  #markdown-help
-    button(id='closehelp')
-      | X
-    textarea.mdtxt(style='display:none')
-      #{mdhelp}
-    .md
-  iframe(id='editbar', src='about:none')
-  #info
-  #pageinfo
-    br
-    | by:
-    a(href='https://twitter.com/intent/user?screen_name=#{creator}')
-      @#{creator}
-    button(id='#{edit_or_feedback}')
-      #{editfeedbacktext}
-    button(id='newpage', type='button')
-      | New Page
-  #uploadarea
-    | Please choose image(s) to upload.
-    br
-    | If multiple images are uploaded together they will be combined to a stack.
-    br
-    br
-    form(id ='uploadform')
-      input.input1(type='file', name='userfile', id='userfile', multiple='multiple')
-      input.input1(id='upload', type='submit', value='Upload file(s)')
-    button(id='cancelupload')
-      | cancel
+      button(id='addstack')
+        | +
+#markdown-help
+  button(id='closehelp')
+    | X
+  textarea.mdtxt(style='display:none')
+    #{mdhelp}
+  .md
+iframe(id='editbar', src='about:none')
+#info
+#uploadarea
+  | Please choose image(s) to upload.
+  br
+  | If multiple images are uploaded together they will be combined to a stack.
+  br
+  br
+  form(id ='uploadform')
+    input.input1(type='file', name='userfile', id='userfile', multiple='multiple')
+    input.input1(id='upload', type='submit', value='Upload file(s)')
+  button(id='cancelupload')
+    | cancel
 #iframe(style='width: 0px; height: 0px; display:none')
 script(type='text/javascript')
   $(function(){

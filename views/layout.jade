@@ -5,13 +5,26 @@ html
     title #{title} 
     -each style in styles
       link(rel='stylesheet', href='/stylesheets/#{style}')
-    script(src = 'http://code.jquery.com/jquery-latest.js')
+    script(src = '/javascripts/jquery-latest.js')
     script(src = '/auth/client')
     script(src = 'http://platform.twitter.com/widgets.js')
     -each script in scripts
       script(type='text/javascript', src='/javascripts/#{script}')
   body
-    #session
-      button(id='twitbutt')
-        | Sign in with twitter
-    != body // this renders the body of an individual view
+    #container
+      #session
+        button(id='twitbutt')
+          | Sign in with twitter
+      != body // this renders the body of an individual view
+      #footer
+        a(href='/')
+          | Home
+        | -
+        a(href='/readme')
+          | Readme
+        | -
+        a(href='/about')
+          | About
+        | -
+        a(href='Contact')
+          | Contact
