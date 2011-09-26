@@ -1,3 +1,6 @@
+#session
+  button(id='twitbutt')
+    | Sign in with twitter
 #pageinfo
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
@@ -44,6 +47,20 @@ iframe(id='editbar', src='about:none')
   button(id='cancelupload')
     | cancel
 #iframe(style='width: 0px; height: 0px; display:none')
+
+#footer
+  a(href='/')
+    | Home
+  | -
+  a(href='/readme')
+    | Readme
+  | -
+  a(href='/about')
+    | About
+  | -
+  a(href='Contact')
+    | Contact
+    
 script(type='text/javascript')
   $(function(){
     $('#markdown-help').hide();
