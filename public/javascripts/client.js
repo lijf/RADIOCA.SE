@@ -34,7 +34,7 @@ function stack_height(){
 }
 
 function scrollfunction_3(){
-    $('.stack_window', top.document).scroll(function(event, delta){
+    $('.stack_window', top.document).mousewheel(function(event, delta){
        movey = $(this).children(':first').css('height');
        console.log(movey);
        if(delta > 0) {
@@ -51,7 +51,7 @@ function scrollfunction_3(){
 }
 
 function scrollfunction(){
-    $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
+    $('.stack > .stack_image', top.document).scroll(function(event, delta){
         if(delta > 0) {
             if($(this).next().length > 0){
                 $(this).next().show();
@@ -65,7 +65,7 @@ function scrollfunction(){
             }
         }
         //console.log(delta);
-        event.preventDefault();
+        //event.preventDefault();
     });
 
 }
