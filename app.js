@@ -74,7 +74,7 @@ function include(arr,obj) {
     return (arr.indexOf(obj) != -1);
 }
 
-db.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
+//db.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
 
 
 // redisClient.set("string key", "string val", redis.print);
