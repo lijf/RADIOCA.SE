@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/javascripts/client.js" afterPath="$PROJECT_DIR$/public/javascripts/client.js" />
     </list>
     <ignored path="express-radicase.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,10 +29,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="client.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="client.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/javascripts/client.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="0" selection-start="376" selection-end="376" vertical-scroll-proportion="0.0">
+            <state line="28" column="4" selection-start="746" selection-end="746" vertical-scroll-proportion="0.57528406">
               <folding />
             </state>
           </provider>
@@ -75,10 +74,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="2" selection-start="1888" selection-end="1888" vertical-scroll-proportion="0.3252841">
+            <state line="76" column="2" selection-start="1888" selection-end="1888" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -141,7 +140,6 @@
         <option value="$PROJECT_DIR$/views/newcase.jade" />
         <option value="$PROJECT_DIR$/keys_file.js" />
         <option value="$PROJECT_DIR$/views/radio.jade" />
-        <option value="$PROJECT_DIR$/public/javascripts/client.js" />
         <option value="$PROJECT_DIR$/views/case.jade" />
         <option value="$PROJECT_DIR$/views/readme.jade" />
         <option value="$PROJECT_DIR$/views/about.jade" />
@@ -150,6 +148,7 @@
         <option value="$PROJECT_DIR$/public/stylesheets/style.styl" />
         <option value="$PROJECT_DIR$/views/index.jade" />
         <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/public/javascripts/client.js" />
       </list>
     </option>
   </component>
@@ -468,13 +467,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/client.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="376" selection-end="376" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/edit.jade">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="8" selection-start="8" selection-end="8" vertical-scroll-proportion="0.0">
@@ -533,7 +525,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="2" selection-start="1888" selection-end="1888" vertical-scroll-proportion="0.3252841">
+        <state line="76" column="2" selection-start="1888" selection-end="1888" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/javascripts/client.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="4" selection-start="746" selection-end="746" vertical-scroll-proportion="0.57528406">
           <folding />
         </state>
       </provider>

@@ -34,7 +34,7 @@ function stack_height(){
 }
 
 function scrollfunction_3(){
-    $('.stack_window', top.document).mousewheel(function(event, delta){
+    $('.stack_window', top.document).scroll(function(event, delta){
        movey = $(this).children(':first').css('height');
        console.log(movey);
        if(delta > 0) {
