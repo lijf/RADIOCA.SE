@@ -94,7 +94,7 @@ function include(arr,obj) {
 
 app.get('/', function(req, res){
     res.render('index', {
-        title: 'RADIOCA.SE',
+        title: ' - Home',
         styles: ['reset.css','style.css'],
         scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
     });
@@ -102,7 +102,7 @@ app.get('/', function(req, res){
 
 app.get('/newcase', function(req, res){
   res.render ('newcase',{
-      title: 'RadioCase - create new case',
+      title: ' - create new case',
       styles: ['reset.css','style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
   });
@@ -176,7 +176,7 @@ app.get('/case/:id/:page', function(req, res) {
             var theCase = JSON.parse(data[0].toString());
             var mdhelp = JSON.parse(data[1].toString());
             return res.render('case', {
-                title: theCase.title || 'untitled',
+                title: ' - ' + theCase.title || ' - untitled',
                 styles: ['reset.css','style.css'],
                 scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                 radios: theCase.radios || '',
