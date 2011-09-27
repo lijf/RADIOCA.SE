@@ -257,18 +257,25 @@ app.get('/sign_out', function(req, res, params){
 
 app.get('/readme', function(req, res){
    res.render('readme',{
-      title: "readme",
+      title: " - README",
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
    });
 });
 
+app.get('/colophon', function(req, res){
+   res.render('colophon',{
+      title: ' - Colophon',
+      styles: ['style.css'],
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js']
+   });
+});
 
 app.get('/about', function(req, res){
    res.render('about',{
-      title: "About",
+      title: " - About",
       styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js']
    });
 });
 

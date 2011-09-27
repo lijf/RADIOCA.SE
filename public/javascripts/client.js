@@ -1,5 +1,20 @@
 var converter = new Showdown.converter();
 
+// "'createTouch' in document" will return true in Apple's Mobile Safari. Otherwise detect Android directly.
+function supportsTouch() {
+    var android = navigator.userAgent.indexOf('Android') != -1;
+    return android || !!('createTouch' in document)
+}
+
+// Use $('a').touchOrClick instead of $('a').click in your code.
+jQuery.fn.touchOrClick = function(efunc) {
+    if (typeof efunc == 'undefined') {
+        return this.trigger(supportsTouch() ? 'touchstart' : 'click');
+    } else {
+        return this.bind(supportsTouch() ? 'touchstart' : 'click', efunc);
+    }
+};
+
 var opts = {
   lines: 12, // The number of lines to draw
   length: 7, // The length of each line
@@ -10,6 +25,8 @@ var opts = {
   trail: 33, // Afterglow percentage
   shadow: true // Whether to render a shadow
 };
+
+var lastScrollTop = 0;
 
 $.fn.spin = function(opts) {
     this.each(function() {
@@ -50,8 +67,29 @@ function scrollfunction_3(){
 
 }
 
+
 function scrollfunction(){
-    $('.stack > .stack_image', top.document).scroll(function(event, delta){
+    $('.stack > .stack_image', top.document).scroll(function(event){
+    console.log('scroll');
+    var st = $(this).scrollTop();
+    if (sc > lastScrollTop){
+        if($(this).next().length > 0){
+                $(this).next().show();
+                $(this).hide();
+            }
+    } else {
+         if($(this).prev().length > 0){
+               $(this).prev().show();
+               $(this).hide();
+            }
+    }
+    lastScrollTop = st;
+    });
+}
+
+
+function scrollfunction_mw(){
+    $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
         if(delta > 0) {
             if($(this).next().length > 0){
                 $(this).next().show();
@@ -65,9 +103,27 @@ function scrollfunction(){
             }
         }
         //console.log(delta);
-        //event.preventDefault();
+        event.preventDefault();
     });
 
+}
+
+function mobile_scrollfunction_old(){
+    $('.stack > .stack_image', top.document).ontouchmove( function(e){
+        var touch = e.touches[0];
+        if(touch.pageY > 0){
+            if($(this).next().length > 0){
+                $(this).next().show();
+                $(this).hide();
+            }
+        } else if (touch.pageY < 0){
+            if($(this).prev().length > 0){
+                $(this).prev().show();
+                $(this).hide();
+            }
+        }
+    });
+    e.preventDefault();
 }
 
 function scrollfunction_old(){
@@ -163,7 +219,7 @@ var authcallback = function(data) {
 };
 
 $(function(){
-  scrollfunction();
+  scrollfunction_mw();
   $('.stack').children(':first').show();
 
   //$('.stack').css('height', parseInt($(this).children(':first').css('height')))

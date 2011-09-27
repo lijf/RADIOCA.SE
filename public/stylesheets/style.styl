@@ -36,12 +36,10 @@
 .stack
     position relative
     overflow hidden
-.stack_window
-    position absolute
-    overflow hidden
 .stack_image
     display none
     width 100%
+    overflow scroll
 .imgload
     visibility hidden
 .deletebutton
@@ -70,6 +68,9 @@
         width 100%
     #texts
         width 100%
+@media screen and (max-width: 585px)
+    .big_logo
+        font-size 30pt
 @media screen and (min-width: 1024px)
     #radios
         width 65%
