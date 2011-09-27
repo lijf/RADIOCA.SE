@@ -97,6 +97,7 @@ app.get('/', function(req, res){
         title: ' - Home',
         styles: ['reset.css','style.css'],
         scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
+
     });
 });
 
