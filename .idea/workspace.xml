@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/index.jade" afterPath="$PROJECT_DIR$/views/index.jade" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/readme.jade" afterPath="$PROJECT_DIR$/views/readme.jade" />
     </list>
     <ignored path="express-radicase.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,10 +29,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.jade" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="index.jade" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/views/index.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="7" selection-start="329" selection-end="329" vertical-scroll-proportion="0.0">
+            <state line="12" column="0" selection-start="175" selection-end="175" vertical-scroll-proportion="0.25104603">
               <folding />
             </state>
           </provider>
@@ -51,7 +50,7 @@
       <file leaf-file-name="case.jade" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/case.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="13" selection-start="1481" selection-end="1481" vertical-scroll-proportion="0.0">
+            <state line="40" column="13" selection-start="862" selection-end="862" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -69,7 +68,7 @@
       <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="237" column="18" selection-start="7799" selection-end="7799" vertical-scroll-proportion="0.0">
+            <state line="178" column="27" selection-start="5531" selection-end="5531" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -93,7 +92,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="readme.jade" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="readme.jade" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/readme.jade">
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -142,13 +141,13 @@
         <option value="$PROJECT_DIR$/views/radio.jade" />
         <option value="$PROJECT_DIR$/public/stylesheets/fonts.css" />
         <option value="$PROJECT_DIR$/public/javascripts/client.js" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/views/layout.jade" />
         <option value="$PROJECT_DIR$/public/stylesheets/style.styl" />
         <option value="$PROJECT_DIR$/views/about.jade" />
         <option value="$PROJECT_DIR$/views/colophon.jade" />
         <option value="$PROJECT_DIR$/views/case.jade" />
         <option value="$PROJECT_DIR$/views/readme.jade" />
+        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/views/index.jade" />
       </list>
     </option>
@@ -510,13 +509,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/case.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="13" selection-start="1481" selection-end="1481" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/layout.jade">
       <provider selected="true" editor-type-id="text-editor">
         <state line="16" column="6" selection-start="602" selection-end="602" vertical-scroll-proportion="0.0">
@@ -524,23 +516,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/index.jade">
+    <entry file="file://$PROJECT_DIR$/views/readme.jade">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="7" selection-start="329" selection-end="329" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="237" column="18" selection-start="7799" selection-end="7799" vertical-scroll-proportion="0.0">
+        <state line="178" column="27" selection-start="5531" selection-end="5531" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/readme.jade">
+    <entry file="file://$PROJECT_DIR$/views/case.jade">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="40" column="13" selection-start="862" selection-end="862" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/index.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="0" selection-start="175" selection-end="175" vertical-scroll-proportion="0.25104603">
           <folding />
         </state>
       </provider>
