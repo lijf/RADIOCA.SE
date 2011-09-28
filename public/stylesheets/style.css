@@ -7,9 +7,7 @@
   text-align: center;
 }
 #newcase {
-  text-align: center;
   margins: 0 auto;
-  padding: 30px;
 }
 .big_logo {
   color: #bbb;
@@ -189,7 +187,7 @@ h1,
 h2,
 h3,
 h4 {
-  color: #222;
+  color: #e90;
   font-weight: 400;
 }
 h1,
