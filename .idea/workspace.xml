@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/style.css" afterPath="$PROJECT_DIR$/public/stylesheets/style.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/style.styl" afterPath="$PROJECT_DIR$/public/stylesheets/style.styl" />
     </list>
     <ignored path="express-radicase.iws" />
