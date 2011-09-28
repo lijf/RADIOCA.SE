@@ -4,9 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/views/case.jade" line="85" mnemonic="9" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/style.css" afterPath="$PROJECT_DIR$/public/stylesheets/style.css" />
-    </list>
+    <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="" />
     <ignored path="express-radicase.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -85,7 +83,7 @@
       <file leaf-file-name="about.jade" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/views/about.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="4" selection-start="318" selection-end="318" vertical-scroll-proportion="0.16282225">
+            <state line="20" column="0" selection-start="470" selection-end="470" vertical-scroll-proportion="0.468114">
               <folding />
             </state>
           </provider>
@@ -538,7 +536,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/views/about.jade">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="4" selection-start="318" selection-end="318" vertical-scroll-proportion="0.16282225">
+        <state line="20" column="0" selection-start="470" selection-end="470" vertical-scroll-proportion="0.468114">
           <folding />
         </state>
       </provider>
