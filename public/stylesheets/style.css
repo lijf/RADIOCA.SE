@@ -6,6 +6,11 @@
 #indexpage {
   text-align: center;
 }
+#newcase {
+  text-align: center;
+  margins: 0 auto;
+  padding: 30px;
+}
 .big_logo {
   color: #bbb;
   font-family: "Orbitron";

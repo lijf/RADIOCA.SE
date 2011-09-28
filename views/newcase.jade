@@ -1,9 +1,21 @@
+
 form(id='newcase')
-  | Title:
+  h3 Create new case
+  | Title
   input(type='text', name='title', id='title')
   br
   | ICD-Code
+  sup *
   input(type='text', name='ICD', id='ICD')
+  br
+  | Private 
+  input(type='checkbox', name='private', id='private, value='private')
   br
   button(id='createcase', type='button')
     | Create Case
+  br
+  br
+  sup
+    | * Swedish users can find ICD-codes at
+  a(href='http://www.icd.nu')
+    | icd.nu
