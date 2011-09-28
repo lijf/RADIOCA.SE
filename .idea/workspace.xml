@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/about.jade" afterPath="$PROJECT_DIR$/views/about.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/style.css" afterPath="$PROJECT_DIR$/public/stylesheets/style.css" />
     </list>
     <ignored path="express-radicase.iws" />
     <ignored path=".idea/workspace.xml" />
