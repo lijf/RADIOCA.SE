@@ -93,19 +93,28 @@ function include(arr,obj) {
 // Routes
 
 app.get('/', function(req, res){
+    var username = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+        else {return "0"}};
     res.render('index', {
         title: ' - Home',
         styles: ['reset.css','style.css'],
-        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
-
+        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+        signed_in: req.isAuthenticated(),
+        user: username()
     });
 });
 
 app.get('/newcase', function(req, res){
+  var username = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+        else {return "0"}};
   res.render ('newcase',{
       title: ' - create new case',
       styles: ['reset.css','style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
   });
 });
 
@@ -210,6 +219,9 @@ app.get('/signed_in', function(req, res){
 });
 
 app.get('/case/:id/:page/edit', function(req, res) {
+    var username = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+        else {return "0"}};
     console.dir(req.isAuthenticated());
     console.dir(req.getAuthDetails().user.user_id);
     console.dir(req.getAuthDetails());
@@ -230,7 +242,9 @@ app.get('/case/:id/:page/edit', function(req, res) {
                     styles: ['style.css'],
                     scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
                     caseid: req.params.id,
-                    page: req.params.page
+                    page: req.params.page,
+                    signed_in: req.isAuthenticated(),
+                    user: username()
                 });
                 }
                 else {res.send("You are not allowed to edit this page but you can ask the author to add you as an editor", 200)}
@@ -258,26 +272,41 @@ app.get('/sign_out', function(req, res, params){
 });
 
 app.get('/readme', function(req, res){
+   var username = function(){
+     if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+     else {return "0"}};
    res.render('readme',{
       title: " - README",
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
    });
 });
 
 app.get('/colophon', function(req, res){
+   var username = function(){
+     if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+     else {return "0"}};
    res.render('colophon',{
       title: ' - Colophon',
       styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js']
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
    });
 });
 
 app.get('/about', function(req, res){
+   var username = function(){
+     if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+     else {return "0"}};
    res.render('about',{
       title: " - About",
       styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js']
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
    });
 });
 

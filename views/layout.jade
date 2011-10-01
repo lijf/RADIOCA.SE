@@ -14,4 +14,24 @@ html
       script(type='text/javascript', src='/javascripts/#{script}')
   body
     #container
+      #session
+        button(id='twitbutt')
+        | Sign in with twitter
       != body // this renders the body of an individual view
+    #footer
+      a(href='/')
+        | Home
+      | -
+      a(href='/readme')
+        | Readme
+      | -
+      a(href='/about')
+        | About
+      | -
+      a(href='mailto:info@radioca.se')
+        | Contact
+script(type='text/javascript')
+  $(function(){
+    var user = '#{user}';
+    if(#{signed_in}){sessionButton('#{user}')};
+  });
