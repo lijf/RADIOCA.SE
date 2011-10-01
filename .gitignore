@@ -1,4 +1,5 @@
 node_modules
 dump.rdb
 img
+keys_file.js
 public/stylesheets/style.css
