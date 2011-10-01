@@ -6,8 +6,8 @@ module.exports = {
   },
   
   twitter: {
-    consumerkey: 'wnzFhTkWJbjVLKuGuR08g',
-    consumersecret: 'dAzpAuPkOKqsxiBFpqVapyME5klC3x3ARBgUnoz2A',
-    callback: 'http://radioca.se/auth/twitter_callback'
+    consumerkey: '5K278x5dEi0BpHUgDnsPFg',
+    consumersecret: '2sE0XRfDyacL34Z8loGRupbdYgLMLpVQa1xycFsR2Q',
+    callback: 'http://local.host:3000/auth/twitter_callback'
   }
 }

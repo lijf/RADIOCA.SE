@@ -115,6 +115,7 @@ app.post('/newcase', function(req, res){
       data.creator = req.getAuthDetails().user.username;
       console.log(data);
       db.incr('number_of_cases', function(err, casenumber){
+        console.dir(data);
         var caseurl = 'case:' + casenumber;
         db.set(caseurl + ':page:1', JSON.stringify(data),
             function(err){
