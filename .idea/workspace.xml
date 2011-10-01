@@ -4,10 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/views/case.jade" line="85" mnemonic="9" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/keys_file_local.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/keys_file.js" afterPath="$PROJECT_DIR$/keys_file.js" />
-    </list>
+    <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="" />
     <ignored path="express-radicase.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
