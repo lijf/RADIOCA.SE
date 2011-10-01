@@ -1,3 +1,4 @@
+#iframe(style='width: 0px; height: 0px; display:none')
 #pageinfo
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
@@ -6,6 +7,7 @@
     #{editfeedbacktext}
   button(id='newpage', type='button')
     | New Page
+iframe(id='editbar', src='about:none')
 #texts
   -each text in texts
     .txt
@@ -30,7 +32,6 @@
   textarea.mdtxt(style='display:none')
     #{mdhelp}
   .md
-iframe(id='editbar', src='about:none')
 #info
 #uploadarea
   | Please choose image(s) to upload.
@@ -43,7 +44,6 @@ iframe(id='editbar', src='about:none')
     input.input1(id='upload', type='submit', value='Upload file(s)')
   button(id='cancelupload')
     | cancel
-#iframe(style='width: 0px; height: 0px; display:none')
 script(type='text/javascript')
   $(function(){
     $('#markdown-help').hide();
