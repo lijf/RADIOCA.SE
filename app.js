@@ -127,6 +127,7 @@ app.post('/newcase', function(req, res){
       var data = req.body;
       data.creator = req.getAuthDetails().user.username;
       console.log(data);
+      data.texts = ['Double click to add text'];
       db.incr('number_of_cases', function(err, casenumber){
         //console.dir(data);
         data.cid = casenumber.toString();

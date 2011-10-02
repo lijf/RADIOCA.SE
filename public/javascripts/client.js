@@ -396,12 +396,11 @@ $(function(){
       target: "postframe"
     });
     $('#uploadform').submit();
-    $('#radios', top.document).append(
-      "<div class='radio'><div class='stack'></div>" +
+    $("<div class='radio'><div class='stack'></div>" +
       "<div class='caption'>" + 
       "<textarea class='mdtxt' style='display:none'>" +
       "(double-click to change caption) </textarea>" +
-      "<div class='md'></div></div></div>");
+      "<div class='md'></div></div></div>").insertBefore('#addstack');
     rendermd();
     $('.radio:last', top.document).append($('<button type="button" class="deletebutton">X</button>'));
 
