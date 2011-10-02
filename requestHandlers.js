@@ -1,8 +1,8 @@
 var formidable = require('formidable'),
-    exec = require('child_process').exec,
-    spawn = require('child_process').spawn,
+//    exec = require('child_process').exec,
+//    spawn = require('child_process').spawn,
     url = require('url'),
-    zip = require('zip'),
+//    zip = require('zip'),
     util = require('util'),
     fs = require('fs');
 
@@ -65,14 +65,16 @@ function postImage2(req, res){
   var form = new formidable.IncomingForm(),
       files = [],
       fields = [];
+  //form.uploadDir = __dirname + '/img/';
   form
     .on('field', function(field, value) {
-        //console.log(field, value);
+        console.log(field, value);
         fields.push([field, value]);
     })
     .on('fileBegin', function(field, file) {
+          console.log(file.filename);
           if(file.type='image/jpeg') {
-            file.path = __dirname + '/tmp/' + d + '.' + i + '.jpg';
+            file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
             i ++;
           }
           console.log(field, file);
@@ -84,23 +86,23 @@ function postImage2(req, res){
         console.log(util.inspect(files));
           // TODO: fix the image montage.
     });
-  form.parse(req, function(err, fields, files){
-      // console.dir(files);
-      if(files.userfile.type == 'application/zip'){
-          //zipfile = files.userfile;
-          //console.dir(zipfile);
-          var reader = zip.Reader(zipfile);
-          console.log(reader.readLocalFileHeader());
-          console.log(reader.readDataDescriptor());
-          //reader.forEach(function(entry){
-            //var matchimage = /\.(jpg|jpeg|png|gif)$/i;
-            //if(matchimage.test(entry.getName())){
-            //   console.log(entry.getName());
-            //}
-            //console.log(i++);
-        //});
-      }
-  });
+  //form.parse(req, function(err, fields, files){
+  //    // console.dir(files);
+  //      if(files.userfile.type == 'application/zip'){
+  //          //zipfile = files.userfile;
+  //          //console.dir(zipfile);
+  //          var reader = zip.Reader(zipfile);
+  //          console.log(reader.readLocalFileHeader());
+  //          console.log(reader.readDataDescriptor());
+  //          //reader.forEach(function(entry){
+  //            //var matchimage = /\.(jpg|jpeg|png|gif)$/i;
+  //            //if(matchimage.test(entry.getName())){
+  //            //   console.log(entry.getName());
+  //            //}
+  //            //console.log(i++);
+  //        //});
+  //      }
+  //  });
 }
 
 exports.postImage = postImage;

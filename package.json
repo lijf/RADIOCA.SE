@@ -10,6 +10,7 @@
         "redis": "0.6.7",
         "oauth": "0.9.5",
         "easy-oauth": "0.2.0",
-        "markdown": "0.2.1"
+        "markdown": "0.2.1",
+        "redback": "0.2.7"
     }
 }

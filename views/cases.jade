@@ -1,4 +1,9 @@
 h1 Cases
 br
+ul
 - each c in cases
-  #{c.title}
+  li
+    a(href='/case/#{c.cid}/1') #{c.title}
+    |  by:
+    a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
+      @#{c.creator}

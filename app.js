@@ -14,7 +14,8 @@ var express = require('express'),
     db = redis.createClient(),
     zip = require('zip'),
     //oauth = require('oauth');
-    easyoauth = require('easy-oauth');
+    easyoauth = require('easy-oauth'),
+    redback = require('redback').use(db);
     // authCheck = require('./authCheck.js');
 
 redis.debug_mode = true;
@@ -147,32 +148,37 @@ app.post('/newcase', function(req, res){
 });
 
 app.get('/cases/:start/:finish', function(req, res){
+   var start = parseInt(req.params.start, 10);
+   var end = parseInt(req.params.finish, 10);
    var username = function(){
       if(req.isAuthenticated()){return req.getAuthDetails().user.username}
       else {return "0"}};
-   db.lrange('cases', parseInt(req.params.start, 10), parseInt(req.params.finish, 10), function(err, data){
-      if(!data[0]){
-          console.dir('not found');
-          res.render('404', {
-               title: ' - 404 - not found',
-               styles: ['reset.css','style.css'],
-               scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
-               signed_in: req.isAuthenticated(),
-               user: username()
-          });
-      }else{
-          console.dir(data);
-          var sendcases = JSON.parse(data[0]);
-          console.dir(sendcases);
-          res.render('cases', {
-               title: ' - Cases',
-               styles: ['reset.css','style.css'],
-               scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
-               signed_in: req.isAuthenticated(),
-               user: username(),
-               cases: sendcases
-        });
-      }
+   db.lrange('cases', start, end, function(err, data){
+       if(err){res.send("error", 404)}
+       else{
+           if(!data[0]){
+              console.dir('not found');
+              res.render('404', {layout: false });
+          }else{
+           var i = 0;
+           var sendcases = [];
+           while(data[i]){
+               sendcases[i] = JSON.parse(data[i].toString());
+               i++;
+           }
+              //console.dir(sendcases);
+              //var sendcases = JSON.parse(data[0]);
+              console.dir(sendcases);
+              res.render('cases', {
+                   title: ' - Cases',
+                   styles: ['reset.css','style.css'],
+                   scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+                   signed_in: req.isAuthenticated(),
+                   user: username(),
+                   cases: sendcases
+            });
+          }
+    }
    });
 });
 
@@ -363,7 +369,7 @@ app.get('/image/:id', function(req, res) {
 app.post('/image/', function(req, res) {
     console.log("POST /image/ called");
     if(req.isAuthenticated()){
-        requestHandlers.postImage2(req,res, db);
+        requestHandlers.postImage2(req,res);
     }
     else {res.send("not logged in", 200)}
 });
