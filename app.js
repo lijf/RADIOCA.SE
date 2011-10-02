@@ -348,7 +348,7 @@ app.get('/image/:id', function(req, res) {
     });
 });
 
-app.post('/image', function(req, res){
+app.post('/image_new', function(req, res){
   console.log('POST /image called');
   var day = new Date();
   var d = day.getTime().toString();
@@ -380,7 +380,7 @@ app.post('/image', function(req, res){
 });
 
 
-app.post('/image_old/', function(req, res) {
+app.post('/image/', function(req, res) {
     console.log("POST /image/ called");
     if(req.isAuthenticated()){
         requestHandlers.postImage2(req,res);

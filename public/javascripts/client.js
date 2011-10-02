@@ -370,7 +370,7 @@ $(function(){
     }
   });
 
-  $("#upload").live({
+  $("#upload_new").live({
      click: function(){
          $('#uploadarea').hide();
          var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
@@ -383,17 +383,16 @@ $(function(){
   });
 
 
-  $("#upload2").live({
+  $("#upload").live({
     click: function(){
     $('#uploadarea').hide();
     var userFile = $('#userfile').val();
     var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
     $('#iframe').append(iframe);
-
     $('#uploadform').attr({
       action: "/image/",
       method: "POST",
-      userfile: $('#userfile').val(),
+      userfile: userFile,
       enctype: "multipart/form-data",
       encoding: "multipart/form-data",
       target: "postframe"
@@ -415,7 +414,7 @@ $(function(){
           var url = $("iframe")[0].contentDocument.body.innerHTML;
           $('.radio:last>.stack', top.document).attr('url', url);
           // alert(imgid);
-          scrollfunction();
+          scrollfunction_mw();
           //editfunctions();
         });
      }

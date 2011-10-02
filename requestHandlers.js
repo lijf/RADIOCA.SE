@@ -1,10 +1,9 @@
 var formidable = require('formidable'),
-//    exec = require('child_process').exec,
-//    spawn = require('child_process').spawn,
+    exec = require('child_process').exec,
+    spawn = require('child_process').spawn,
     url = require('url'),
-//    zip = require('zip'),
+    zip = require('zip'),
     util = require('util'),
-    form = require('connect-form'),
     fs = require('fs');
 
 function postImage(req, res){
