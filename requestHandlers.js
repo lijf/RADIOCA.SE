@@ -86,7 +86,7 @@ function postImage2(req, res){
         console.log(util.inspect(files));
           // TODO: fix the image montage.
     });
-  //form.parse(req, function(err, fields, files){
+  form.parse(req, function(err, fields, files){
   //    // console.dir(files);
   //      if(files.userfile.type == 'application/zip'){
   //          //zipfile = files.userfile;
@@ -102,7 +102,7 @@ function postImage2(req, res){
   //            //console.log(i++);
   //        //});
   //      }
-  //  });
+    });
 }
 
 exports.postImage = postImage;
