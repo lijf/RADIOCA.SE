@@ -282,8 +282,9 @@ $(function(){
   $("#createcase").click(function(){
       var json = {};
       json.title = $('#title').val();
-      json.icd = $('#icd').val();
-      // alert(JSON.stringify(json));
+      json.icd = $('#ICD').val();
+      json.private = $('#private').is(':checked');
+      alert(JSON.stringify(json));
       $.ajax({
           url: '/newcase',
           type: 'POST',

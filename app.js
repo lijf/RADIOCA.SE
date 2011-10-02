@@ -10,11 +10,14 @@ var express = require('express'),
     fs = require('fs'),
     requestHandlers = require("./requestHandlers"),
     sys = require('sys'),
-    db = require('redis').createClient(),
+    redis = require('redis'),
+    db = redis.createClient(),
     zip = require('zip'),
     //oauth = require('oauth');
     easyoauth = require('easy-oauth');
     // authCheck = require('./authCheck.js');
+
+redis.debug_mode = true;
 
 var app = module.exports = express.createServer();
 
@@ -122,11 +125,15 @@ app.post('/newcase', function(req, res){
    if(req.isAuthenticated()){
       var data = req.body;
       data.creator = req.getAuthDetails().user.username;
-      console.log(data);
+      //console.log(data);
       db.incr('number_of_cases', function(err, casenumber){
-        console.dir(data);
+        //console.dir(data);
+        data.cid = casenumber.toString();
+        casedata=JSON.stringify(data);
+        db.lpush('cases', data);
+        db.sadd('cases:' + data.creator, casedata);
         var caseurl = 'case:' + casenumber;
-        db.set(caseurl + ':page:1', JSON.stringify(data),
+        db.set(caseurl + ':page:1', casedata,
             function(err){
                 db.sadd(caseurl + ':users', req.getAuthDetails().user.user_id,
                     function(){
@@ -137,6 +144,36 @@ app.post('/newcase', function(req, res){
     });
    }
    else{res.send('FORBIDDEN', 403)};
+});
+
+app.get('/cases/:start/:finish', function(req, res){
+   var username = function(){
+      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+      else {return "0"}};
+   db.lrange('cases', parseInt(req.params.start, 10), parseInt(req.params.finish, 10), function(err, data){
+      if(!data[0]){
+          console.dir('not found');
+          res.render('404', {
+               title: ' - 404 - not found',
+               styles: ['reset.css','style.css'],
+               scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+               signed_in: req.isAuthenticated(),
+               user: username()
+          });
+      }else{
+          console.dir(data);
+          var sendcases = JSON.parse(data[0]);
+          console.dir(sendcases);
+          res.render('cases', {
+               title: ' - Cases',
+               styles: ['reset.css','style.css'],
+               scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+               signed_in: req.isAuthenticated(),
+               user: username(),
+               cases: sendcases
+        });
+      }
+   });
 });
 
 app.get('/ziptest', function(req, res){
@@ -186,6 +223,7 @@ app.get('/case/:id/:page', function(req, res) {
             //console.log(data[0]);
             var theCase = JSON.parse(data[0].toString());
             var mdhelp = JSON.parse(data[1].toString());
+            //console.dir(theCase);
             return res.render('case', {
                 title: ' - ' + theCase.title || ' - untitled',
                 styles: ['reset.css','style.css'],

@@ -13,6 +13,9 @@ html
     -each script in scripts
       script(type='text/javascript', src='/javascripts/#{script}')
   body
+    #sl
+      .small_logo
+        | RADIOCA.SE
     #container
       #session
         button(id='twitbutt')
@@ -22,11 +25,11 @@ html
       a(href='/')
         | Home
       | -
-      a(href='/readme')
-        | Readme
-      | -
       a(href='/about')
         | About
+      | -
+      a(href='/readme')
+        | Readme
       | -
       a(href='mailto:info@radioca.se')
         | Contact

@@ -1,5 +1,6 @@
 #indexpage
-  h1.big_logo RADIOCA.SE
+  br
+  .big_logo RADIOCA.SE
 
   img(src='/images/OldRadio_2_320.jpg')
 
@@ -7,6 +8,10 @@
 
   br
 
-  a(href='/cases') List Cases
+  a(href='/cases/0/20') List Cases
   |  -
   a(href='/newcase') Create Case
+script(type='text/javascript')
+  $(function(){
+    $('#sl').hide();
+  });
