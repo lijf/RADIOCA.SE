@@ -4,6 +4,7 @@ var formidable = require('formidable'),
     url = require('url'),
 //    zip = require('zip'),
     util = require('util'),
+    form = require('connect-form'),
     fs = require('fs');
 
 function postImage(req, res){

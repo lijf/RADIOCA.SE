@@ -15,12 +15,18 @@ var express = require('express'),
     zip = require('zip'),
     //oauth = require('oauth');
     easyoauth = require('easy-oauth'),
-    redback = require('redback').use(db);
+    form = require('connect-form'),
+    redback = require('redback').use(db),
+    formidable = require('formidable'),
     // authCheck = require('./authCheck.js');
+    util = require('util');
 
-redis.debug_mode = true;
 
-var app = module.exports = express.createServer();
+//redis.debug_mode = true;
+
+var app = module.exports = express.createServer(
+    form({keepExtensions: true})
+);
 
 // Configuration
 
@@ -180,21 +186,6 @@ app.get('/cases/:start/:finish', function(req, res){
           }
     }
    });
-});
-
-app.get('/ziptest', function(req, res){
-    var zipfile = fs.readFileSync(__dirname + "/SD.zip");
-    var reader = zip.Reader(zipfile);
-    console.log(reader.readLocalFileHeader());
-    console.log(reader.readDataDescriptor());
-    var i = 0;
-    reader.forEach(function(entry){
-            var matchimage = /\.(jpg|jpeg|png|gif)$/i;
-            if(matchimage.test(entry.getName())){
-              console.log(entry.getName());
-            }
-            console.log(i++);
-        });
 });
 
 app.get('/test', function(req, res) {
@@ -366,7 +357,39 @@ app.get('/image/:id', function(req, res) {
     });
 });
 
-app.post('/image/', function(req, res) {
+app.post('/image/', function(req, res){
+  console.log('POST /image/ called');
+  var day = new Date();
+  var d = day.getTime().toString();
+  console.log(d);
+  var i = 0;
+  var form_in = new formidable.IncomingForm(),
+      files = [],
+      fields = [];
+  form_in
+    .on('field', function(field, value) {
+        console.log(field, value);
+        fields.push([field, value]);
+    })
+    .on('fileBegin', function(name, file) {
+          console.log(file.filename);
+          if(file.type='image/jpeg') {
+             file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
+             i ++;
+          }
+          console.log(field, file);
+          files.push([field, file]);
+    })
+    .on('end', function() {
+        console.log('-> upload done');
+        console.log(util.inspect(fields));
+        console.log(util.inspect(files));
+          // TODO: fix the image montage.
+    });
+});
+
+
+app.post('/image_old/', function(req, res) {
     console.log("POST /image/ called");
     if(req.isAuthenticated()){
         requestHandlers.postImage2(req,res);
