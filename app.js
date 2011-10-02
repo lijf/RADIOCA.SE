@@ -17,7 +17,7 @@ var express = require('express'),
     easyoauth = require('easy-oauth');
 
 
-redis.debug_mode = true;
+//redis.debug_mode = true;
 
 var app = module.exports = express.createServer(
 );
@@ -101,7 +101,7 @@ app.get('/', function(req, res){
         if(req.isAuthenticated()){return req.getAuthDetails().user.username}
         else {return "0"}};
     res.render('index', {
-        title: ' - Home',
+        title: 'RADIOCA.SE - Home',
         styles: ['reset.css','style.css'],
         scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
         signed_in: req.isAuthenticated(),
@@ -114,7 +114,7 @@ app.get('/newcase', function(req, res){
         if(req.isAuthenticated()){return req.getAuthDetails().user.username}
         else {return "0"}};
   res.render ('newcase',{
-      title: ' - create new case',
+      title: 'RADIOCA.SE - create new case',
       styles: ['reset.css','style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
       signed_in: req.isAuthenticated(),
@@ -126,13 +126,13 @@ app.post('/newcase', function(req, res){
    if(req.isAuthenticated()){
       var data = req.body;
       data.creator = req.getAuthDetails().user.username;
-      console.log(data);
+      //console.log(data);
       data.texts = ['Double click to add text'];
       db.incr('number_of_cases', function(err, casenumber){
         //console.dir(data);
         data.cid = casenumber.toString();
         casedata=JSON.stringify(data);
-        console.log(casedata);
+        //console.log(casedata);
         db.lpush('cases', casedata);
         db.sadd('cases:' + data.creator, casedata);
         var caseurl = 'case:' + casenumber;
@@ -172,7 +172,7 @@ app.get('/cases/:start/:finish', function(req, res){
               //var sendcases = JSON.parse(data[0]);
               console.dir(sendcases);
               res.render('cases', {
-                   title: ' - Cases',
+                   title: 'RADIOCA.SE - Cases',
                    styles: ['reset.css','style.css'],
                    scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                    signed_in: req.isAuthenticated(),
@@ -208,13 +208,15 @@ app.get('/case/:id/:page', function(req, res) {
         }
         db.mget(findCase, "markdown-help", function(err, data){
             //console.dir(data);
-            if(!data[0]){return res.send("huh?", 404);} else {
+            if(!data[0]){res.redirect('back')} else {
             //console.log(data[0]);
             var theCase = JSON.parse(data[0].toString());
             var mdhelp = JSON.parse(data[1].toString());
+            var prevpage = parseInt(req.params.page, 10) - 1;
+            var nextpage = parseInt(req.params.page, 10) + 1;
             //console.dir(theCase);
             return res.render('case', {
-                title: ' - ' + theCase.title || ' - untitled',
+                title: 'RADIOCA.SE - ' + theCase.title || ' - untitled',
                 styles: ['reset.css','style.css'],
                 scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                 radios: theCase.radios || '',
@@ -225,6 +227,10 @@ app.get('/case/:id/:page', function(req, res) {
                 editfeedbacktext: editfeedbacktext,
                 signed_in: req.isAuthenticated(),
                 user: username(),
+                cid: req.params.id,
+                prevpage: prevpage,
+                nextpage: nextpage,
+                page: req.params.page,
                 editor: editor
             });
             }
@@ -235,13 +241,22 @@ app.get('/case/:id/:page', function(req, res) {
 app.get('/signed_in', function(req, res){
    var uid =  req.getAuthDetails().user.user_id;
    var userdata = JSON.stringify(req.getAuthDetails());
-   db.set('user:' + uid, userdata, function(err, data){
-       db.sismember('users', uid, function(err, data){
-           if(!data){
-               db.sadd('users', uid);
-               res.send("new user", 200);
-           }
-       });
+   //console.dir(req.getAuthDetails());
+   db.sismember('users', uid, function(err, data){
+       if(!data){
+           db.sismember('invitees', req.getAuthDetails().user.username, function(err, data){
+               if(!data){
+                   req.logout();
+                   res.send('not allowed', 403)
+               } else {
+                   db.sadd('users', uid);
+                   db.set('user:' + uid, userdata, function(err, data){});
+                   res.send("new user, first login", 200);
+               }
+           });
+       } else {
+         db.set('user:' + uid, userdata, function(err, data){});
+         res.send('OK', 200)}
    });
 });
 
@@ -285,12 +300,26 @@ app.put('/case/:id/:page', function(req, res) {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
             if(editor){
                 var data = req.body;
+                data.creator = req.getAuthDetails().user.username;
+                data.cid = req.params.id;
                 db.set('case:' + req.params.id + ':page:' + req.params.page, JSON.stringify(data));
                 console.log('saved page');
                 res.send('OK', 200)
             }
             else{res.send('FORBIDDEN', 403)};
     });
+});
+
+app.put('/case/:id/:page/delete', function(req, res){
+    console.dir('delete page triggered');
+    db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
+        if(editor){
+            db.del('case:' + req.params.id + ':page:' + req.params.page);
+            res.send('OK', 200);
+        }
+
+    })
+
 });
 
 app.get('/sign_out', function(req, res, params){

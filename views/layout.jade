@@ -2,7 +2,7 @@
 html
   head
     meta(name='viewport', content='initial-scale=1.0, width=device-width')
-    title RADIOCA.SE#{title}
+    title #{title}
     link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
     -each style in styles
       link(rel='stylesheet', href='/stylesheets/#{style}')
@@ -14,7 +14,7 @@ html
       script(type='text/javascript', src='/javascripts/#{script}')
   body
     #sl
-      .small_logo
+      a.small_logo(href='/')
         | RADIOCA.SE
     #container
       #session

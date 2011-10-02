@@ -15,12 +15,17 @@ iframe(id='editbar', src='about:none')
       textarea.mdtxt(style='display:none')
         #{text}
       .md
+  -if('#{prevpage}')
+    a(href='/case/#{cid}/#{prevpage}', style='float: left')
+      | <- prev page
+  a(href='/case/#{cid}/#{nextpage}', style='float: right')
+    |   next page ->
 #radios
   - each r in radios
     .radio
       .stack
         - each i in r.images
-          img.stack_image(src='/image/#{i}')
+          img.stack_image(src='#{i}')
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
@@ -34,6 +39,14 @@ iframe(id='editbar', src='about:none')
     #{mdhelp}
   .md
 #info
+#delete_dialog
+  form(id='deletepage', action='/case/#{cid}/#{page}/delete')
+    | Are you sure you want to delete this page?
+    br
+    button(id='deleteconfirmed', type='button')
+      | Confirm'
+    button(id='canceldelete', type='button')
+      | Cancel
 #uploadarea
   | Please choose image(s) to upload.
   br
@@ -54,6 +67,7 @@ script(type='text/javascript')
     $('#editbar').hide();
     $('#newpage').hide();
     $('.stack').children(':first').show();
+    $('#delete_dialog').hide();
     //$('#editbutton').hide();
 
     rendermd(); // renders the markdown textareas.

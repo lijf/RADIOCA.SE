@@ -60,7 +60,7 @@ function postImage(req, res){
 function postImage2(req, res){
   var day = new Date();
   var d = day.getTime().toString();
-  console.log(d);
+  //console.log(d);
   var i = 0;
   var form = new formidable.IncomingForm(),
       files = [],
@@ -68,22 +68,22 @@ function postImage2(req, res){
   //form.uploadDir = __dirname + '/img/';
   form
     .on('field', function(field, value) {
-        console.log(field, value);
+        //console.log(field, value);
         fields.push([field, value]);
     })
     .on('fileBegin', function(field, file) {
-          console.log(file.filename);
+          //console.log(file.filename);
           if(file.type='image/jpeg') {
             file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
             i ++;
           }
-          console.log(field, file);
+          //console.log(field, file);
           files.push([field, file]);
     })
     .on('end', function() {
         console.log('-> upload done');
-        console.log(util.inspect(fields));
-        console.log(util.inspect(files));
+        //console.log(util.inspect(fields));
+        //console.log(util.inspect(files));
         res.send(d + '|' + i, 200);
           // TODO: fix the image montage.
     });

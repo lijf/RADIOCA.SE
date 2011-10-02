@@ -67,7 +67,6 @@ function scrollfunction_3(){
 
 }
 
-
 function scrollfunction(){
     $('.stack > .stack_image', top.document).scroll(function(event){
     console.log('scroll');
@@ -86,7 +85,6 @@ function scrollfunction(){
     lastScrollTop = st;
     });
 }
-
 
 function scrollfunction_mw(){
     $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
@@ -174,7 +172,7 @@ function editclose(){
  $("#addstack", top.document).hide();
  $("#uploadarea", top.document).hide();
  $("#editbar", top.document).hide().attr('src', 'about:none');
- $(".stack>.deletebutton", top.document).remove();
+ $(".radio>.deletebutton", top.document).remove();
  $("#editbutton", top.document).show();
  $("#newpage").hide();
 }
@@ -183,20 +181,17 @@ function spiderpage(){
 
   var jsonpage = {};
   jsonpage.title = $("title", top.document).html();
-  // alert(jsonpage.title);
   jsonpage.radios = $(".radio", top.document).map(function(){
     var radio = {};
-    radio.img = $(this).children('.stack').attr("url");
+    radio.images = $(this).children('.stack').children('.stack_image').map(function(){
+       return($(this).attr('src'));
+    }).get();
     radio.caption = $(this).children('.caption').children('.mdtxt').val();
-    // alert(JSON.stringify(radio));
     return radio;
   }).get();
   jsonpage.texts = $(".txt>.mdtxt", top.document).map(function(){
     return($(this).val());
   }).get();
-  //jsonpage.users = [];
-  //jsonpage.users += '56831686';
-  // alert(JSON.stringify(jsonpage));  
   return jsonpage;
 }
 
@@ -205,17 +200,20 @@ function sessionButton(user){
 }
 
 var authcallback = function(data) {
-    sessionButton(data.user.username);
-    $('#twitbutt', top.document).hide();
     $.ajax({
        url: '/signed_in',
-       success: function(data){
-           if(data=='new user'){
-               $('#info').html('new user').show();
+       statusCode: {
+           200: function(){
+                sessionButton(data.user.username);
+                $('#twitbutt', top.document).hide();
+                $('#feedbackbutton').attr("id","editbutton").html("Edit");
+                if(data=='new user'){
+                $('#info').html('new user').show();}},
+           403: function(data){
+                alert('not allowed - if you feel that this is an error, please write to info@radioca.se');
            }
        }
     });
-    $('#feedbackbutton').attr("id","editbutton").html("Edit");
 };
 
 $(function(){
@@ -240,11 +238,12 @@ $(function(){
             window.open('http://twitter.com/#!/logout');
           $.ajax({
                 url: '/sign_out',
-                success: function(data){
-                    editclose();
-                    $('#editbutton').hide();
-                    $('#session').html(data);
-                }
+                statusCode: {
+                    200: function(data){
+                         editclose();
+                         $('#editbutton').hide();
+                         $('#session').html(data);
+                }}
             });
         $('#editbutton').attr("id","feedbackbutton").html("Feedback");
         $('#feedbackbutton').show();
@@ -284,7 +283,7 @@ $(function(){
       json.title = $('#title').val();
       json.icd = $('#ICD').val();
       json.private = $('#private').is(':checked');
-      alert(JSON.stringify(json));
+      //alert(JSON.stringify(json));
       $.ajax({
           url: '/newcase',
           type: 'POST',
@@ -333,15 +332,13 @@ $(function(){
     function(event){
     event.preventDefault();
     var data = spiderpage();
-    //alert(JSON.stringify(data));
     var url = $("#savepage").attr("action").toString();
-    //alert(url);
     $.ajax({
       type: 'PUT',
       url: url,
       data: data,
       success: function(msg) {
-        alert("Page Saved: " + msg);
+        //alert("Page Saved: " + msg);
       }
     });
   });
@@ -382,6 +379,31 @@ $(function(){
      }
   });
 
+  $('#canceldelete').live({
+     click: function(){
+         $('#delete_dialog', top.document).hide();
+     }
+  });
+
+  $('#deleteconfirmed').live({
+      click: function(){
+          $.ajax({
+              type: 'PUT',
+              url: $('#deletepage').attr('action'),
+              statusCode: {
+                  200: function(){
+                      alert('page deleted');
+                  }
+              }
+          });
+      }
+  });
+
+  $('#delpage').live({
+      click: function(){
+          $('#delete_dialog', top.document).show();
+      }
+  });
 
   $("#upload").live({
     click: function(){
@@ -407,10 +429,10 @@ $(function(){
     //$('.radio:last>.stack', top.document).spin();
     $('#postframe').one('load',
         function(){
-          alert("postframe triggered");
+          //alert("postframe triggered");
           var i =0;
           var url = $("iframe")[0].contentDocument.body.innerHTML.split('|');
-          alert("id" + url[0] + "images:" + url[1]);
+          //alert("id" + url[0] + "images:" + url[1]);
           while(i<url[1]){
             $('.radio:last>.stack', top.document).append(
             '<img class="stack_image" src="/image/' + url[0] + '.' + i + '"/>');
