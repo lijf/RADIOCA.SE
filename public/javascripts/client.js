@@ -371,6 +371,19 @@ $(function(){
   });
 
   $("#upload").live({
+     click: function(){
+         $('#uploadarea').hide();
+         var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
+         $('#iframe').append(iframe);
+         $('#uploadform').attr({
+             target: "postframe"
+      });
+      $('#uploadform').submit();
+     }
+  });
+
+
+  $("#upload2").live({
     click: function(){
     $('#uploadarea').hide();
     var userFile = $('#userfile').val();

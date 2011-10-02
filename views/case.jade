@@ -39,8 +39,8 @@ iframe(id='editbar', src='about:none')
   | If multiple images are uploaded together they will be combined to a stack.
   br
   br
-  form(id='uploadform')
-    input.input1(type='file', name='userfile', id='userfile', multiple='multiple')
+  form(id='uploadform', action='/image', enctype='multipart/form-data', method='post')
+    input.input1(type='file', name='fileupload', multiple='multiple')
     input.input1(id='upload', type='submit', value='Upload file(s)')
   button(id='cancelupload')
     | cancel

@@ -10,22 +10,16 @@ var express = require('express'),
     fs = require('fs'),
     requestHandlers = require("./requestHandlers"),
     sys = require('sys'),
+    form = require('connect-form'),
+    util = require('util'),
     redis = require('redis'),
     db = redis.createClient(),
-    zip = require('zip'),
-    //oauth = require('oauth');
-    easyoauth = require('easy-oauth'),
-    form = require('connect-form'),
-    redback = require('redback').use(db),
-    formidable = require('formidable'),
-    // authCheck = require('./authCheck.js');
-    util = require('util');
+    easyoauth = require('easy-oauth');
 
 
-//redis.debug_mode = true;
+redis.debug_mode = true;
 
 var app = module.exports = express.createServer(
-    form({keepExtensions: true})
 );
 
 // Configuration
@@ -132,12 +126,13 @@ app.post('/newcase', function(req, res){
    if(req.isAuthenticated()){
       var data = req.body;
       data.creator = req.getAuthDetails().user.username;
-      //console.log(data);
+      console.log(data);
       db.incr('number_of_cases', function(err, casenumber){
         //console.dir(data);
         data.cid = casenumber.toString();
         casedata=JSON.stringify(data);
-        db.lpush('cases', data);
+        console.log(casedata);
+        db.lpush('cases', casedata);
         db.sadd('cases:' + data.creator, casedata);
         var caseurl = 'case:' + casenumber;
         db.set(caseurl + ':page:1', casedata,
@@ -160,7 +155,7 @@ app.get('/cases/:start/:finish', function(req, res){
       if(req.isAuthenticated()){return req.getAuthDetails().user.username}
       else {return "0"}};
    db.lrange('cases', start, end, function(err, data){
-       if(err){res.send("error", 404)}
+       if(err){res.render('404', {layout: false})}
        else{
            if(!data[0]){
               console.dir('not found');
@@ -186,10 +181,6 @@ app.get('/cases/:start/:finish', function(req, res){
           }
     }
    });
-});
-
-app.get('/test', function(req, res) {
-    res.send('<html><body><p>Test</body></html>');
 });
 
 app.get('/case/:id/:page', function(req, res) {
@@ -357,22 +348,22 @@ app.get('/image/:id', function(req, res) {
     });
 });
 
-app.post('/image/', function(req, res){
-  console.log('POST /image/ called');
+app.post('/image', function(req, res){
+  console.log('POST /image called');
   var day = new Date();
   var d = day.getTime().toString();
   console.log(d);
   var i = 0;
-  var form_in = new formidable.IncomingForm(),
+  var form = new formidable.IncomingForm(),
       files = [],
       fields = [];
-  form_in
+  form
     .on('field', function(field, value) {
         console.log(field, value);
         fields.push([field, value]);
     })
     .on('fileBegin', function(name, file) {
-          console.log(file.filename);
+          console.log('file');
           if(file.type='image/jpeg') {
              file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
              i ++;
