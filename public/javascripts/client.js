@@ -67,7 +67,6 @@ function scrollfunction_3(){
 
 }
 
-
 function scrollfunction(){
     $('.stack > .stack_image', top.document).scroll(function(event){
     console.log('scroll');
@@ -86,7 +85,6 @@ function scrollfunction(){
     lastScrollTop = st;
     });
 }
-
 
 function scrollfunction_mw(){
     $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
@@ -161,7 +159,7 @@ function editfunctions(){
     }
   }); // hides the textbox and renders the markdown
 
-  $(".stack", top.document).append($('<button type="button" class="deletebutton">X</button>'));
+  $(".radio", top.document).append($('<button type="button" class="deletebutton">X</button>'));
     // adds deletebutton to stacks
   $("#addstack", top.document).show();
   // $('#newpage', top.document).show();
@@ -174,7 +172,7 @@ function editclose(){
  $("#addstack", top.document).hide();
  $("#uploadarea", top.document).hide();
  $("#editbar", top.document).hide().attr('src', 'about:none');
- $(".stack>.deletebutton", top.document).remove();
+ $(".radio>.deletebutton", top.document).remove();
  $("#editbutton", top.document).show();
  $("#newpage").hide();
 }
@@ -183,20 +181,17 @@ function spiderpage(){
 
   var jsonpage = {};
   jsonpage.title = $("title", top.document).html();
-  // alert(jsonpage.title);
   jsonpage.radios = $(".radio", top.document).map(function(){
     var radio = {};
-    radio.img = $(this).children('.stack').attr("url");
+    radio.images = $(this).children('.stack').children('.stack_image').map(function(){
+       return($(this).attr('src'));
+    }).get();
     radio.caption = $(this).children('.caption').children('.mdtxt').val();
-    // alert(JSON.stringify(radio));
     return radio;
   }).get();
   jsonpage.texts = $(".txt>.mdtxt", top.document).map(function(){
     return($(this).val());
   }).get();
-  //jsonpage.users = [];
-  //jsonpage.users += '56831686';
-  // alert(JSON.stringify(jsonpage));  
   return jsonpage;
 }
 
@@ -205,17 +200,20 @@ function sessionButton(user){
 }
 
 var authcallback = function(data) {
-    sessionButton(data.user.username);
-    $('#twitbutt', top.document).hide();
     $.ajax({
        url: '/signed_in',
-       success: function(data){
-           if(data=='new user'){
-               $('#info').html('new user').show();
+       statusCode: {
+           200: function(){
+                sessionButton(data.user.username);
+                $('#twitbutt', top.document).hide();
+                $('#feedbackbutton').attr("id","editbutton").html("Edit");
+                if(data=='new user'){
+                $('#info').html('new user').show();}},
+           403: function(data){
+                alert('not allowed - if you feel that this is an error, please write to info@radioca.se');
            }
        }
     });
-    $('#feedbackbutton').attr("id","editbutton").html("Edit");
 };
 
 $(function(){
@@ -240,11 +238,12 @@ $(function(){
             window.open('http://twitter.com/#!/logout');
           $.ajax({
                 url: '/sign_out',
-                success: function(data){
-                    editclose();
-                    $('#editbutton').hide();
-                    $('#session').html(data);
-                }
+                statusCode: {
+                    200: function(data){
+                         editclose();
+                         $('#editbutton').hide();
+                         $('#session').html(data);
+                }}
             });
         $('#editbutton').attr("id","feedbackbutton").html("Feedback");
         $('#feedbackbutton').show();
@@ -282,8 +281,9 @@ $(function(){
   $("#createcase").click(function(){
       var json = {};
       json.title = $('#title').val();
-      json.icd = $('#icd').val();
-      // alert(JSON.stringify(json));
+      json.icd = $('#ICD').val();
+      json.private = $('#private').is(':checked');
+      //alert(JSON.stringify(json));
       $.ajax({
           url: '/newcase',
           type: 'POST',
@@ -332,15 +332,13 @@ $(function(){
     function(event){
     event.preventDefault();
     var data = spiderpage();
-    //alert(JSON.stringify(data));
     var url = $("#savepage").attr("action").toString();
-    //alert(url);
     $.ajax({
       type: 'PUT',
       url: url,
       data: data,
       success: function(msg) {
-        alert("Page Saved: " + msg);
+        //alert("Page Saved: " + msg);
       }
     });
   });
@@ -369,39 +367,80 @@ $(function(){
     }
   });
 
+  $("#upload_new").live({
+     click: function(){
+         $('#uploadarea').hide();
+         var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
+         $('#iframe').append(iframe);
+         $('#uploadform').attr({
+             target: "postframe"
+      });
+      $('#uploadform').submit();
+     }
+  });
+
+  $('#canceldelete').live({
+     click: function(){
+         $('#delete_dialog', top.document).hide();
+     }
+  });
+
+  $('#deleteconfirmed').live({
+      click: function(){
+          $.ajax({
+              type: 'PUT',
+              url: $('#deletepage').attr('action'),
+              statusCode: {
+                  200: function(){
+                      alert('page deleted');
+                  }
+              }
+          });
+      }
+  });
+
+  $('#delpage').live({
+      click: function(){
+          $('#delete_dialog', top.document).show();
+      }
+  });
+
   $("#upload").live({
     click: function(){
     $('#uploadarea').hide();
     var userFile = $('#userfile').val();
-    var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
-    $('#iframe').append(iframe);
-
     $('#uploadform').attr({
       action: "/image/",
       method: "POST",
-      userfile: $('#userfile').val(),
+      userfile: userFile,
       enctype: "multipart/form-data",
       encoding: "multipart/form-data",
       target: "postframe"
     });
     $('#uploadform').submit();
-    // create the new div, when image processed, set it as background
-    $('#radios', top.document).append(
-      "<div class='radio'><div url='', class='stack img512'></div>" +
+    $("<div class='radio'><div class='stack'></div>" +
       "<div class='caption'>" + 
       "<textarea class='mdtxt' style='display:none'>" +
       "(double-click to change caption) </textarea>" +
-      "<div class='md'></div></div></div>");
+      "<div class='md'></div></div></div>").insertBefore('#addstack');
     rendermd();
-    $('.radio:last>.stack', top.document).append($('<button type="button" class="deletebutton">X</button>'));
+    $('.radio:last', top.document).append($('<button type="button" class="deletebutton">X</button>'));
 
-    $('.radio:last>.stack', top.document).spin();
-    $('#postframe').load(
+    //$('.radio:last>.stack', top.document).spin();
+    $('#postframe').one('load',
         function(){
-          var url = $("iframe")[0].contentDocument.body.innerHTML;
-          $('.radio:last>.stack', top.document).attr('url', url);
+          //alert("postframe triggered");
+          var i =0;
+          var url = $("iframe")[0].contentDocument.body.innerHTML.split('|');
+          //alert("id" + url[0] + "images:" + url[1]);
+          while(i<url[1]){
+            $('.radio:last>.stack', top.document).append(
+            '<img class="stack_image" src="/image/' + url[0] + '.' + i + '"/>');
+              i++;
           // alert(imgid);
-          scrollfunction();
+          }
+          scrollfunction_mw();
+          $('.stack:last').children(':first').show();
           //editfunctions();
         });
      }

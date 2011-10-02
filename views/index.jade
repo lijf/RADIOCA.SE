@@ -1,8 +1,6 @@
-#session
-  button(id='twitbutt')
-    | Sign in with twitter
 #indexpage
-  h1.big_logo RADIOCA.SE
+  br
+  .big_logo RADIOCA.SE
 
   img(src='/images/OldRadio_2_320.jpg')
 
@@ -10,19 +8,10 @@
 
   br
 
-  a(href='/cases') List Cases
+  a(href='/cases/0/-1') List Cases
   |  -
   a(href='/newcase') Create Case
-
-#footer
-  a(href='/')
-    | Home
-  | -
-  a(href='/readme')
-    | Readme
-  | -
-  a(href='/about')
-    | About
-  | -
-  a(href='mailto:info@radioca.se')
-    | Contact
+script(type='text/javascript')
+  $(function(){
+    $('#sl').hide();
+  });

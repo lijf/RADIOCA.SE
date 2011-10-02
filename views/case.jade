@@ -1,6 +1,5 @@
-#session
-  button(id='twitbutt')
-    | Sign in with twitter
+#iframe(style='width: 0px; height: 0px; display:none')
+  iframe(name="postframe", id="postframe", class="hidden", src="about:none")
 #pageinfo
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
@@ -9,58 +8,56 @@
     #{editfeedbacktext}
   button(id='newpage', type='button')
     | New Page
+iframe(id='editbar', src='about:none')
 #texts
   -each text in texts
     .txt
       textarea.mdtxt(style='display:none')
         #{text}
       .md
+  -if('#{prevpage}')
+    a(href='/case/#{cid}/#{prevpage}', style='float: left')
+      | <- prev page
+  a(href='/case/#{cid}/#{nextpage}', style='float: right')
+    |   next page ->
 #radios
   - each r in radios
     .radio
       .stack
         - each i in r.images
-          img.stack_image(src='/image/#{i}')
+          img.stack_image(src='#{i}')
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-      button(id='addstack')
-        | +
+  button(id='addstack')
+    | +
 #markdown-help
   button(id='closehelp')
     | X
   textarea.mdtxt(style='display:none')
     #{mdhelp}
   .md
-iframe(id='editbar', src='about:none')
 #info
+#delete_dialog
+  form(id='deletepage', action='/case/#{cid}/#{page}/delete')
+    | Are you sure you want to delete this page?
+    br
+    button(id='deleteconfirmed', type='button')
+      | Confirm'
+    button(id='canceldelete', type='button')
+      | Cancel
 #uploadarea
   | Please choose image(s) to upload.
   br
   | If multiple images are uploaded together they will be combined to a stack.
   br
   br
-  form(id ='uploadform')
+  form(id='uploadform')
     input.input1(type='file', name='userfile', id='userfile', multiple='multiple')
     input.input1(id='upload', type='submit', value='Upload file(s)')
   button(id='cancelupload')
     | cancel
-#iframe(style='width: 0px; height: 0px; display:none')
-
-#footer
-  a(href='/')
-    | Home
-  | -
-  a(href='/readme')
-    | Readme
-  | -
-  a(href='/about')
-    | About
-  | -
-  a(href='mailto:info@radioca.se')
-    | Contact
-    
 script(type='text/javascript')
   $(function(){
     $('#markdown-help').hide();
@@ -70,6 +67,7 @@ script(type='text/javascript')
     $('#editbar').hide();
     $('#newpage').hide();
     $('.stack').children(':first').show();
+    $('#delete_dialog').hide();
     //$('#editbutton').hide();
 
     rendermd(); // renders the markdown textareas.

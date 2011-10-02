@@ -2,7 +2,7 @@
 html
   head
     meta(name='viewport', content='initial-scale=1.0, width=device-width')
-    title RADIOCA.SE#{title}
+    title #{title}
     link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
     -each style in styles
       link(rel='stylesheet', href='/stylesheets/#{style}')
@@ -13,5 +13,28 @@ html
     -each script in scripts
       script(type='text/javascript', src='/javascripts/#{script}')
   body
+    #sl
+      a.small_logo(href='/')
+        | RADIOCA.SE
     #container
+      #session
+        button(id='twitbutt')
+          | Sign in with twitter
       != body // this renders the body of an individual view
+    #footer
+      a(href='/')
+        | Home
+      | -
+      a(href='/about')
+        | About
+      | -
+      a(href='/readme')
+        | Readme
+      | -
+      a(href='mailto:info@radioca.se')
+        | Contact
+script(type='text/javascript')
+  $(function(){
+    var user = '#{user}';
+    if(#{signed_in}){sessionButton('#{user}')};
+  });

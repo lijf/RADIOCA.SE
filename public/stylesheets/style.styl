@@ -1,13 +1,12 @@
 #container
     margin 0 auto
     width 90%
-    padding-top 5px
 #indexpage
     text-align center
 #newcase
     margins 0 auto
 .big_logo
-    color #bbb
+    color #bca
     font-family "Orbitron"
     font-weight bold
     font-size 50pt
@@ -16,12 +15,24 @@
     font-family "Damion"
     font-size 40pt
     color #e90
+#sl
+    position fixed
+    height 0
+    width 20px
+    -webkit-transform rotate(-90deg)
+    -moz-transform rotate(-90deg)
+    margin-top 110px
 .small_logo
     font-family "Orbitron"
     text-decoration none
-    float left
-    margin 4px
-    color #bbb
+    color #bca
+#delete_dialog
+    position fixed
+    left 30%
+    top 50%
+    background black
+    width 35%
+    padding 70px
 #footer
     padding 30px 0
     text-align center
@@ -36,6 +47,8 @@
     float left
     clear left
     width 50%
+.radio
+    position relative
 .stack
     position relative
     overflow hidden
@@ -55,12 +68,13 @@
 #texts
     width 50%
     float right
-    clear left
+    clear both
 .txt
     background-image url("/images/paper/Texture0213.jpg")
 @media screen and (max-width: 450px)
+    #sl
+        display none
     #container
-        padding-top 60px
         width 100%
     #session
         top 5px
@@ -89,24 +103,15 @@ textarea
     padding 10px 20px
 #markdown-help
     position absolute
-    left 5%
-    top 30px
-    width 512px
+    top 62px
+    width 45%
     background-image url("/images/paper/Texture0214.jpg")
 #editbar
-    position fixed
-    border none
-    top 0px
-    left 0px
-    margin-top 0px
     height 30px
     width 100%
-#controls
-    position relative
+    overflow hidden
 #savepage
-    position fixed
-    left 355px
-    top 5px
+    margin-top -5px
 #uploadarea
     position fixed
     left 17%

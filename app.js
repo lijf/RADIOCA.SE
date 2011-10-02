@@ -10,13 +10,17 @@ var express = require('express'),
     fs = require('fs'),
     requestHandlers = require("./requestHandlers"),
     sys = require('sys'),
-    db = require('redis').createClient(),
-    zip = require('zip'),
-    //oauth = require('oauth');
+    form = require('connect-form'),
+    util = require('util'),
+    redis = require('redis'),
+    db = redis.createClient(),
     easyoauth = require('easy-oauth');
-    // authCheck = require('./authCheck.js');
 
-var app = module.exports = express.createServer();
+
+//redis.debug_mode = true;
+
+var app = module.exports = express.createServer(
+);
 
 // Configuration
 
@@ -93,19 +97,28 @@ function include(arr,obj) {
 // Routes
 
 app.get('/', function(req, res){
+    var username = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+        else {return "0"}};
     res.render('index', {
-        title: ' - Home',
+        title: 'RADIOCA.SE - Home',
         styles: ['reset.css','style.css'],
-        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
-
+        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+        signed_in: req.isAuthenticated(),
+        user: username()
     });
 });
 
 app.get('/newcase', function(req, res){
+  var username = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+        else {return "0"}};
   res.render ('newcase',{
-      title: ' - create new case',
+      title: 'RADIOCA.SE - create new case',
       styles: ['reset.css','style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js']
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
   });
 });
 
@@ -113,11 +126,17 @@ app.post('/newcase', function(req, res){
    if(req.isAuthenticated()){
       var data = req.body;
       data.creator = req.getAuthDetails().user.username;
-      console.log(data);
+      //console.log(data);
+      data.texts = ['Double click to add text'];
       db.incr('number_of_cases', function(err, casenumber){
-        console.dir(data);
+        //console.dir(data);
+        data.cid = casenumber.toString();
+        casedata=JSON.stringify(data);
+        //console.log(casedata);
+        db.lpush('cases', casedata);
+        db.sadd('cases:' + data.creator, casedata);
         var caseurl = 'case:' + casenumber;
-        db.set(caseurl + ':page:1', JSON.stringify(data),
+        db.set(caseurl + ':page:1', casedata,
             function(err){
                 db.sadd(caseurl + ':users', req.getAuthDetails().user.user_id,
                     function(){
@@ -130,23 +149,39 @@ app.post('/newcase', function(req, res){
    else{res.send('FORBIDDEN', 403)};
 });
 
-app.get('/ziptest', function(req, res){
-    var zipfile = fs.readFileSync(__dirname + "/SD.zip");
-    var reader = zip.Reader(zipfile);
-    console.log(reader.readLocalFileHeader());
-    console.log(reader.readDataDescriptor());
-    var i = 0;
-    reader.forEach(function(entry){
-            var matchimage = /\.(jpg|jpeg|png|gif)$/i;
-            if(matchimage.test(entry.getName())){
-              console.log(entry.getName());
-            }
-            console.log(i++);
-        });
-});
-
-app.get('/test', function(req, res) {
-    res.send('<html><body><p>Test</body></html>');
+app.get('/cases/:start/:finish', function(req, res){
+   var start = parseInt(req.params.start, 10);
+   var end = parseInt(req.params.finish, 10);
+   var username = function(){
+      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+      else {return "0"}};
+   db.lrange('cases', start, end, function(err, data){
+       if(err){res.render('404', {layout: false})}
+       else{
+           if(!data[0]){
+              console.dir('not found');
+              res.render('404', {layout: false });
+          }else{
+           var i = 0;
+           var sendcases = [];
+           while(data[i]){
+               sendcases[i] = JSON.parse(data[i].toString());
+               i++;
+           }
+              //console.dir(sendcases);
+              //var sendcases = JSON.parse(data[0]);
+              console.dir(sendcases);
+              res.render('cases', {
+                   title: 'RADIOCA.SE - Cases',
+                   styles: ['reset.css','style.css'],
+                   scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
+                   signed_in: req.isAuthenticated(),
+                   user: username(),
+                   cases: sendcases
+            });
+          }
+    }
+   });
 });
 
 app.get('/case/:id/:page', function(req, res) {
@@ -173,12 +208,15 @@ app.get('/case/:id/:page', function(req, res) {
         }
         db.mget(findCase, "markdown-help", function(err, data){
             //console.dir(data);
-            if(!data[0]){return res.send("huh?", 404);} else {
+            if(!data[0]){res.redirect('back')} else {
             //console.log(data[0]);
             var theCase = JSON.parse(data[0].toString());
             var mdhelp = JSON.parse(data[1].toString());
+            var prevpage = parseInt(req.params.page, 10) - 1;
+            var nextpage = parseInt(req.params.page, 10) + 1;
+            //console.dir(theCase);
             return res.render('case', {
-                title: ' - ' + theCase.title || ' - untitled',
+                title: 'RADIOCA.SE - ' + theCase.title || ' - untitled',
                 styles: ['reset.css','style.css'],
                 scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                 radios: theCase.radios || '',
@@ -189,6 +227,10 @@ app.get('/case/:id/:page', function(req, res) {
                 editfeedbacktext: editfeedbacktext,
                 signed_in: req.isAuthenticated(),
                 user: username(),
+                cid: req.params.id,
+                prevpage: prevpage,
+                nextpage: nextpage,
+                page: req.params.page,
                 editor: editor
             });
             }
@@ -199,17 +241,29 @@ app.get('/case/:id/:page', function(req, res) {
 app.get('/signed_in', function(req, res){
    var uid =  req.getAuthDetails().user.user_id;
    var userdata = JSON.stringify(req.getAuthDetails());
-   db.set('user:' + uid, userdata, function(err, data){
-       db.sismember('users', uid, function(err, data){
-           if(!data){
-               db.sadd('users', uid);
-               res.send("new user", 200);
-           }
-       });
+   //console.dir(req.getAuthDetails());
+   db.sismember('users', uid, function(err, data){
+       if(!data){
+           db.sismember('invitees', req.getAuthDetails().user.username, function(err, data){
+               if(!data){
+                   req.logout();
+                   res.send('not allowed', 403)
+               } else {
+                   db.sadd('users', uid);
+                   db.set('user:' + uid, userdata, function(err, data){});
+                   res.send("new user, first login", 200);
+               }
+           });
+       } else {
+         db.set('user:' + uid, userdata, function(err, data){});
+         res.send('OK', 200)}
    });
 });
 
 app.get('/case/:id/:page/edit', function(req, res) {
+    var username = function(){
+        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+        else {return "0"}};
     console.dir(req.isAuthenticated());
     console.dir(req.getAuthDetails().user.user_id);
     console.dir(req.getAuthDetails());
@@ -230,7 +284,9 @@ app.get('/case/:id/:page/edit', function(req, res) {
                     styles: ['style.css'],
                     scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
                     caseid: req.params.id,
-                    page: req.params.page
+                    page: req.params.page,
+                    signed_in: req.isAuthenticated(),
+                    user: username()
                 });
                 }
                 else {res.send("You are not allowed to edit this page but you can ask the author to add you as an editor", 200)}
@@ -244,6 +300,8 @@ app.put('/case/:id/:page', function(req, res) {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
             if(editor){
                 var data = req.body;
+                data.creator = req.getAuthDetails().user.username;
+                data.cid = req.params.id;
                 db.set('case:' + req.params.id + ':page:' + req.params.page, JSON.stringify(data));
                 console.log('saved page');
                 res.send('OK', 200)
@@ -252,32 +310,59 @@ app.put('/case/:id/:page', function(req, res) {
     });
 });
 
+app.put('/case/:id/:page/delete', function(req, res){
+    console.dir('delete page triggered');
+    db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
+        if(editor){
+            db.del('case:' + req.params.id + ':page:' + req.params.page);
+            res.send('OK', 200);
+        }
+
+    })
+
+});
+
 app.get('/sign_out', function(req, res, params){
     req.logout();
     res.send('<button id="twitbutt">Sign in with twitter</button>');
 });
 
 app.get('/readme', function(req, res){
+   var username = function(){
+     if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+     else {return "0"}};
    res.render('readme',{
       title: " - README",
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
    });
 });
 
 app.get('/colophon', function(req, res){
+   var username = function(){
+     if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+     else {return "0"}};
    res.render('colophon',{
       title: ' - Colophon',
       styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js']
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
    });
 });
 
 app.get('/about', function(req, res){
+   var username = function(){
+     if(req.isAuthenticated()){return req.getAuthDetails().user.username}
+     else {return "0"}};
    res.render('about',{
       title: " - About",
       styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js']
+      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
+      signed_in: req.isAuthenticated(),
+      user: username()
    });
 });
 
@@ -293,10 +378,42 @@ app.get('/image/:id', function(req, res) {
     });
 });
 
+app.post('/image_new', function(req, res){
+  console.log('POST /image called');
+  var day = new Date();
+  var d = day.getTime().toString();
+  console.log(d);
+  var i = 0;
+  var form = new formidable.IncomingForm(),
+      files = [],
+      fields = [];
+  form
+    .on('field', function(field, value) {
+        console.log(field, value);
+        fields.push([field, value]);
+    })
+    .on('fileBegin', function(name, file) {
+          console.log('file');
+          if(file.type='image/jpeg') {
+             file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
+             i ++;
+          }
+          console.log(field, file);
+          files.push([field, file]);
+    })
+    .on('end', function() {
+        console.log('-> upload done');
+        console.log(util.inspect(fields));
+        console.log(util.inspect(files));
+          // TODO: fix the image montage.
+    });
+});
+
+
 app.post('/image/', function(req, res) {
     console.log("POST /image/ called");
     if(req.isAuthenticated()){
-        requestHandlers.postImage2(req,res, db);
+        requestHandlers.postImage2(req,res);
     }
     else {res.send("not logged in", 200)}
 });

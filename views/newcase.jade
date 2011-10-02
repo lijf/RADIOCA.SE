@@ -1,6 +1,3 @@
-#session
-  button(id='twitbutt')
-    | Sign in with twitter
 form(id='newcase')
   h3 Create new case
   | Title
@@ -11,7 +8,7 @@ form(id='newcase')
   input(type='text', name='ICD', id='ICD')
   br
   | Private 
-  input(type='checkbox', name='private', id='private, value='private')
+  input(type='checkbox', name='private', id='private', value='private')
   br
   button(id='createcase', type='button')
     | Create Case
@@ -19,17 +16,5 @@ form(id='newcase')
   br
   sup
     | * Swedish users can find ICD-codes at
-  a(href='http://www.icd.nu')
-    | icd.nu
-#footer
-  a(href='/')
-    | Home
-  | -
-  a(href='/readme')
-    | Readme
-  | -
-  a(href='/about')
-    | About
-  | -
-  a(href='mailto:info@radioca.se')
-    | Contact
+    a(href='http://www.icd.nu')
+      | icd.nu

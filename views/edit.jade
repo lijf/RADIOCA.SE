@@ -6,9 +6,14 @@
     input(id='save', type='submit', value='Save page')
     button(id='newpage', type='button')
       | New Page
+    button(id='delpage', type='button')
+      | Delete Page
     button(id='done', type='button')
       | Done
 script(type='text/javascript')
   $(function(){
+    $('#session').hide();
+    $('#footer').hide();
+    $('#sl').hide();
     editfunctions(); //activates edit functionality when page is loaded
   });
