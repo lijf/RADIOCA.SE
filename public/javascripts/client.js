@@ -161,7 +161,7 @@ function editfunctions(){
     }
   }); // hides the textbox and renders the markdown
 
-  $(".stack", top.document).append($('<button type="button" class="deletebutton">X</button>'));
+  $(".radio", top.document).append($('<button type="button" class="deletebutton">X</button>'));
     // adds deletebutton to stacks
   $("#addstack", top.document).show();
   // $('#newpage', top.document).show();
@@ -387,8 +387,6 @@ $(function(){
     click: function(){
     $('#uploadarea').hide();
     var userFile = $('#userfile').val();
-    var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
-    $('#iframe').append(iframe);
     $('#uploadform').attr({
       action: "/image/",
       method: "POST",
@@ -398,23 +396,30 @@ $(function(){
       target: "postframe"
     });
     $('#uploadform').submit();
-    // create the new div, when image processed, set it as background
     $('#radios', top.document).append(
-      "<div class='radio'><div url='', class='stack img512'></div>" +
+      "<div class='radio'><div class='stack'></div>" +
       "<div class='caption'>" + 
       "<textarea class='mdtxt' style='display:none'>" +
       "(double-click to change caption) </textarea>" +
       "<div class='md'></div></div></div>");
     rendermd();
-    $('.radio:last>.stack', top.document).append($('<button type="button" class="deletebutton">X</button>'));
+    $('.radio:last', top.document).append($('<button type="button" class="deletebutton">X</button>'));
 
-    $('.radio:last>.stack', top.document).spin();
-    $('#postframe').load(
+    //$('.radio:last>.stack', top.document).spin();
+    $('#postframe').one('load',
         function(){
-          var url = $("iframe")[0].contentDocument.body.innerHTML;
-          $('.radio:last>.stack', top.document).attr('url', url);
+          alert("postframe triggered");
+          var i =0;
+          var url = $("iframe")[0].contentDocument.body.innerHTML.split('|');
+          alert("id" + url[0] + "images:" + url[1]);
+          while(i<url[1]){
+            $('.radio:last>.stack', top.document).append(
+            '<img class="stack_image" src="/image/' + url[0] + '.' + i + '"/>');
+              i++;
           // alert(imgid);
+          }
           scrollfunction_mw();
+          $('.stack:last').children(':first').show();
           //editfunctions();
         });
      }
