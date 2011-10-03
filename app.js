@@ -216,7 +216,7 @@ app.get('/case/:id/:page', function(req, res) {
             var nextpage = parseInt(req.params.page, 10) + 1;
             //console.dir(theCase);
             return res.render('case', {
-                title: 'RADIOCA.SE - ' + theCase.title || ' - untitled',
+                title: theCase.title || ' - untitled',
                 styles: ['reset.css','style.css'],
                 scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                 radios: theCase.radios || '',
