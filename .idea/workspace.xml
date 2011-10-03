@@ -67,7 +67,7 @@
       <file leaf-file-name="readme.jade" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/views/readme.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="552" selection-start="3680" selection-end="3680" vertical-scroll-proportion="0.6973501">
+            <state line="13" column="153" selection-start="3150" selection-end="3150" vertical-scroll-proportion="0.33472803">
               <folding />
             </state>
           </provider>
@@ -530,7 +530,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/views/readme.jade">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="552" selection-start="3680" selection-end="3680" vertical-scroll-proportion="0.6973501">
+        <state line="13" column="153" selection-start="3150" selection-end="3150" vertical-scroll-proportion="0.33472803">
           <folding />
         </state>
       </provider>
