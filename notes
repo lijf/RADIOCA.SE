@@ -1,5 +1,0 @@
-get number of files
-get imagesize with gm
-make montages 30000/imagewidth images wide (or maybe high) - move up/down
-remove uploaded images
-return id and number of imagemontages to browser for drawing the page
