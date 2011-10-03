@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805a49d8-4f6b-4661-9360-c1fcdd641da4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/readme.jade" afterPath="$PROJECT_DIR$/views/readme.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
     </list>
     <ignored path="express-radicase.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -55,19 +55,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="app.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="6" selection-start="327" selection-end="327" vertical-scroll-proportion="0.0">
+            <state line="355" column="31" selection-start="12103" selection-end="12103" vertical-scroll-proportion="0.8025568">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="readme.jade" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="readme.jade" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/readme.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="445" selection-start="1377" selection-end="1377" vertical-scroll-proportion="0.27894002">
+            <state line="5" column="445" selection-start="1377" selection-end="1377" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -137,8 +137,8 @@
         <option value="$PROJECT_DIR$/public/stylesheets/style.styl" />
         <option value="$PROJECT_DIR$/views/case.jade" />
         <option value="$PROJECT_DIR$/public/javascripts/client.js" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/views/readme.jade" />
+        <option value="$PROJECT_DIR$/app.js" />
       </list>
     </option>
   </component>
@@ -521,16 +521,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
+    <entry file="file://$PROJECT_DIR$/views/readme.jade">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="6" selection-start="327" selection-end="327" vertical-scroll-proportion="0.0">
+        <state line="5" column="445" selection-start="1377" selection-end="1377" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/readme.jade">
+    <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="445" selection-start="1377" selection-end="1377" vertical-scroll-proportion="0.27894002">
+        <state line="355" column="31" selection-start="12103" selection-end="12103" vertical-scroll-proportion="0.8025568">
           <folding />
         </state>
       </provider>

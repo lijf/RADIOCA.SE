@@ -332,7 +332,7 @@ app.get('/readme', function(req, res){
      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
      else {return "0"}};
    res.render('readme',{
-      title: " - README",
+      title: "RADIOCA.SE - README",
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
       signed_in: req.isAuthenticated(),
@@ -345,7 +345,7 @@ app.get('/colophon', function(req, res){
      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
      else {return "0"}};
    res.render('colophon',{
-      title: ' - Colophon',
+      title: 'RADIOCA.SE - Colophon',
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
       signed_in: req.isAuthenticated(),
@@ -358,7 +358,7 @@ app.get('/about', function(req, res){
      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
      else {return "0"}};
    res.render('about',{
-      title: " - About",
+      title: "RADIOCA.SE - About",
       styles: ['style.css'],
       scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
       signed_in: req.isAuthenticated(),
