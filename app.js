@@ -296,6 +296,22 @@ app.get('/case/:id/:page/edit', function(req, res) {
     else {res.send("Please log in to edit pages", 200)}
 });
 
+app.put('/case/:id/newpage', function(req, res){
+  console.log('newpage triggered');
+  db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
+    if(editor){
+        var page = 2;
+        var cid = req.params.id;
+        var pagedata = req.body;
+        pagedata.texts = ['Double click to add text'];
+        pagedata.creator = req.getAuthDetails().user.username;
+        pagedata.cid = req.params.id;
+        requestHandlers.newpage(req, res, cid, page, db, pagedata);
+    }
+    else{res.send('FORBIDDEN', 403)};
+  });
+});
+
 app.put('/case/:id/:page', function(req, res) {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
             if(editor){

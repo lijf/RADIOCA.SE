@@ -106,5 +106,23 @@ function postImage2(req, res){
     });
 }
 
+function newpage(req, res, cid, page, db, pagedata){
+            var trypage = 'case:' + cid + ':page:' + page;
+            db.get(trypage, function(err, data){
+                if(!data){
+                    db.set(trypage, JSON.stringify(pagedata));
+                    console.log('OK, created page: ' + trypage);
+                    var sendurl = '/case/' + cid + '/' + page;
+                    // TODO fix redirect after new page creation.
+                    //console.dir(sendurl);
+                    //res.send(sendurl.toString(), 200);
+                } else {
+                    page++;
+                    newpage(req, res, cid, page, db, pagedata);
+                }
+            });
+        }
+
+exports.newpage = newpage;
 exports.postImage = postImage;
 exports.postImage2 = postImage2;
