@@ -174,7 +174,6 @@ function editclose(){
  $("#editbar", top.document).hide().attr('src', 'about:none');
  $(".radio>.deletebutton", top.document).remove();
  $("#editbutton", top.document).show();
- $("#newpage").hide();
 }
 
 function spiderpage(){
@@ -250,13 +249,12 @@ $(function(){
         }
   });
 
-  $("#newpage").live({
-      click: function(){
+  $("#newpage").click(function(){
         var pathname=parent.window.location.pathname.split('/');
         var json = {};
         json.title = $("title", top.document).html();
-        var pageno=parseInt(pathname[3])+1;
-        var targeturl = '/case/' + pathname[2] + '/' + pageno;
+        //var pageno=parseInt(pathname[3])+1;
+        var targeturl = '/case/' + pathname[2] + '/newpage';
         $.ajax({
             url: targeturl,
             type: 'PUT',
@@ -267,15 +265,13 @@ $(function(){
                     alert('page not found')},
                 200: function() {
                     alert('OK - created new page');
-                    parent.change_url(targeturl);
+                    //parent.change_url();
                     },
                 403: function(){
                     alert('Forbidden')
                 }
-
             }
         });
-      }
   });
 
   $("#createcase").click(function(){
@@ -393,6 +389,7 @@ $(function(){
               statusCode: {
                   200: function(){
                       alert('page deleted');
+                      parent.window.history.go(-2);
                   }
               }
           });
