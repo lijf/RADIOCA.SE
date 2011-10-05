@@ -4,14 +4,16 @@ html
     meta(name='viewport', content='initial-scale=1.0, width=device-width')
     title #{title}
     link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
-    -each style in styles
-      link(rel='stylesheet', href='/stylesheets/#{style}')
+    link(rel='stylesheet', href='/stylesheets/reset.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
 
     script(src = '/javascripts/jquery-latest.js')
     script(src = '/auth/client')
     script(src = 'http://platform.twitter.com/widgets.js')
-    -each script in scripts
-      script(type='text/javascript', src='/javascripts/#{script}')
+    script(src = '/javascripts/jquery.mousewheel.min.js')
+    script(src = '/javascripts/spin.js')
+    script(src = '/javascripts/showdown.js')
+    script(src = '/javascripts/client.js')
   body
     #sl
       a(href='/')
