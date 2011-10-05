@@ -1,11 +1,13 @@
-br
-br
-h1.casesh1 Cases
-br
-ul
-- each c in cases
-  li.casesli
-    a(href='/case/#{c.cid}/1') #{c.title}
-    |  by:
-    a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
-      @#{c.creator}
+#cases
+  h1 Cases
+  #cases_lc
+    - each c in cases
+      a(href='/case/#{c.cid}/1') #{c.title}
+      |   
+      br
+  #cases_rc
+    - each c in cases
+      | by:
+      a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
+        @#{c.creator}
+      br
