@@ -110,6 +110,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/newcase', function(req, res){
+  if(req.isAuthenticated()){
   var username = function(){
         if(req.isAuthenticated()){return req.getAuthDetails().user.username}
         else {return "0"}};
@@ -120,6 +121,7 @@ app.get('/newcase', function(req, res){
       signed_in: req.isAuthenticated(),
       user: username()
   });
+  } else {res.redirect('/')}
 });
 
 app.post('/newcase', function(req, res){
@@ -150,6 +152,7 @@ app.post('/newcase', function(req, res){
 });
 
 app.get('/cases/:start/:finish', function(req, res){
+ if(req.isAuthenticated()){
    var start = parseInt(req.params.start, 10);
    var end = parseInt(req.params.finish, 10);
    var username = function(){
@@ -182,9 +185,11 @@ app.get('/cases/:start/:finish', function(req, res){
           }
     }
    });
+ }else{ res.redirect('/') }
 });
 
 app.get('/case/:id/:page', function(req, res) {
+  if(req.isAuthenticated()){
     console.log('GET case/' + req.params.id + '/' + req.params.page);
     var findCase = "case:" + req.params.id + ":page:" + req.params.page;
     var uid = function(){
@@ -236,6 +241,7 @@ app.get('/case/:id/:page', function(req, res) {
             }
           });
     });
+  }else{res.redirect('/')}
  });
 
 app.get('/signed_in', function(req, res){
@@ -261,6 +267,7 @@ app.get('/signed_in', function(req, res){
 });
 
 app.get('/case/:id/:page/edit', function(req, res) {
+  if(req.isAuthenticated()){
     var username = function(){
         if(req.isAuthenticated()){return req.getAuthDetails().user.username}
         else {return "0"}};
@@ -294,6 +301,7 @@ app.get('/case/:id/:page/edit', function(req, res) {
         });
     }
     else {res.send("Please log in to edit pages", 200)}
+  }else{res.redirect('/')}
 });
 
 app.put('/case/:id/newpage', function(req, res){
@@ -383,6 +391,7 @@ app.get('/about', function(req, res){
 });
 
 app.get('/image/:id', function(req, res) {
+    if(req.isAuthenticated()){
     var image = __dirname + '/img/' + req.params.id + '.jpg';
     fs.readFile(image, "binary", function(error, file) {
         if (error){ return res.send("huh?", 404);} else {
@@ -392,6 +401,7 @@ app.get('/image/:id', function(req, res) {
             res.end();
         }
     });
+    }else{res.redirect('/')}
 });
 
 app.post('/image_new', function(req, res){
