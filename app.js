@@ -102,8 +102,6 @@ app.get('/', function(req, res){
         else {return "0"}};
     res.render('index', {
         title: 'RADIOCA.SE - Home',
-        styles: ['reset.css','style.css'],
-        scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
         signed_in: req.isAuthenticated(),
         user: username()
     });
@@ -111,16 +109,11 @@ app.get('/', function(req, res){
 
 app.get('/newcase', function(req, res){
   if(req.isAuthenticated()){
-  var username = function(){
-        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
-        else {return "0"}};
-  res.render ('newcase',{
-      title: 'RADIOCA.SE - create new case',
-      styles: ['reset.css','style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
-      signed_in: req.isAuthenticated(),
-      user: username()
-  });
+      res.render ('newcase',{
+          title: 'RADIOCA.SE - create new case',
+          signed_in: req.isAuthenticated(),
+          user: req.getAuthDetails().user.username
+      });
   } else {res.redirect('/')}
 });
 
@@ -155,9 +148,6 @@ app.get('/cases/:start/:finish', function(req, res){
  if(req.isAuthenticated()){
    var start = parseInt(req.params.start, 10);
    var end = parseInt(req.params.finish, 10);
-   var username = function(){
-      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
-      else {return "0"}};
    db.lrange('cases', start, end, function(err, data){
        if(err){res.render('404', {layout: false})}
        else{
@@ -176,10 +166,8 @@ app.get('/cases/:start/:finish', function(req, res){
               console.dir(sendcases);
               res.render('cases', {
                    title: 'RADIOCA.SE - Cases',
-                   styles: ['reset.css','style.css'],
-                   scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                    signed_in: req.isAuthenticated(),
-                   user: username(),
+                   user: req.getAuthDetails().user.username,
                    cases: sendcases
             });
           }
@@ -192,18 +180,12 @@ app.get('/case/:id/:page', function(req, res) {
   if(req.isAuthenticated()){
     console.log('GET case/' + req.params.id + '/' + req.params.page);
     var findCase = "case:" + req.params.id + ":page:" + req.params.page;
-    var uid = function(){
-        if(req.isAuthenticated()){return req.getAuthDetails().user.user_id}
-        else {return "0"}};
-    var username = function(){
-        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
-        else {return "0"}};
     db.smembers('case:' + req.params.id + ':users', function(err, editors){
         //console.log('case editors ' + editors);
         var editor=0;
         var edit_or_feedback;
         var editfeedbacktext = "Feedback";
-        if(include(editors, uid())){
+        if(include(editors, req.getAuthDetails().user.user_id)){
             console.log('found in editors');
             edit_or_feedback="editbutton";
             editfeedbacktext="Edit";
@@ -222,8 +204,6 @@ app.get('/case/:id/:page', function(req, res) {
             //console.dir(theCase);
             return res.render('case', {
                 title: theCase.title || ' - untitled',
-                styles: ['reset.css','style.css'],
-                scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js', 'client.js'],
                 radios: theCase.radios || '',
                 texts: theCase.texts || '',
                 creator: theCase.creator || '',
@@ -231,7 +211,7 @@ app.get('/case/:id/:page', function(req, res) {
                 edit_or_feedback: edit_or_feedback,
                 editfeedbacktext: editfeedbacktext,
                 signed_in: req.isAuthenticated(),
-                user: username(),
+                user: req.getAuthDetails().user.username,
                 cid: req.params.id,
                 prevpage: prevpage,
                 nextpage: nextpage,
@@ -268,12 +248,9 @@ app.get('/signed_in', function(req, res){
 
 app.get('/case/:id/:page/edit', function(req, res) {
   if(req.isAuthenticated()){
-    var username = function(){
-        if(req.isAuthenticated()){return req.getAuthDetails().user.username}
-        else {return "0"}};
-    console.dir(req.isAuthenticated());
-    console.dir(req.getAuthDetails().user.user_id);
-    console.dir(req.getAuthDetails());
+    //console.dir(req.isAuthenticated());
+    //console.dir(req.getAuthDetails().user.user_id);
+    //console.dir(req.getAuthDetails());
     if (req.isAuthenticated()) {
         db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data) {
             if (!data[0]) {
@@ -288,12 +265,10 @@ app.get('/case/:id/:page/edit', function(req, res) {
                 //console.dir(JSON.parse(data.toString()).users);
                 res.render('edit', {
                     title: "edit",
-                    styles: ['style.css'],
-                    scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
                     caseid: req.params.id,
                     page: req.params.page,
                     signed_in: req.isAuthenticated(),
-                    user: username()
+                    user: req.getAuthDetails().user.username
                 });
                 }
                 else {res.send("You are not allowed to edit this page but you can ask the author to add you as an editor", 200)}
@@ -357,8 +332,6 @@ app.get('/readme', function(req, res){
      else {return "0"}};
    res.render('readme',{
       title: "RADIOCA.SE - README",
-      styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
       signed_in: req.isAuthenticated(),
       user: username()
    });
@@ -370,8 +343,6 @@ app.get('/colophon', function(req, res){
      else {return "0"}};
    res.render('colophon',{
       title: 'RADIOCA.SE - Colophon',
-      styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
       signed_in: req.isAuthenticated(),
       user: username()
    });
@@ -383,8 +354,6 @@ app.get('/about', function(req, res){
      else {return "0"}};
    res.render('about',{
       title: "RADIOCA.SE - About",
-      styles: ['style.css'],
-      scripts: ['jquery.mousewheel.min.js', 'spin.js', 'showdown.js','client.js'],
       signed_in: req.isAuthenticated(),
       user: username()
    });
@@ -415,29 +384,29 @@ app.post('/image_new', function(req, res){
       fields = [];
   form
     .on('field', function(field, value) {
-        console.log(field, value);
+        //console.log(field, value);
         fields.push([field, value]);
     })
     .on('fileBegin', function(name, file) {
-          console.log('file');
+          //console.log('file');
           if(file.type='image/jpeg') {
              file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
              i ++;
           }
-          console.log(field, file);
+          //console.log(field, file);
           files.push([field, file]);
     })
     .on('end', function() {
-        console.log('-> upload done');
-        console.log(util.inspect(fields));
-        console.log(util.inspect(files));
+        //console.log('-> upload done');
+        //console.log(util.inspect(fields));
+        //console.log(util.inspect(files));
           // TODO: fix the image montage.
     });
 });
 
 
 app.post('/image/', function(req, res) {
-    console.log("POST /image/ called");
+    //console.log("POST /image/ called");
     if(req.isAuthenticated()){
         requestHandlers.postImage2(req,res);
     }
