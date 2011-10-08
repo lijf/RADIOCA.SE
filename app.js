@@ -163,7 +163,7 @@ app.get('/cases/:start/:finish', function(req, res){
            }
               //console.dir(sendcases);
               //var sendcases = JSON.parse(data[0]);
-              console.dir(sendcases);
+              //console.dir(sendcases);
               res.render('cases', {
                    title: 'RADIOCA.SE - Cases',
                    signed_in: req.isAuthenticated(),
@@ -279,7 +279,7 @@ app.get('/case/:id/:page/edit', function(req, res) {
   }else{res.redirect('/')}
 });
 
-app.put('/case/:id/newpage', function(req, res){
+app.post('/case/:id/newpage', function(req, res){
   console.log('newpage triggered');
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
     if(editor){
@@ -309,16 +309,14 @@ app.put('/case/:id/:page', function(req, res) {
     });
 });
 
-app.put('/case/:id/:page/delete', function(req, res){
+app.post('/case/:id/:page/delete', function(req, res){
     console.dir('delete page triggered');
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
         if(editor){
             db.del('case:' + req.params.id + ':page:' + req.params.page);
             res.send('OK', 200);
-        }
-
+        }else{res.send('FORBIDDEN', 403)}
     })
-
 });
 
 app.get('/sign_out', function(req, res, params){

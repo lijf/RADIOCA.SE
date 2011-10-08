@@ -111,11 +111,7 @@ function newpage(req, res, cid, page, db, pagedata){
             db.get(trypage, function(err, data){
                 if(!data){
                     db.set(trypage, JSON.stringify(pagedata));
-                    console.log('OK, created page: ' + trypage);
-                    var sendurl = '/case/' + cid + '/' + page;
-                    // TODO fix redirect after new page creation.
-                    //console.dir(sendurl);
-                    //res.send(sendurl.toString(), 200);
+                    res.send('/case/' + cid + '/' + page, 200);
                 } else {
                     page++;
                     newpage(req, res, cid, page, db, pagedata);
