@@ -3,11 +3,9 @@
 #pageinfo
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
-    @#{creator}
-  button(id='#{edit_or_feedback}')
-    #{editfeedbacktext}
-  button(id='newpage', type='button')
-    | New Page
+    @#{creator}  
+button(id='#{edit_or_feedback}')
+  #{editfeedbacktext}
 iframe(id='editbar', src='about:none')
 #texts
   -each text in texts
@@ -39,7 +37,7 @@ iframe(id='editbar', src='about:none')
     #{mdhelp}
   .md
 #info
-#delete_dialog
+#delete_dialog.dialog_box
   form(id='deletepage', action='/case/#{cid}/#{page}/delete')
     | Are you sure you want to delete this page?
     br
@@ -54,10 +52,15 @@ iframe(id='editbar', src='about:none')
   br
   br
   form(id='uploadform')
-    input.input1(type='file', name='userfile', id='userfile', multiple='multiple')
+    .fileinputs
+      input.file(type='file', name='userfile', id='userfile', multiple='multiple')
+      .fakefile
+        input
+        button
+          | Browse
     input.input1(id='upload', type='submit', value='Upload file(s)')
-  button(id='cancelupload')
-    | cancel
+    button(id='cancelupload')
+      | cancel
 script(type='text/javascript')
   $(function(){
     $('#markdown-help').hide();

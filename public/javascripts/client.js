@@ -198,6 +198,32 @@ function sessionButton(user){
     $('#session').html('<button id="sign_out">Sign out ' + user + '</button>');
 }
 
+// The following is to style file input fields, from http://www.quirksmode.org/dom/inputfile.html
+
+var W3CDOM = (document.createElement && document.getElementsByTagName);
+
+function initFileUploads() {
+	if (!W3CDOM) return;
+	var fakeFileUpload = document.createElement('div');
+	fakeFileUpload.className = 'fakefile';
+	fakeFileUpload.appendChild(document.createElement('input'));
+	var browsebutton = document.createElement('button');
+	browsebutton.innerHTML='Browse';
+	fakeFileUpload.appendChild(browsebutton);
+	var x = document.getElementsByTagName('input');
+	for (var i=0;i<x.length;i++) {
+		if (x[i].type != 'file') continue;
+		if (x[i].parentNode.className != 'fileinputs') continue;
+		x[i].className = 'file hidden';
+		var clone = fakeFileUpload.cloneNode(true);
+		x[i].parentNode.appendChild(clone);
+		x[i].relatedElement = clone.getElementsByTagName('input')[0];
+		x[i].onchange = x[i].onmouseout = function () {
+			this.relatedElement.value = this.value;
+		}
+	}
+}
+
 var authcallback = function(data) {
     $.ajax({
        url: '/signed_in',
@@ -216,21 +242,16 @@ var authcallback = function(data) {
 };
 
 $(function(){
+  //initFileUploads();
+
+// $('#userfile').live({
+//      change: function(){
+//          $(this).siblings('.fakefile > input').val = $(this).val();
+//      }
+// });
+
   scrollfunction_mw();
   $('.stack').children(':first').show();
-
-  //$('.stack').css('height', parseInt($(this).children(':first').css('height')))
-
-  //  $('.radio')
-//      .load(function(){
-//       alert(this.attr('src'));
-//       //$(this).parent.attr('url',$(this).attr('src'));
-//       })
-//      .each(function(){
-//      if( this.complete && this.naturalWidth !== 0) {
-//          $(this).trigger('load');
-//      }
-//   });
 
   $('#sign_out').live({
       click: function(){
@@ -253,20 +274,19 @@ $(function(){
         var pathname=parent.window.location.pathname.split('/');
         var json = {};
         json.title = $("title", top.document).html();
-        //var pageno=parseInt(pathname[3])+1;
         var targeturl = '/case/' + pathname[2] + '/newpage';
         $.ajax({
             url: targeturl,
-            type: 'PUT',
-            dataType: 'text/html',
+            type: 'POST',
             data: json,
             statusCode: {
                 404: function() {
-                    alert('page not found')},
-                200: function() {
-                    alert('OK - created new page');
-                    //parent.change_url();
-                    },
+                    alert('page not found')
+                },
+                200: function(redirect) {
+                    $('#save').trigger('click');
+                    parent.change_url(redirect);
+                },
                 403: function(){
                     alert('Forbidden')
                 }
@@ -279,7 +299,6 @@ $(function(){
       json.title = $('#title').val();
       json.icd = $('#ICD').val();
       json.private = $('#private').is(':checked');
-      //alert(JSON.stringify(json));
       $.ajax({
           url: '/newcase',
           type: 'POST',
@@ -324,8 +343,7 @@ $(function(){
           $(this).spin(opts);
   });
 
-  $("#save").click(
-    function(event){
+  $("#save").click(function(event){
     event.preventDefault();
     var data = spiderpage();
     var url = $("#savepage").attr("action").toString();
@@ -359,6 +377,7 @@ $(function(){
 
   $('#done').live({
     click: function(){
+        $('#save').trigger('click');
         editclose();
     }
   });
@@ -384,12 +403,12 @@ $(function(){
   $('#deleteconfirmed').live({
       click: function(){
           $.ajax({
-              type: 'PUT',
+              type: 'POST',
               url: $('#deletepage').attr('action'),
               statusCode: {
                   200: function(){
                       alert('page deleted');
-                      parent.window.history.go(-2);
+                      window.parent.history.go(-2);
                   }
               }
           });

@@ -1,5 +1,7 @@
 #cases
   h1.damion Cases
+  a(href='/newcase') Create Case
+  br
   #cases_lc
     - each c in cases
       a(href='/case/#{c.cid}/1') #{c.title}

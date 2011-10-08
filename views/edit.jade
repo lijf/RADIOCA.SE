@@ -1,5 +1,7 @@
 #controls
   form(id='savepage', action='/case/#{caseid}/#{page}')
+    button(id='done', type='button')
+      | Done
     input(type='hidden', name='_method', value='put')
     button(id='help', type='button')
       | ?
@@ -8,8 +10,6 @@
       | New Page
     button(id='delpage', type='button')
       | Delete Page
-    button(id='done', type='button')
-      | Done
 script(type='text/javascript')
   $(function(){
     $('#session').hide();
