@@ -93,7 +93,7 @@ function touchscroll(){
                   samp = 0;
                   var touch = e.touches[0];
                   if(parseInt(touch.pageY,10) > lastY){
-                      log('movedown');
+                      //log('movedown');
                       if(visimg.prev().length > 0){
                           visimg.hide();
                           visimg.next().hide();
@@ -101,7 +101,7 @@ function touchscroll(){
                           visimg=visimg.prev();
                       }
                   }else{
-                      log('moveup');
+                      //log('moveup');
                       if(visimg.next().length > 0){
                           visimg.hide();
                           visimg.prev().hide();
