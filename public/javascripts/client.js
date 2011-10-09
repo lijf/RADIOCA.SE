@@ -117,9 +117,10 @@ function touchscroll_2(){
 }
 
 function touchscroll(){
-    $('.stack > .stack_image', top.document).ontouchmove( function(e){
-        if(e.targetTouches.length == 2){
-            var touch = e.touches[0];
+    $('.stack > .stack_image', top.document).each(function(){
+        this.ontouchstart = function(event){
+        if(event.targetTouches.length == 2){
+            var touch = event.touches[0];
             if(touch.pageY > 0){
                 if($(this).next().length > 0){
                     $(this).next().show();
@@ -132,8 +133,9 @@ function touchscroll(){
                 }
             }
         }
+            event.preventDefault();
+        }
     });
-    e.preventDefault();
 }
 
 function scrollfunction_old(){
