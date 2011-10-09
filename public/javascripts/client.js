@@ -65,22 +65,6 @@ var lastY = 0;
 var samp = 0;
 
 function touchscroll(){
-<<<<<<< HEAD
-    $('.stack > .stack_image', top.document).each(function(){
-        this.ontouchstart = function(event){
-        if(event.targetTouches.length == 2){
-            var touch = event.touches[0];
-            console.log(touch.pageY.toString());
-            if(touch.pageY > 10){
-                if($(this).next().length > 0){
-                    $(this).next().show();
-                    $(this).hide();
-                }
-            } else if (touch.pageY < -10){
-                if($(this).prev().length > 0){
-                    $(this).prev().show();
-                    $(this).hide();
-=======
     $('.stack > .stack_image', top.document).each( function(){
         var visimg = $(this);
         this.ontouchstart = function(e){
@@ -93,7 +77,7 @@ function touchscroll(){
                   samp = 0;
                   var touch = e.touches[0];
                   if(parseInt(touch.pageY,10) > lastY){
-                      log('movedown');
+                      //log('movedown');
                       if(visimg.prev().length > 0){
                           visimg.hide();
                           visimg.next().hide();
@@ -101,7 +85,7 @@ function touchscroll(){
                           visimg=visimg.prev();
                       }
                   }else{
-                      log('moveup');
+                      //log('moveup');
                       if(visimg.next().length > 0){
                           visimg.hide();
                           visimg.prev().hide();
@@ -111,25 +95,9 @@ function touchscroll(){
                   }
                   log(parseInt(touch.pageY, 10));
                   return lastY = parseInt(touch.pageY,10);
->>>>>>> scroll_touches
                 }
             e.preventDefault();
         }
-<<<<<<< HEAD
-            event.preventDefault();
-        }
-    });
-}
-
-function scrollfunction_old(){
-  $('.stack', top.document).mousewheel(function(event, delta){
-    var movex = parseInt($(this).css('width'),10);
-    if (delta > 0) {
-    $(this).css('background-position', parseInt($(this).css('background-position'),10) - movex);
-    } else if (delta < 0) {
-    $(this).css('background-position', parseInt($(this).css('background-position'),10) + movex);
-=======
->>>>>>> scroll_touches
     }
     });
 }
