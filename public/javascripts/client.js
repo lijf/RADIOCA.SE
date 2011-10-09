@@ -121,6 +121,7 @@ function touchscroll(){
         this.ontouchstart = function(event){
         if(event.targetTouches.length == 2){
             var touch = event.touches[0];
+            console.log(touch.pageY);
             if(touch.pageY > 10){
                 if($(this).next().length > 0){
                     $(this).next().show();
