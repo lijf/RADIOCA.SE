@@ -106,18 +106,30 @@ function scrollfunction_mw(){
 
 }
 
-function mobile_scrollfunction_old(){
+function touchscroll_2(){
+    node.ontouchmove = function(e){
+    if(e.targetTouches.length == 2){
+       var f1 = e.targetTouches[0],
+           f2 = e.targetTouches[2];
+       var node = touch.target;
+    }
+    }
+}
+
+function touchscroll(){
     $('.stack > .stack_image', top.document).ontouchmove( function(e){
-        var touch = e.touches[0];
-        if(touch.pageY > 0){
-            if($(this).next().length > 0){
-                $(this).next().show();
-                $(this).hide();
-            }
-        } else if (touch.pageY < 0){
-            if($(this).prev().length > 0){
-                $(this).prev().show();
-                $(this).hide();
+        if(e.targetTouches.length == 2){
+            var touch = e.touches[0];
+            if(touch.pageY > 0){
+                if($(this).next().length > 0){
+                    $(this).next().show();
+                    $(this).hide();
+                }
+            } else if (touch.pageY < 0){
+                if($(this).prev().length > 0){
+                    $(this).prev().show();
+                    $(this).hide();
+                }
             }
         }
     });
@@ -250,7 +262,9 @@ $(function(){
 //      }
 // });
 
+  touchscroll();
   scrollfunction_mw();
+    
   $('.stack').children(':first').show();
 
   $('#sign_out').live({
