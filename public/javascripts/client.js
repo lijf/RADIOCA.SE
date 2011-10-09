@@ -71,7 +71,7 @@ function touchscroll(){
             return visimg = $(this);
         };
         this.ontouchmove = function(e){
-            if(e.targetTouches.length == 2){
+            if(e.targetTouches.length == 3){
                 samp++;
                 if(samp==3){
                   samp = 0;
