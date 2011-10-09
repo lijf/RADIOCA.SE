@@ -121,12 +121,12 @@ function touchscroll(){
         this.ontouchstart = function(event){
         if(event.targetTouches.length == 2){
             var touch = event.touches[0];
-            if(touch.pageY > 0){
+            if(touch.pageY > 10){
                 if($(this).next().length > 0){
                     $(this).next().show();
                     $(this).hide();
                 }
-            } else if (touch.pageY < 0){
+            } else if (touch.pageY < -10){
                 if($(this).prev().length > 0){
                     $(this).prev().show();
                     $(this).hide();
