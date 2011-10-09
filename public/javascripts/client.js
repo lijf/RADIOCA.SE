@@ -120,6 +120,7 @@ function touchscroll(){
     $('.stack > .stack_image', top.document).ontouchmove( function(e){
         if(e.targetTouches.length == 2){
             var touch = e.touches[0];
+            log(touch.pageY);
             if(touch.pageY > 0){
                 if($(this).next().length > 0){
                     $(this).next().show();
