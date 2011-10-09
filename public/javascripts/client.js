@@ -1,11 +1,5 @@
 var converter = new Showdown.converter();
 
-// "'createTouch' in document" will return true in Apple's Mobile Safari. Otherwise detect Android directly.
-function supportsTouch() {
-    var android = navigator.userAgent.indexOf('Android') != -1;
-    return android || !!('createTouch' in document)
-}
-
 // Use $('a').touchOrClick instead of $('a').click in your code.
 jQuery.fn.touchOrClick = function(efunc) {
     if (typeof efunc == 'undefined') {
