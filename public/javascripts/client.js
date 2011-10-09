@@ -46,46 +46,6 @@ $.fn.spin = function(opts) {
     
 function change_url(url){ document.location=url; }
 
-function stack_height(){
-    $('.stack').css('height', parseInt($(this).children(':first').children(':first').css('height')))
-}
-
-function scrollfunction_3(){
-    $('.stack_window', top.document).mousewheel(function(event, delta){
-       movey = $(this).children(':first').css('height');
-       console.log(movey);
-       if(delta > 0) {
-           $(this).css('top', parseInt($(this).css('top'), 10) + movey);
-           console.log($(this).css('top'));
-       }
-        else if(delta < 0){
-           $(this).css('top', parseInt($(this).css('top'), 10) - movey);
-       }
-       console.log(delta);
-       event.preventDefault();
-    });
-
-}
-
-function scrollfunction(){
-    $('.stack > .stack_image', top.document).scroll(function(event){
-    console.log('scroll');
-    var st = $(this).scrollTop();
-    if (sc > lastScrollTop){
-        if($(this).next().length > 0){
-                $(this).next().show();
-                $(this).hide();
-            }
-    } else {
-         if($(this).prev().length > 0){
-               $(this).prev().show();
-               $(this).hide();
-            }
-    }
-    lastScrollTop = st;
-    });
-}
-
 function scrollfunction_mw(){
     $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
         if(delta > 0) {
@@ -107,43 +67,8 @@ function scrollfunction_mw(){
     });
 }
 
-
 var lastY = 0;
 var samp = 0;
-
-function touchscroll_4(){
-    $('.stack > .stack_image', top.document).each( function(){
-        var visimg = $(this);
-        this.ontouchstart = function(e){
-            return visimg = $(this);
-        };
-        this.ontouchmove = function(e){
-            if(e.targetTouches.length == 2){
-                var touch = e.touches[0];
-                if(parseInt(touch.pageY,10) > lastY){
-                    log('movedown');
-                    if(visimg.prev().length > 0){
-                        visimg.hide();
-                        visimg.next().hide();
-                        visimg.prev().show();
-                        visimg=visimg.prev();
-                    }
-                }else{
-                    log('moveup');
-                    if(visimg.next().length > 0){
-                        visimg.hide();
-                        visimg.prev().hide();
-                        visimg.next().show();
-                        visimg=visimg.next();
-                    }
-                }
-                log(parseInt(touch.pageY, 10));
-                return lastY = parseInt(touch.pageY,10);
-                e.preventDefault();
-            }
-        }
-    });
-}
 
 function touchscroll(){
     $('.stack > .stack_image', top.document).each( function(){
@@ -181,49 +106,6 @@ function touchscroll(){
         }
     }
     });
-}
-function touchscroll_3(){
-    $('.stack > .stack_image', top.document).each( function(){
-        var moveY = 0;
-        this.ontouchstart = function(e){var visimg = $(this);e.preventDefault();}
-        this.ontouchmove = function(e){
-            var touch = e.touches[0];
-            log(touch.pageY);
-            moveY = (parseInt(touch.pageY, 10) - lastpageY);
-            log(moveY);
-            if(moveY > 5){
-                if(visimg.next().length > 0){
-                    log('movedown');
-                    visimg.css('display','none');
-                    visimg = visimg.next();
-                    visimg.css('display', 'inline');
-                    lastpageY = parseInt(touch.pageY, 10);
-                }
-            } else if (moveY < -5){
-                if(visimg.prev().length > 0){
-                    log('moveup');
-                    visimg.css('display','none');
-                    visimg = visimg.prev();
-                    visimg.css('display','inline');
-                    lastpageY = parseInt(touch.pageY, 10);
-
-                }
-            }
-            e.preventDefault();
-        }
-    });
-}
-
-function scrollfunction_old(){
-  $('.stack', top.document).mousewheel(function(event, delta){
-    var movex = parseInt($(this).css('width'),10);
-    if (delta > 0) {
-    $(this).css('background-position', parseInt($(this).css('background-position'),10) - movex);
-    } else if (delta < 0) {
-    $(this).css('background-position', parseInt($(this).css('background-position'),10) + movex);
-    }
-    event.preventDefault();
-  });
 }
 
 function rendermd(){ 
@@ -267,7 +149,6 @@ function editclose(){
 }
 
 function spiderpage(){
-
   var jsonpage = {};
   jsonpage.title = $("title", top.document).html();
   jsonpage.radios = $(".radio", top.document).map(function(){
@@ -288,32 +169,6 @@ function sessionButton(user){
     $('#session').html('<button id="sign_out">Sign out ' + user + '</button>');
 }
 
-// The following is to style file input fields, from http://www.quirksmode.org/dom/inputfile.html
-
-var W3CDOM = (document.createElement && document.getElementsByTagName);
-
-function initFileUploads() {
-	if (!W3CDOM) return;
-	var fakeFileUpload = document.createElement('div');
-	fakeFileUpload.className = 'fakefile';
-	fakeFileUpload.appendChild(document.createElement('input'));
-	var browsebutton = document.createElement('button');
-	browsebutton.innerHTML='Browse';
-	fakeFileUpload.appendChild(browsebutton);
-	var x = document.getElementsByTagName('input');
-	for (var i=0;i<x.length;i++) {
-		if (x[i].type != 'file') continue;
-		if (x[i].parentNode.className != 'fileinputs') continue;
-		x[i].className = 'file hidden';
-		var clone = fakeFileUpload.cloneNode(true);
-		x[i].parentNode.appendChild(clone);
-		x[i].relatedElement = clone.getElementsByTagName('input')[0];
-		x[i].onchange = x[i].onmouseout = function () {
-			this.relatedElement.value = this.value;
-		}
-	}
-}
-
 var authcallback = function(data) {
     $.ajax({
        url: '/signed_in',
@@ -332,13 +187,6 @@ var authcallback = function(data) {
 };
 
 $(function(){
-  //initFileUploads();
-
-// $('#userfile').live({
-//      change: function(){
-//          $(this).siblings('.fakefile > input').val = $(this).val();
-//      }
-// });
 
   touchscroll();
   scrollfunction_mw();
