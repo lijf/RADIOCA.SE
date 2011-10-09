@@ -90,51 +90,128 @@ function scrollfunction_mw(){
     $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
         if(delta > 0) {
             if($(this).next().length > 0){
-                $(this).next().show();
-                $(this).hide();
+                $(this).css('display','none');
+                $(this).prev().css('display','none');
+                $(this).next().css('display','inline');
             }
 
         } else if (delta < 0){
             if($(this).prev().length > 0){
-               $(this).prev().show();
-               $(this).hide();
+               $(this).css('display','none');
+               $(this).next().css('display','none');
+               $(this).prev().css('display','inline');
             }
         }
         //console.log(delta);
         event.preventDefault();
     });
-
 }
 
-function touchscroll_2(){
-    node.ontouchmove = function(e){
-    if(e.targetTouches.length == 2){
-       var f1 = e.targetTouches[0],
-           f2 = e.targetTouches[2];
-       var node = touch.target;
-    }
-    }
-}
 
-function touchscroll(){
-    $('.stack > .stack_image', top.document).ontouchmove( function(e){
-        if(e.targetTouches.length == 2){
-            var touch = e.touches[0];
-            log(touch.pageY);
-            if(touch.pageY > 0){
-                if($(this).next().length > 0){
-                    $(this).next().show();
-                    $(this).hide();
+var lastY = 0;
+var samp = 0;
+
+function touchscroll_4(){
+    $('.stack > .stack_image', top.document).each( function(){
+        var visimg = $(this);
+        this.ontouchstart = function(e){
+            return visimg = $(this);
+        };
+        this.ontouchmove = function(e){
+            if(e.targetTouches.length == 2){
+                var touch = e.touches[0];
+                if(parseInt(touch.pageY,10) > lastY){
+                    log('movedown');
+                    if(visimg.prev().length > 0){
+                        visimg.hide();
+                        visimg.next().hide();
+                        visimg.prev().show();
+                        visimg=visimg.prev();
+                    }
+                }else{
+                    log('moveup');
+                    if(visimg.next().length > 0){
+                        visimg.hide();
+                        visimg.prev().hide();
+                        visimg.next().show();
+                        visimg=visimg.next();
+                    }
                 }
-            } else if (touch.pageY < 0){
-                if($(this).prev().length > 0){
-                    $(this).prev().show();
-                    $(this).hide();
-                }
+                log(parseInt(touch.pageY, 10));
+                return lastY = parseInt(touch.pageY,10);
+                e.preventDefault();
             }
         }
     });
-    e.preventDefault();
+}
+
+function touchscroll(){
+    $('.stack > .stack_image', top.document).each( function(){
+        var visimg = $(this);
+        this.ontouchstart = function(e){
+            return visimg = $(this);
+        };
+        this.ontouchmove = function(e){
+            if(e.targetTouches.length == 2){
+                samp++;
+                if(samp==3){
+                  samp = 0;
+                  var touch = e.touches[0];
+                  if(parseInt(touch.pageY,10) > lastY){
+                      log('movedown');
+                      if(visimg.prev().length > 0){
+                          visimg.hide();
+                          visimg.next().hide();
+                          visimg.prev().show();
+                          visimg=visimg.prev();
+                      }
+                  }else{
+                      log('moveup');
+                      if(visimg.next().length > 0){
+                          visimg.hide();
+                          visimg.prev().hide();
+                          visimg.next().show();
+                          visimg=visimg.next();
+                      }
+                  }
+                  log(parseInt(touch.pageY, 10));
+                  return lastY = parseInt(touch.pageY,10);
+                }
+            e.preventDefault();
+        }
+    }
+    });
+}
+function touchscroll_3(){
+    $('.stack > .stack_image', top.document).each( function(){
+        var moveY = 0;
+        this.ontouchstart = function(e){var visimg = $(this);e.preventDefault();}
+        this.ontouchmove = function(e){
+            var touch = e.touches[0];
+            log(touch.pageY);
+            moveY = (parseInt(touch.pageY, 10) - lastpageY);
+            log(moveY);
+            if(moveY > 5){
+                if(visimg.next().length > 0){
+                    log('movedown');
+                    visimg.css('display','none');
+                    visimg = visimg.next();
+                    visimg.css('display', 'inline');
+                    lastpageY = parseInt(touch.pageY, 10);
+                }
+            } else if (moveY < -5){
+                if(visimg.prev().length > 0){
+                    log('moveup');
+                    visimg.css('display','none');
+                    visimg = visimg.prev();
+                    visimg.css('display','inline');
+                    lastpageY = parseInt(touch.pageY, 10);
+
+                }
+            }
+            e.preventDefault();
+        }
+    });
 }
 
 function scrollfunction_old(){
