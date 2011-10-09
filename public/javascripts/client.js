@@ -1,11 +1,5 @@
 var converter = new Showdown.converter();
 
-// "'createTouch' in document" will return true in Apple's Mobile Safari. Otherwise detect Android directly.
-function supportsTouch() {
-    var android = navigator.userAgent.indexOf('Android') != -1;
-    return android || !!('createTouch' in document)
-}
-
 // Use $('a').touchOrClick instead of $('a').click in your code.
 jQuery.fn.touchOrClick = function(efunc) {
     if (typeof efunc == 'undefined') {
@@ -46,77 +40,32 @@ $.fn.spin = function(opts) {
     
 function change_url(url){ document.location=url; }
 
-function stack_height(){
-    $('.stack').css('height', parseInt($(this).children(':first').children(':first').css('height')))
-}
-
-function scrollfunction_3(){
-    $('.stack_window', top.document).mousewheel(function(event, delta){
-       movey = $(this).children(':first').css('height');
-       console.log(movey);
-       if(delta > 0) {
-           $(this).css('top', parseInt($(this).css('top'), 10) + movey);
-           console.log($(this).css('top'));
-       }
-        else if(delta < 0){
-           $(this).css('top', parseInt($(this).css('top'), 10) - movey);
-       }
-       console.log(delta);
-       event.preventDefault();
-    });
-
-}
-
-function scrollfunction(){
-    $('.stack > .stack_image', top.document).scroll(function(event){
-    console.log('scroll');
-    var st = $(this).scrollTop();
-    if (sc > lastScrollTop){
-        if($(this).next().length > 0){
-                $(this).next().show();
-                $(this).hide();
-            }
-    } else {
-         if($(this).prev().length > 0){
-               $(this).prev().show();
-               $(this).hide();
-            }
-    }
-    lastScrollTop = st;
-    });
-}
-
 function scrollfunction_mw(){
     $('.stack > .stack_image', top.document).mousewheel(function(event, delta){
         if(delta > 0) {
             if($(this).next().length > 0){
-                $(this).next().show();
-                $(this).hide();
+                $(this).css('display','none');
+                $(this).prev().css('display','none');
+                $(this).next().css('display','inline');
             }
 
         } else if (delta < 0){
             if($(this).prev().length > 0){
-               $(this).prev().show();
-               $(this).hide();
+               $(this).css('display','none');
+               $(this).next().css('display','none');
+               $(this).prev().css('display','inline');
             }
         }
         //console.log(delta);
         event.preventDefault();
     });
-
 }
 
-function touchscroll_2(){
-    node.ontouchmove = function(e){
-    if(e.targetTouches.length == 2){
-       var f1 = e.targetTouches[0],
-           f2 = e.targetTouches[2];
-       var node = touch.target;
-    }
-    }
-}
+var lastY = 0;
+var samp = 0;
 
 function touchscroll(){
+<<<<<<< HEAD
     $('.stack > .stack_image', top.document).each(function(){
         this.ontouchstart = function(event){
         if(event.targetTouches.length == 2){
@@ -131,9 +80,42 @@ function touchscroll(){
                 if($(this).prev().length > 0){
                     $(this).prev().show();
                     $(this).hide();
+=======
+    $('.stack > .stack_image', top.document).each( function(){
+        var visimg = $(this);
+        this.ontouchstart = function(e){
+            return visimg = $(this);
+        };
+        this.ontouchmove = function(e){
+            if(e.targetTouches.length == 2){
+                samp++;
+                if(samp==3){
+                  samp = 0;
+                  var touch = e.touches[0];
+                  if(parseInt(touch.pageY,10) > lastY){
+                      log('movedown');
+                      if(visimg.prev().length > 0){
+                          visimg.hide();
+                          visimg.next().hide();
+                          visimg.prev().show();
+                          visimg=visimg.prev();
+                      }
+                  }else{
+                      log('moveup');
+                      if(visimg.next().length > 0){
+                          visimg.hide();
+                          visimg.prev().hide();
+                          visimg.next().show();
+                          visimg=visimg.next();
+                      }
+                  }
+                  log(parseInt(touch.pageY, 10));
+                  return lastY = parseInt(touch.pageY,10);
+>>>>>>> scroll_touches
                 }
-            }
+            e.preventDefault();
         }
+<<<<<<< HEAD
             event.preventDefault();
         }
     });
@@ -146,9 +128,10 @@ function scrollfunction_old(){
     $(this).css('background-position', parseInt($(this).css('background-position'),10) - movex);
     } else if (delta < 0) {
     $(this).css('background-position', parseInt($(this).css('background-position'),10) + movex);
+=======
+>>>>>>> scroll_touches
     }
-    event.preventDefault();
-  });
+    });
 }
 
 function rendermd(){ 
@@ -192,7 +175,6 @@ function editclose(){
 }
 
 function spiderpage(){
-
   var jsonpage = {};
   jsonpage.title = $("title", top.document).html();
   jsonpage.radios = $(".radio", top.document).map(function(){
@@ -213,32 +195,6 @@ function sessionButton(user){
     $('#session').html('<button id="sign_out">Sign out ' + user + '</button>');
 }
 
-// The following is to style file input fields, from http://www.quirksmode.org/dom/inputfile.html
-
-var W3CDOM = (document.createElement && document.getElementsByTagName);
-
-function initFileUploads() {
-	if (!W3CDOM) return;
-	var fakeFileUpload = document.createElement('div');
-	fakeFileUpload.className = 'fakefile';
-	fakeFileUpload.appendChild(document.createElement('input'));
-	var browsebutton = document.createElement('button');
-	browsebutton.innerHTML='Browse';
-	fakeFileUpload.appendChild(browsebutton);
-	var x = document.getElementsByTagName('input');
-	for (var i=0;i<x.length;i++) {
-		if (x[i].type != 'file') continue;
-		if (x[i].parentNode.className != 'fileinputs') continue;
-		x[i].className = 'file hidden';
-		var clone = fakeFileUpload.cloneNode(true);
-		x[i].parentNode.appendChild(clone);
-		x[i].relatedElement = clone.getElementsByTagName('input')[0];
-		x[i].onchange = x[i].onmouseout = function () {
-			this.relatedElement.value = this.value;
-		}
-	}
-}
-
 var authcallback = function(data) {
     $.ajax({
        url: '/signed_in',
@@ -257,13 +213,6 @@ var authcallback = function(data) {
 };
 
 $(function(){
-  //initFileUploads();
-
-// $('#userfile').live({
-//      change: function(){
-//          $(this).siblings('.fakefile > input').val = $(this).val();
-//      }
-// });
 
   touchscroll();
   scrollfunction_mw();
