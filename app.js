@@ -216,7 +216,8 @@ app.get('/case/:id/:page', function(req, res) {
                 prevpage: prevpage,
                 nextpage: nextpage,
                 page: req.params.page,
-                editor: editor
+                editor: editor,
+                private: theCase.private || 0
             });
             }
           });

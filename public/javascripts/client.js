@@ -1,14 +1,5 @@
 var converter = new Showdown.converter();
 
-// Use $('a').touchOrClick instead of $('a').click in your code.
-jQuery.fn.touchOrClick = function(efunc) {
-    if (typeof efunc == 'undefined') {
-        return this.trigger(supportsTouch() ? 'touchstart' : 'click');
-    } else {
-        return this.bind(supportsTouch() ? 'touchstart' : 'click', efunc);
-    }
-};
-
 var opts = {
   lines: 12, // The number of lines to draw
   length: 7, // The length of each line
@@ -20,24 +11,6 @@ var opts = {
   shadow: true // Whether to render a shadow
 };
 
-var lastScrollTop = 0;
-
-$.fn.spin = function(opts) {
-    this.each(function() {
-      var $this = $(this),
-          data = $this.data();
-
-      if (data.spinner) {
-        data.spinner.stop();
-        delete data.spinner;
-      }
-      if (opts !== false) {
-        data.spinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
-      }
-    });
-    return this;
-  };
-    
 function change_url(url){ document.location=url; }
 
 function scrollfunction_mw(){
@@ -144,7 +117,9 @@ function editclose(){
 
 function spiderpage(){
   var jsonpage = {};
-  jsonpage.title = $("title", top.document).html();
+  jsonpage.title = $("#meta_title", top.document).val();
+  //alert(jsonpage.title.toString());
+  jsonpage.private = $("#meta_private", top.document).val();
   jsonpage.radios = $(".radio", top.document).map(function(){
     var radio = {};
     radio.images = $(this).children('.stack').children('.stack_image').map(function(){
@@ -291,6 +266,14 @@ $(function(){
     });
   });
 
+  $("#meta_button").click(function(){
+      $("#meta_dialog", top.document).show();
+  });
+
+  $("#meta_ok").click(function(){
+      $("#meta_dialog", top.document).hide();
+  });
+
   $("#help").click(function(){
       $("#markdown-help", top.document).show();
   });
@@ -376,7 +359,6 @@ $(function(){
     rendermd();
     $('.radio:last', top.document).append($('<button type="button" class="deletebutton">X</button>'));
 
-    //$('.radio:last>.stack', top.document).spin();
     $('#postframe').one('load',
         function(){
           //alert("postframe triggered");
