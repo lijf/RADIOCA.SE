@@ -79,17 +79,17 @@ function touchscroll(){
                   if(parseInt(touch.pageY,10) > lastY){
                       //log('movedown');
                       if(visimg.prev().length > 0){
+                          visimg.prev().show();
                           visimg.hide();
                           visimg.next().hide();
-                          visimg.prev().show();
                           visimg=visimg.prev();
                       }
                   }else{
                       //log('moveup');
                       if(visimg.next().length > 0){
+                          visimg.next().show();
                           visimg.hide();
                           visimg.prev().hide();
-                          visimg.next().show();
                           visimg=visimg.next();
                       }
                   }
