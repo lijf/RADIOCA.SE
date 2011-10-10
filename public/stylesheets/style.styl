@@ -17,8 +17,7 @@
     position fixed
 .dialog_box
     position fixed
-    width 85%
-    left 5%
+    left 30%
     top 30%
     background #222
     padding 8px
@@ -56,7 +55,7 @@
     top 0px
     left 0px
     width 100%
-    overflow scroll
+    overflow hide
 .imgload
     visibility hidden
 .deletebutton
@@ -95,6 +94,8 @@
     background-image url("/images/paper/Texture0213.jpg")
     color #006
 @media screen and (max-width: 450px)
+    #markdown-help
+        width 100%
     #sl
         display none
     #container
@@ -117,6 +118,8 @@
         width 65%
     #texts
         width 35%
+    #markdown-help
+        width 65%
 textarea
     width 100%
     line-height 1.2
@@ -125,26 +128,14 @@ textarea
 .md
     padding 10px 20px
 #markdown-help
+    background-image url("/images/paper/Texture0213.jpg")
+    color #006
     position absolute
-    top 62px
-    width 45%
-    background-image url("/images/paper/Texture0214.jpg")
+    width 50%
 #editbar
     height 25px
     width 350px
     overflow hidden
-#uploadarea
-    position fixed
-    width 85%
-    left 5%
-    top 30%
-    background #222
-    padding 8px
-    border 5px
-    border-style solid
-    border-color #aaa
-    -moz-border-radius 12px
-    -webkit-border-radius 12px
 #uploadform
     position relative
 .fileinputs
