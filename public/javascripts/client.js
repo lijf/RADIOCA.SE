@@ -93,7 +93,7 @@ function touchscroll(){
                           visimg=visimg.next();
                       }
                   }
-                  log(parseInt(touch.pageY, 10));
+                  //log(parseInt(touch.pageY, 10));
                   return lastY = parseInt(touch.pageY,10);
                 }
             e.preventDefault();
