@@ -77,23 +77,6 @@ case1 = {
 function include(arr,obj) {
     return (arr.indexOf(obj) != -1);
 }
-
-//db.set("case:" + case1.caseid + ":page:" + case1.page, JSON.stringify(case1));
-
-
-// redisClient.set("string key", "string val", redis.print);
-// redisClient.incr("numberOfCases", redis.print);
-// redisClient.hset("hash key", "hashtest 1", "some value", redis.print);
-// redisClient.hset(["hash key", "hashtest 2", "some other value"], redis.print);
-// redisClient.hkeys("hash key", function (err, replies) {
-//   console.log(replies.length + " replies:");
-//   replies.forEach(function (reply, i) {
-//     console.log("     " + i + ": " + reply);
-//  });
-//  redisClient.quit();
-// });
-
-
 // Routes
 
 app.get('/', function(req, res){
@@ -101,7 +84,7 @@ app.get('/', function(req, res){
         if(req.isAuthenticated()){return req.getAuthDetails().user.username}
         else {return "0"}};
     res.render('index', {
-        title: 'RADIOCA.SE - Home',
+        title: 'Home',
         signed_in: req.isAuthenticated(),
         user: username()
     });
@@ -110,7 +93,7 @@ app.get('/', function(req, res){
 app.get('/newcase', function(req, res){
   if(req.isAuthenticated()){
       res.render ('newcase',{
-          title: 'RADIOCA.SE - create new case',
+          title: 'Create new case',
           signed_in: req.isAuthenticated(),
           user: req.getAuthDetails().user.username
       });
@@ -121,14 +104,16 @@ app.post('/newcase', function(req, res){
    if(req.isAuthenticated()){
       var data = req.body;
       data.creator = req.getAuthDetails().user.username;
-      //console.log(data);
+      console.log(data);
       data.texts = ['Double click to add text'];
       db.incr('number_of_cases', function(err, casenumber){
-        //console.dir(data);
+        console.dir(data);
         data.cid = casenumber.toString();
         casedata=JSON.stringify(data);
-        //console.log(casedata);
-        db.lpush('cases', casedata);
+        console.log(data.private);
+        if(!data.private){
+            db.lpush('cases', casedata);
+        }
         db.sadd('cases:' + data.creator, casedata);
         var caseurl = 'case:' + casenumber;
         db.set(caseurl + ':page:1', casedata,
@@ -165,7 +150,7 @@ app.get('/cases/:start/:finish', function(req, res){
               //var sendcases = JSON.parse(data[0]);
               //console.dir(sendcases);
               res.render('cases', {
-                   title: 'RADIOCA.SE - Cases',
+                   title: 'Cases',
                    signed_in: req.isAuthenticated(),
                    user: req.getAuthDetails().user.username,
                    cases: sendcases
@@ -217,7 +202,7 @@ app.get('/case/:id/:page', function(req, res) {
                 nextpage: nextpage,
                 page: req.params.page,
                 editor: editor,
-                private: theCase.private || 0
+                meta_private: theCase.meta_private || 0
             });
             }
           });
@@ -330,7 +315,7 @@ app.get('/readme', function(req, res){
      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
      else {return "0"}};
    res.render('readme',{
-      title: "RADIOCA.SE - README",
+      title: "README",
       signed_in: req.isAuthenticated(),
       user: username()
    });
@@ -341,7 +326,7 @@ app.get('/colophon', function(req, res){
      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
      else {return "0"}};
    res.render('colophon',{
-      title: 'RADIOCA.SE - Colophon',
+      title: 'Colophon',
       signed_in: req.isAuthenticated(),
       user: username()
    });
@@ -352,7 +337,7 @@ app.get('/about', function(req, res){
      if(req.isAuthenticated()){return req.getAuthDetails().user.username}
      else {return "0"}};
    res.render('about',{
-      title: "RADIOCA.SE - About",
+      title: "About",
       signed_in: req.isAuthenticated(),
       user: username()
    });
@@ -403,9 +388,8 @@ app.post('/image_new', function(req, res){
     });
 });
 
-
 app.post('/image/', function(req, res) {
-    //console.log("POST /image/ called");
+    console.log("POST /image/ called");
     if(req.isAuthenticated()){
         requestHandlers.postImage2(req,res);
     }

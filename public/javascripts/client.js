@@ -99,7 +99,7 @@ function editfunctions(){
   }); // hides the textbox and renders the markdown
 
   $(".radio", top.document).append($('<button type="button" class="deletebutton">X</button>'));
-    // adds deletebutton to stacks
+    // adds deletebutton to radios
   $("#addstack", top.document).show();
   // $('#newpage', top.document).show();
 }
@@ -119,7 +119,7 @@ function spiderpage(){
   var jsonpage = {};
   jsonpage.title = $("#meta_title", top.document).val();
   //alert(jsonpage.title.toString());
-  jsonpage.private = $("#meta_private", top.document).val();
+  jsonpage.meta_private = $("#meta_private", top.document).val();
   jsonpage.radios = $(".radio", top.document).map(function(){
     var radio = {};
     radio.images = $(this).children('.stack').children('.stack_image').map(function(){
@@ -243,7 +243,7 @@ $(function(){
 
   $('.deletebutton').live({
     click: function(){
-       $(this).parent().parent().remove();         
+       $(this).parent().remove();
     }
   });
 
@@ -255,6 +255,7 @@ $(function(){
   $("#save").click(function(event){
     event.preventDefault();
     var data = spiderpage();
+    //alert(data);
     var url = $("#savepage").attr("action").toString();
     $.ajax({
       type: 'PUT',
@@ -324,7 +325,7 @@ $(function(){
               url: $('#deletepage').attr('action'),
               statusCode: {
                   200: function(){
-                      alert('page deleted');
+                      //alert('page deleted');
                       window.parent.history.go(-2);
                   }
               }

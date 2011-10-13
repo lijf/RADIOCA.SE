@@ -1,5 +1,4 @@
-#iframe(style='width: 0px; height: 0px; display:none')
-  iframe(name="postframe", id="postframe", class="hidden", src="about:none")
+iframe.hidden(name="postframe", id="postframe", src="about:none")
 #pageinfo
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
@@ -42,7 +41,7 @@ iframe(id='editbar', src='about:none', style='display:none')
     | Are you sure you want to delete this page?
     br
     button(id='deleteconfirmed', type='button')
-      | Confirm'
+      | Confirm
     button(id='canceldelete', type='button')
       | Cancel
 #meta_dialog.dialog_box(style='display:none')
@@ -50,7 +49,7 @@ iframe(id='editbar', src='about:none', style='display:none')
     | Title:
     input(type='text', id='meta_title', value='#{title}')
     | Private
-    input(type='checkbox', id='meta_private', value='private', name='private')
+    input(type='checkbox', id='meta_private', value='meta_private', name='meta_private')
     button(id='meta_ok', type='button')
       | OK
 #uploadarea.dialog_box(style='display:none')
@@ -82,5 +81,5 @@ script(type='text/javascript')
         $(this).siblings(".md").show();
       }
     }); // hides the textbox and renders the markdown
-    if(#{private}){$('#meta_private').attr('checked');}
+    if(#{meta_private}){$('#meta_private').attr('checked', true);}
   });
