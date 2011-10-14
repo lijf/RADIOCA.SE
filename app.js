@@ -165,47 +165,51 @@ app.get('/case/:id/:page', function(req, res) {
   if(req.isAuthenticated()){
     console.log('GET case/' + req.params.id + '/' + req.params.page);
     var findCase = "case:" + req.params.id + ":page:" + req.params.page;
-    db.smembers('case:' + req.params.id + ':users', function(err, editors){
-        //console.log('case editors ' + editors);
-        var editor=0;
-        var edit_or_feedback;
-        var editfeedbacktext = "Feedback";
-        if(include(editors, req.getAuthDetails().user.user_id)){
-            console.log('found in editors');
-            edit_or_feedback="editbutton";
-            editfeedbacktext="Edit";
-            editor=1;
-        } else {
-            edit_or_feedback="feedbackbutton"
-        }
-        db.mget(findCase, "markdown-help", function(err, data){
-            //console.dir(data);
-            if(!data[0]){res.redirect('back')} else {
-            //console.log(data[0]);
-            var theCase = JSON.parse(data[0].toString());
-            var mdhelp = JSON.parse(data[1].toString());
-            var prevpage = parseInt(req.params.page, 10) - 1;
-            var nextpage = parseInt(req.params.page, 10) + 1;
-            //console.dir(theCase);
-            return res.render('case', {
-                title: theCase.title || ' - untitled',
-                radios: theCase.radios || '',
-                texts: theCase.texts || '',
-                creator: theCase.creator || '',
-                mdhelp: mdhelp,
-                edit_or_feedback: edit_or_feedback,
-                editfeedbacktext: editfeedbacktext,
-                signed_in: req.isAuthenticated(),
-                user: req.getAuthDetails().user.username,
-                cid: req.params.id,
-                prevpage: prevpage,
-                nextpage: nextpage,
-                page: req.params.page,
-                editor: editor,
-                meta_private: theCase.meta_private || 0
-            });
+    db.sismember('private','case:' + req.params.id, function(err, private){
+      if(private){
+        db.smembers('case:' + req.params.id + ':users', function(err, editors){
+            //console.log('case editors ' + editors);
+            var editor=0;
+            var edit_or_feedback;
+            var editfeedbacktext = "Feedback";
+            if(include(editors, req.getAuthDetails().user.user_id)){
+                console.log('found in editors');
+                edit_or_feedback="editbutton";
+                editfeedbacktext="Edit";
+                editor=1;
+            } else {
+                edit_or_feedback="feedbackbutton"
             }
-          });
+            db.mget(findCase, "markdown-help", function(err, data){
+                //console.dir(data);
+                if(!data[0]){res.redirect('back')} else {
+                //console.log(data[0]);
+                var theCase = JSON.parse(data[0].toString());
+                var mdhelp = JSON.parse(data[1].toString());
+                var prevpage = parseInt(req.params.page, 10) - 1;
+                var nextpage = parseInt(req.params.page, 10) + 1;
+                //console.dir(theCase);
+                return res.render('case', {
+                    title: theCase.title || ' - untitled',
+                    radios: theCase.radios || '',
+                    texts: theCase.texts || '',
+                    creator: theCase.creator || '',
+                    mdhelp: mdhelp,
+                    edit_or_feedback: edit_or_feedback,
+                    editfeedbacktext: editfeedbacktext,
+                    signed_in: req.isAuthenticated(),
+                    user: req.getAuthDetails().user.username,
+                    cid: req.params.id,
+                    prevpage: prevpage,
+                    nextpage: nextpage,
+                    page: req.params.page,
+                    editor: editor,
+                    meta_private: theCase.meta_private || 0
+                });
+                }
+              });
+        });
+      }
     });
   }else{res.redirect('/')}
  });

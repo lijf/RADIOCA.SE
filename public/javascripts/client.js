@@ -1,15 +1,6 @@
 var converter = new Showdown.converter();
-
-var opts = {
-  lines: 12, // The number of lines to draw
-  length: 7, // The length of each line
-  width: 4, // The line thickness
-  radius: 10, // The radius of the inner circle
-  color: '#fff', // #rbg or #rrggbb
-  speed: 1, // Rounds per second
-  trail: 33, // Afterglow percentage
-  shadow: true // Whether to render a shadow
-};
+var lastY = 0;
+var samp = 0;
 
 function change_url(url){ document.location=url; }
 
@@ -33,9 +24,6 @@ function scrollfunction_mw(){
         event.preventDefault();
     });
 }
-
-var lastY = 0;
-var samp = 0;
 
 function touchscroll(){
     $('.stack > .stack_image', top.document).each( function(){
@@ -189,16 +177,11 @@ $(function(){
             type: 'POST',
             data: json,
             statusCode: {
-                404: function() {
-                    alert('page not found')
-                },
+                404: function(){alert('page not found')},
                 200: function(redirect) {
-                    $('#save').trigger('click');
-                    parent.change_url(redirect);
-                },
-                403: function(){
-                    alert('Forbidden')
-                }
+                       $('#save').trigger('click');
+                       parent.change_url(redirect);},
+                403: function(){alert('Forbidden')}
             }
         });
   });
