@@ -119,6 +119,38 @@ function newpage(req, res, cid, page, db, pagedata){
             });
         }
 
+function renderpage(req, res, db){
+    var findpage = 'case:' + req.params.id + ':page:' + req.params.page;
+    db.mget(findpage, "markdown-help", function(err, data){
+        //console.dir(data);
+        if(!data[0]){res.redirect('back')} else {
+            //console.log(data[0]);
+            var theCase = JSON.parse(data[0].toString());
+            var mdhelp = JSON.parse(data[1].toString());
+            var prevpage = parseInt(req.params.page, 10) - 1;
+            var nextpage = parseInt(req.params.page, 10) + 1;
+            //console.dir(theCase);
+            return res.render('case', {
+                title: theCase.title || ' - untitled',
+                radios: theCase.radios || '',
+                texts: theCase.texts || '',
+                creator: theCase.creator || '',
+                mdhelp: mdhelp,
+                edit_or_feedback: edit_or_feedback,
+                editfeedbacktext: editfeedbacktext,
+                signed_in: req.isAuthenticated(),
+                user: req.getAuthDetails().user.username,
+                cid: req.params.id,
+                prevpage: prevpage,
+                nextpage: nextpage,
+                page: req.params.page,
+                editor: editor,
+                meta_private: theCase.meta_private || 0
+            });
+        }
+    });
+
+exports.renderpage = renderpage;
 exports.newpage = newpage;
 exports.postImage = postImage;
 exports.postImage2 = postImage2;
