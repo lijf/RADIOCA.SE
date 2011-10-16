@@ -107,7 +107,10 @@ function spiderpage(){
   var jsonpage = {};
   jsonpage.title = $("#meta_title", top.document).val();
   //alert(jsonpage.title.toString());
-  jsonpage.meta_private = $("#meta_private", top.document).val();
+  jsonpage.meta_private = function(){
+      if($("#meta_private", top.document).is(':checked')){return 1} else {return 0}
+        };
+  alert(jsonpage.meta_private());
   jsonpage.radios = $(".radio", top.document).map(function(){
     var radio = {};
     radio.images = $(this).children('.stack').children('.stack_image').map(function(){
@@ -171,6 +174,9 @@ $(function(){
         var pathname=parent.window.location.pathname.split('/');
         var json = {};
         json.title = $("title", top.document).html();
+        json.meta_private = function(){
+          if($("#meta_private", top.document).is(':checked')){return 1} else {return 0}
+        };
         var targeturl = '/case/' + pathname[2] + '/newpage';
         $.ajax({
             url: targeturl,
@@ -218,10 +224,6 @@ $(function(){
       click: function(){
           $("#uploadarea").hide();
       }
-  });
-
-  $('#facebutt').click(function(){
-      openEasyOAuthBox('facebook',authcallback);
   });
 
   $('.deletebutton').live({
