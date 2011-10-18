@@ -226,6 +226,46 @@ $(function(){
       }
   });
 
+  $('#feedbackbutton').live({
+      click: function(){$('#feedback_dialog', top.document).show();
+    }
+  });
+
+  $('#cancel_feedback').live({
+      click: function(){$('#feedback_dialog', top.document).hide();}
+  });
+
+  $('#send_feedback').live({
+      click: function(){
+          var pathname=window.location.pathname.split('/');
+          var feedback = {};
+          var targeturl = '/case/' + pathname[2] + '/feedback';
+          feedback.text = $('#feedback_text', top.document).val();
+          feedback.toAuthor = function(){
+              if($("#feedback_author", top.document).is(':checked')){return 1} else {return 0}
+          };
+          //feedback.toPublic = function(){
+          //    if($("#feedback_public", top.document).is(':checked')){return 1} else {return 0}
+          //};
+          feedback.toCurator = function(){
+              if($("#feedback_curator", top.document).is(':checked')){return 1} else {return 0}
+          };
+          $.ajax({
+            url: targeturl,
+            type: 'POST',
+            data: feedback,
+            statusCode: {
+              404: function(){alert('page not found')},
+              200: function(response){
+                  alert(response);
+                  $('#feedback_dialog', top.document).hide();
+              },
+              403: function(){alert('Forbidden')}
+            }
+          });
+      }
+  });
+
   $('.deletebutton').live({
     click: function(){
        $(this).parent().remove();

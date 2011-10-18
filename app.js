@@ -182,16 +182,14 @@ app.get('/case/:id/:page', function(req, res) {
   if(req.isAuthenticated()){
     console.log('GET case/' + req.params.id + '/' + req.params.page);
     var findCase = "case:" + req.params.id + ":page:" + req.params.page;
-        db.smembers('case:' + req.params.id + ':users', function(err, editors){
-            //console.log('case editors ' + editors);
-            var editor=0;
+        db.sismember('case:' + req.params.id + ':users',
+          req.getAuthDetails().user.user_id,
+          function(err, editor){
             var edit_or_feedback = "feedbackbutton";
             var editfeedbacktext = "Feedback";
-            if(include(editors, req.getAuthDetails().user.user_id)){
-                console.log('found in editors');
+            if(editor){
                 edit_or_feedback="editbutton";
                 editfeedbacktext="Edit";
-                editor=1;
             }
             db.mget(findCase, "markdown-help", function(err, data){
                 //console.dir(data);
@@ -269,10 +267,6 @@ app.get('/signed_in', function(req, res){
 });
 
 app.get('/case/:id/:page/edit', function(req, res) {
-  if(req.isAuthenticated()){
-    //console.dir(req.isAuthenticated());
-    //console.dir(req.getAuthDetails().user.user_id);
-    //console.dir(req.getAuthDetails());
     if (req.isAuthenticated()) {
         db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data) {
             if (!data[0]) {
@@ -296,9 +290,7 @@ app.get('/case/:id/:page/edit', function(req, res) {
                 else {res.send("NOT ALLOWED", 403)}
             });
         });
-    }
-    else {res.send("Please log in to edit pages", 200)}
-  }else{res.redirect('/')}
+    } else{res.redirect('/')}
 });
 
 app.post('/case/:id/newpage', function(req, res){
@@ -392,6 +384,12 @@ app.get('/image/:id', function(req, res) {
         }
     });
     }else{res.redirect('/')}
+});
+
+app.post('/case/:id/feedback', function(req, res){
+    feedback = req.body;
+    console.dir(feedback);
+    res.send('OK', 200);
 });
 
 app.post('/image_new', function(req, res){

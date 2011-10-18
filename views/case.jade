@@ -12,6 +12,7 @@ iframe(id='editbar', src='about:none', style='display:none')
       textarea.mdtxt(style='display:none')
         #{text}
       .md
+  br
   -if('#{prevpage}')
     a(href='/case/#{cid}/#{prevpage}', style='float: left')
       | <- prev page
@@ -52,6 +53,20 @@ iframe(id='editbar', src='about:none', style='display:none')
     input(type='checkbox', id='meta_private', value='1', name='meta_private')
     button(id='meta_ok', type='button')
       | OK
+#feedback_dialog.dialog_box(style='display:none')
+  form(id='feedback')
+    textarea(id='feedback_text')
+    br
+    | Send to:
+    input(type='checkbox', id='feedback_author', value='1', name='author')
+    | Creator
+    input(type='checkbox', id='feedback_curator', value='1', name='curator')
+    | Curator
+    br
+    button(type='button', id='send_feedback')
+      | Send feedback
+    button(type='button', id='cancel_feedback')
+      | Cancel
 #uploadarea.dialog_box(style='display:none')
   | Please choose image(s) to upload.
   br
