@@ -110,7 +110,7 @@ function spiderpage(){
   jsonpage.meta_private = function(){
       if($("#meta_private", top.document).is(':checked')){return 1} else {return 0}
         };
-  alert(jsonpage.meta_private());
+  //alert(jsonpage.meta_private());
   jsonpage.radios = $(".radio", top.document).map(function(){
     var radio = {};
     radio.images = $(this).children('.stack').children('.stack_image').map(function(){
@@ -134,11 +134,11 @@ var authcallback = function(data) {
        url: '/signed_in',
        statusCode: {
            200: function(){
-                sessionButton(data.user.username);
-                $('#twitbutt', top.document).hide();
-                $('#feedbackbutton').attr("id","editbutton").html("Edit");
-                if(data=='new user'){
-                $('#info').html('new user').show();}},
+                $('#session').html('<a class="session" id="user_settings">' + data.user.username + ' ▼ </a>');
+                //$('#twitbutt', top.document).hide();
+                $('#feedbackbutton').attr("id","editbutton").html("Edit");},
+                //if(data=='new user'){
+                //$('#info').html('new user').show();}},
            403: function(data){
                 alert('not allowed - if you feel that this is an error, please write to info@radioca.se');
            }
@@ -148,6 +148,12 @@ var authcallback = function(data) {
 
 $(function(){
 
+  $('#user_settings').live({
+      click: function(){
+        $('#userinfo').toggle();
+      }
+  });
+
   touchscroll();
   scrollfunction_mw();
     
@@ -155,16 +161,17 @@ $(function(){
 
   $('#sign_out').live({
       click: function(){
-            window.open('http://twitter.com/#!/logout');
+          window.open('http://twitter.com/#!/logout');
           $.ajax({
                 url: '/sign_out',
                 statusCode: {
                     200: function(data){
                          editclose();
                          $('#editbutton').hide();
-                         $('#session').html(data);
+                         $('#session').html('<a class="session" id="sign_in">Sign in with twitter</a>');
                 }}
             });
+        $('#userinfo').hide();
         $('#editbutton').attr("id","feedbackbutton").html("Feedback");
         $('#feedbackbutton').show();
         }
@@ -214,7 +221,7 @@ $(function(){
     }
   });
 
-  $('#twitbutt').live({
+  $('#sign_in').live({
       click: function(){
         openEasyOAuthBox('twitter',authcallback)
     }
@@ -320,7 +327,7 @@ $(function(){
 
   $('#done').live({
     click: function(){
-        $('#save').trigger('click');
+        //$('#save').trigger('click');
         editclose();
     }
   });
