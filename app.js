@@ -101,6 +101,30 @@ app.get('/newcase', function(req, res){
 });
 
 app.post('/newcase', function(req, res){
+    if(req.isAuthenticated()){
+        var data = req.body;
+        data.creator = req.getAuthDetails().user.username;
+        //console.log(data);
+        data.texts = ['Double click to add text'];
+        var day = new Date();
+        var cid = day.getTime().toString();
+        data.cid = cid;
+            if(!data.meta_private){ db.lpush('cases', cid)}
+            else{db.sadd('private', cid)};
+            db.sadd('cases:' + data.creator, cid);
+            db.hmset('case:' + cid + ':page:1', data,
+                function(err){
+                    db.sadd('case:' + cid + ':users', req.getAuthDetails().user.user_id,
+                        function(){
+                            console.log('created case: ' + cid);
+                            res.send('/case/' + cid +'/1',200);
+                        });
+                });
+    }
+    else{res.send('FORBIDDEN', 403)};
+});
+
+app.post('/newcase_old', function(req, res){
    if(req.isAuthenticated()){
       var data = req.body;
       data.creator = req.getAuthDetails().user.username;
@@ -130,6 +154,26 @@ app.post('/newcase', function(req, res){
 });
 
 app.get('/cases/:start/:finish', function(req, res){
+    if(req.isAuthenticated()){
+        var start = parseInt(req.params.start, 10);
+        var end = parseInt(req.params.finish, 10);
+        db.lrange('cases', start, end, function(err, data){
+            if(err){res.send('404', 404)}
+            else{
+                if(!data[0]){
+                    console.dir('not found');
+                    res.send('404', 404);
+                }else{
+                    var i = 0;
+                    var sendcases = [];
+                    requestHandlers.getCases(req, res, data, i, sendcases, db);
+                }
+            }
+        });
+    }else{ res.redirect('/') }
+});
+
+app.get('/cases/:start/:finish/old', function(req, res){
  if(req.isAuthenticated()){
    var start = parseInt(req.params.start, 10);
    var end = parseInt(req.params.finish, 10);
@@ -161,36 +205,86 @@ app.get('/cases/:start/:finish', function(req, res){
  }else{ res.redirect('/') }
 });
 
-app.get('/case/:id/:page/new', function(req, res){
-    if(req.isAuthenticated()){
-        console.log('GET case/' + req.params.id + '/' + req.params.page);
-        db.sismember('private','case:' + req.params.id, function(err, private){
-            if(err){res.redirect('back');}else{
-            if(!private){requestHandlers.renderpage(req, res, db)}
-            else{
-              db.smembers('case:' + req.params.id + ':users', function(err, editors){
-                  if(include(editors, req.params.getAuthDetails().user.user_id)){
-                      console.log('found in editors');
-                      reqestHandlers.renderpage(req, res, db)
-                  } else {res.send('NOT ALLOWED', 403)}
-              });
-            }}
-        });
-    }});
+//app.get('/case/:id/:page/new', function(req, res){
+//    if(req.isAuthenticated()){
+//        console.log('GET case/' + req.params.id + '/' + req.params.page);
+//        db.sismember('private','case:' + req.params.id, function(err, private){
+//            if(err){res.redirect('back');}else{
+//            if(!private){requestHandlers.renderpage(req, res, db)}
+//            else{
+//              db.smembers('case:' + req.params.id + ':users', function(err, editors){
+//                  if(include(editors, req.params.getAuthDetails().user.user_id)){
+//                      console.log('found in editors');
+//                      reqestHandlers.renderpage(req, res, db)
+//                  } else {res.send('NOT ALLOWED', 403)}
+//              });
+//            }}
+//        });
+//    }});
 
 app.get('/case/:id/:page', function(req, res) {
+    if(req.isAuthenticated()){
+        console.log('GET case/' + req.params.id + '/' + req.params.page);
+        var findCase = "case:" + req.params.id + ":page:" + req.params.page;
+        db.sismember('case:' + req.params.id + ':users',
+            req.getAuthDetails().user.user_id,
+            function(err, editor){
+                db.get("markdown-help", function(err, data){
+                    mdhelp = JSON.parse(data);
+                    db.hgetall(findCase, function(err, theCase){
+                    if(err || !theCase.cid){res.redirect('back')} else {
+                        console.dir(theCase);
+                        var prevpage = parseInt(req.params.page, 10) - 1;
+                        var nextpage = parseInt(req.params.page, 10) + 1;
+                        if(theCase.meta_private){
+                            if(editor){
+                                return res.render('case', {
+                                    title: theCase.title || ' - untitled',
+                                    radios: theCase.radios || '',
+                                    texts: [theCase.texts] || '',
+                                    creator: theCase.creator || '',
+                                    mdhelp: mdhelp,
+                                    signed_in: req.isAuthenticated(),
+                                    user: req.getAuthDetails().user.username,
+                                    cid: req.params.id,
+                                    prevpage: prevpage,
+                                    nextpage: nextpage,
+                                    page: req.params.page,
+                                    editor: editor,
+                                    meta_private: theCase.meta_private || 0
+                                });
+                            }else{res.redirect('back');}
+                        }else{
+                            return res.render('case', {
+                                title: theCase.title || ' - untitled',
+                                radios: theCase.radios || '',
+                                texts: theCase.texts || '',
+                                creator: theCase.creator || '',
+                                mdhelp: mdhelp,
+                                signed_in: req.isAuthenticated(),
+                                user: req.getAuthDetails().user.username,
+                                cid: req.params.id,
+                                prevpage: prevpage,
+                                nextpage: nextpage,
+                                page: req.params.page,
+                                editor: editor,
+                                meta_private: theCase.meta_private || 0
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    }else{res.redirect('/')}
+});
+
+app.get('/case/:id/:page/old', function(req, res) {
   if(req.isAuthenticated()){
     console.log('GET case/' + req.params.id + '/' + req.params.page);
     var findCase = "case:" + req.params.id + ":page:" + req.params.page;
         db.sismember('case:' + req.params.id + ':users',
           req.getAuthDetails().user.user_id,
           function(err, editor){
-            var edit_or_feedback = "feedbackbutton";
-            var editfeedbacktext = "Feedback";
-            if(editor){
-                edit_or_feedback="editbutton";
-                editfeedbacktext="Edit";
-            }
             db.mget(findCase, "markdown-help", function(err, data){
                 //console.dir(data);
                 if(!data[0]){res.redirect('back')} else {
@@ -207,8 +301,6 @@ app.get('/case/:id/:page', function(req, res) {
                             texts: theCase.texts || '',
                             creator: theCase.creator || '',
                             mdhelp: mdhelp,
-                            edit_or_feedback: edit_or_feedback,
-                            editfeedbacktext: editfeedbacktext,
                             signed_in: req.isAuthenticated(),
                             user: req.getAuthDetails().user.username,
                             cid: req.params.id,
@@ -226,8 +318,6 @@ app.get('/case/:id/:page', function(req, res) {
                         texts: theCase.texts || '',
                         creator: theCase.creator || '',
                         mdhelp: mdhelp,
-                        edit_or_feedback: edit_or_feedback,
-                        editfeedbacktext: editfeedbacktext,
                         signed_in: req.isAuthenticated(),
                         user: req.getAuthDetails().user.username,
                         cid: req.params.id,
@@ -268,8 +358,9 @@ app.get('/signed_in', function(req, res){
 
 app.get('/case/:id/:page/edit', function(req, res) {
     if (req.isAuthenticated()) {
-        db.get("case:" + req.params.id + ":page:" + req.params.page, function(err, data) {
-            if (!data[0]) {
+        db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(err, data) {
+            console.dir(data);
+            if (!data) {
                 return res.send("NOT FOUND", 404);
             }
             else db.sismember('case:' + req.params.id + ':users',
@@ -300,7 +391,7 @@ app.post('/case/:id/newpage', function(req, res){
         var page = 2;
         var cid = req.params.id;
         var pagedata = req.body;
-        pagedata.texts = ['Double click to add text'];
+        pagedata.texts = 'Double click to add text';
         pagedata.creator = req.getAuthDetails().user.username;
         pagedata.cid = req.params.id;
         requestHandlers.newpage(req, res, cid, page, db, pagedata);
@@ -311,9 +402,26 @@ app.post('/case/:id/newpage', function(req, res){
 
 app.put('/case/:id/:page', function(req, res) {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
+        if(editor){
+            var data = req.body;
+            //console.dir(data);
+            data.cid = req.params.id;
+            data.creator = req.getAuthDetails().user.username;
+            //hash = JSON.stringify(data);
+            //console.dir(hash);
+            db.hmset('case:' + req.params.id + ':page:' + req.params.page, data);
+            console.log('saved page');
+            res.send('OK', 200)
+        }
+        else{res.send('FORBIDDEN', 403)};
+    });
+});
+
+app.put('/case/:id/:page/old', function(req, res) {
+    db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor){
             if(editor){
                 var data = req.body;
-                console.dir(data);
+                //console.dir(data);
                 data.creator = req.getAuthDetails().user.username;
                 data.cid = req.params.id;
                 db.set('case:' + req.params.id + ':page:' + req.params.page, JSON.stringify(data));
@@ -392,41 +500,10 @@ app.post('/case/:id/feedback', function(req, res){
     res.send('OK', 200);
 });
 
-app.post('/image_new', function(req, res){
-  console.log('POST /image called');
-  var day = new Date();
-  var d = day.getTime().toString();
-  console.log(d);
-  var i = 0;
-  var form = new formidable.IncomingForm(),
-      files = [],
-      fields = [];
-  form
-    .on('field', function(field, value) {
-        //console.log(field, value);
-        fields.push([field, value]);
-    })
-    .on('fileBegin', function(name, file) {
-          //console.log('file');
-          if(file.type='image/jpeg') {
-             file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
-             i ++;
-          }
-          //console.log(field, file);
-          files.push([field, file]);
-    })
-    .on('end', function() {
-        //console.log('-> upload done');
-        //console.log(util.inspect(fields));
-        //console.log(util.inspect(files));
-          // TODO: fix the image montage.
-    });
-});
-
-app.post('/image/', function(req, res) {
+app.post('/:id/image/', function(req, res) {
     console.log("POST /image/ called");
     if(req.isAuthenticated()){
-        requestHandlers.postImage2(req,res);
+        requestHandlers.postImage2(req,res, db);
     }
     else {res.send("not logged in", 200)}
 });

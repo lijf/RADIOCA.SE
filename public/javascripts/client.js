@@ -284,6 +284,18 @@ $(function(){
           $(this).spin(opts);
   });
 
+  $("#showsave").live({
+     click: function(){
+         $("#save_dialog", top.document).show();
+     }
+  });
+
+  $("#cancelsave").live({
+      click: function(){
+          $("save_dialog", top.document).hide();
+      }
+  });
+
   $("#save").click(function(event){
     event.preventDefault();
     var data = spiderpage();

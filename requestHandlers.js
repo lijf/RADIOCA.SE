@@ -1,7 +1,23 @@
 var formidable = require('formidable'),
     url = require('url');
 
-function postImage2(req, res){
+function getCases(req, res, data, i, sendcases, db){
+    if(data[i]){
+        db.hgetall('case:' + data[i] + ':page:1', function(err, sendcase){
+            sendcases[i] = sendcase;
+            i++;
+            if(data[i]){getCases(data, i, sendcases)}
+            else{res.render('cases', {
+                title: 'Cases',
+                signed_in: req.isAuthenticated(),
+                user: req.getAuthDetails().user.username,
+                cases: sendcases
+            })}
+        });
+    } else{return 'No data'}
+}
+
+function postImage2(req, res, db){
   var day = new Date();
   var d = day.getTime().toString();
   //console.log(d);
@@ -26,6 +42,8 @@ function postImage2(req, res){
     })
     .on('end', function() {
         console.log('-> upload done');
+        db.sadd('image:' + d, 'req.params.id');
+        db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':images', d);
         //console.log(util.inspect(fields));
         //console.log(util.inspect(files));
         res.send(d + '|' + i, 200);
@@ -96,7 +114,7 @@ function renderpage(req, res, db){
         });
     });
 }
-
+exports.getCases = getCases;
 exports.renderpage = renderpage;
 exports.newpage = newpage;
 exports.postImage2 = postImage2;
