@@ -110,7 +110,7 @@ app.post('/newcase', function(req, res){
         var cid = day.getTime().toString();
         data.cid = cid;
             if(!data.meta_private){ db.lpush('cases', cid)}
-            else{db.sadd('private', cid)};
+            else{db.sadd('private', cid)}
             db.sadd('cases:' + data.creator, cid);
             db.hmset('case:' + cid + ':page:1', data,
                 function(err){
@@ -121,7 +121,7 @@ app.post('/newcase', function(req, res){
                         });
                 });
     }
-    else{res.send('FORBIDDEN', 403)};
+    else{res.send('FORBIDDEN', 403)}
 });
 
 app.post('/newcase_old', function(req, res){
@@ -138,7 +138,7 @@ app.post('/newcase_old', function(req, res){
         var caseurl = 'case:' + casenumber;
         //console.log(data.private);
         if(!data.private){ db.lpush('cases', casedata)}
-        else{db.sadd('private', caseurl)};
+        else{db.sadd('private', caseurl)}
         db.sadd('cases:' + data.creator, casedata);
         db.set(caseurl + ':page:1', casedata,
             function(err){
