@@ -97,9 +97,9 @@ function rendercase(req, res, theCase, editor, db){
                         images.forEach(function(image, imgID){
                             theCase.radios[ID].images[imgID] = image;
                         });
-                        if(!radioIDs[ID+1])
-                        {
+                        if(!radioIDs[ID+1]){
                             console.log('last radio');
+                            console.dir(theCase);
                             return res.render('case', {
                                 title: theCase.title || ' - untitled',
                                 radios: theCase.radios || '',
@@ -116,7 +116,6 @@ function rendercase(req, res, theCase, editor, db){
                                 meta_private: theCase.meta_private || 0
                             });
                         }
-                        //console.dir(theCase.radios[ID].images);
                     });
                 });
             });
