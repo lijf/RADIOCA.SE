@@ -30,7 +30,7 @@ iframe(id='editbar', src='about:none', style='display:none')
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-  a.session(id='addstack')
+  a.session(id='addstack', style='display:none')
     | ＋
   #markdown-help(style='display:none')
     a.session(id='closehelp')
@@ -84,7 +84,7 @@ iframe(id='editbar', src='about:none', style='display:none')
   | they will be combined to a stack.
   br
   br
-  form(id='uploadform')
+  form(id='uploadform', action='/image/#{cid}/#{page}')
     .fileinputs
       input.file(type='file', name='userfile', id='userfile', multiple='multiple')
       .fakefile

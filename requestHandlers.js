@@ -7,7 +7,7 @@ function getCases(req, res, data, i, sendcases, db){
             sendcases[i] = sendcase;
             i++;
             if(data[i]){getCases(data, i, sendcases)}
-            else{res.render('cases', {
+            else{console.log('rendering cases');res.render('cases', {
                 title: 'Cases',
                 signed_in: req.isAuthenticated(),
                 user: req.getAuthDetails().user.username,
@@ -15,6 +15,91 @@ function getCases(req, res, data, i, sendcases, db){
             })}
         });
     } else{return 'No data'}
+}
+
+function popradios_old(req, res, theCase, editor, radioID, radios, db, i){
+    db.lrange('radio:' + radioID[i], 0, -1, function(err, images){
+        if(err || !images[0]){
+        //console.dir(radios);
+        return res.render('case', {
+            title: theCase.title || ' - untitled',
+            radios: radios || '',
+            texts: [theCase.texts] || '',
+            creator: theCase.creator || '',
+            mdhelp: mdhelp,
+            signed_in: req.isAuthenticated(),
+            user: req.getAuthDetails().user.username,
+            cid: req.params.id,
+            prevpage: parseInt(req.params.page, 10) - 1,
+            nextpage: parseInt(req.params.page, 10) + 1,
+            page: req.params.page,
+            editor: editor,
+            meta_private: theCase.meta_private || 0
+        });
+        }
+        else{
+            console.dir(images);
+            //radios[i].images = images;
+            i++;
+            popradios(req, res, theCase, editor, radioID, radios, db, i);
+        }
+    });
+}
+
+function popradios(req, res, theCase, db){
+    db.lrange('case:' + req.params.id + ':page:' + req.params.page + ":radios",
+        0, -1, function(err, radioIDs){
+            theCase.radios = [];
+            radioIDs.forEach(function(radioID, ID){
+                theCase.radios[ID] = [];
+                theCase.radios[ID].ID = radioID;
+                db.lrange("radio:" + radioID, 0, -1, function(err, images){
+                    theCase.radios[ID].images = [];
+                    images.forEach(function(image, imgID){
+                        theCase.radios[ID].images[imgID] = image;
+                    });
+                    //console.dir(theCase.radios[ID].images);
+                });
+            });
+    });
+}
+
+function rendercase(req, res, theCase, editor, db){
+    db.get("markdown-help", function(err, data){
+        mdhelp = JSON.parse(data);
+        popradios(req, res, theCase, db);
+        console.dir(theCase);
+        return res.render('case', {
+        title: theCase.title || ' - untitled',
+        radios: theCase.radios || '',
+        texts: [theCase.texts] || '',
+        creator: theCase.creator || '',
+        mdhelp: mdhelp,
+        signed_in: req.isAuthenticated(),
+        user: req.getAuthDetails().user.username,
+        cid: req.params.id,
+        prevpage: parseInt(req.params.page, 10) - 1,
+        nextpage: parseInt(req.params.page, 10) + 1,
+        page: req.params.page,
+        editor: editor,
+        meta_private: theCase.meta_private || 0
+    });
+});
+}
+
+
+function rendercase_old(req, res, theCase, editor, db){
+    db.get("markdown-help", function(err, data){
+      mdhelp = JSON.parse(data);
+      db.lrange("case:" + req.params.id + ":page:" + req.params.page + ':radios', 0, -1, function(err, radioID){
+        if(err || !radioID[0]){console.log('no radio found')}
+        else{console.log(radioID);
+             var radios = [];
+             var i = 0;
+             popradios(req, res, theCase, editor, radioID, radios, db, i);
+        }
+      });
+    });
 }
 
 function postImage2(req, res, db){
@@ -35,6 +120,7 @@ function postImage2(req, res, db){
           //console.log(file.filename);
           if(file.type='image/jpeg') {
             file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
+            db.rpush('radio:' + d, '/img/' + d + '.' + i + '.jpg');
             i ++;
           }
           //console.log(field, file);
@@ -42,8 +128,8 @@ function postImage2(req, res, db){
     })
     .on('end', function() {
         console.log('-> upload done');
-        db.sadd('image:' + d, 'req.params.id');
-        db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':images', d);
+        db.sadd('image:' + d, req.params.id);
+        db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', d);
         //console.log(util.inspect(fields));
         //console.log(util.inspect(files));
         res.send(d + '|' + i, 200);
@@ -68,53 +154,7 @@ function newpage(req, res, cid, page, db, pagedata){
             });
         }
 
-function renderpage(req, res, db){
-    var findcase = 'case:' + req.params.id;
-    var findpage = 'case:' + req.params.id + ':page:' + req.params.page;
-    db.smembers(findcase + ':users', function(err, editors){
-        var editor=0;
-        var edit_or_feedback;
-        var editfeedbacktext = "Feedback";
-        if(include(editors, req.getAuthDetails().user.user_id)){
-            console.log('found in editors');
-            edit_or_feedback="editbutton";
-            editfeedbacktext="Edit";
-            editor=1;
-        } else {
-            edit_or_feedback="feedbackbutton"
-        }
-        db.mget(findpage, "markdown-help", function(err, data){
-            //console.dir(data);
-            if(!data[0]){res.redirect('back')} else {
-                //console.log(data[0]);
-                var thePage = JSON.parse(data[0].toString());
-                var mdhelp = JSON.parse(data[1].toString());
-                var prevpage = parseInt(req.params.page, 10) - 1;
-                var nextpage = parseInt(req.params.page, 10) + 1;
-                //console.dir(theCase);
-                return res.render('case', {
-                    title: thePage.title || ' - untitled',
-                    radios: thePage.radios || '',
-                    texts: thePage.texts || '',
-                    creator: theCase.creator || '',
-                    mdhelp: mdhelp,
-                    edit_or_feedback: edit_or_feedback,
-                    editfeedbacktext: editfeedbacktext,
-                    signed_in: req.isAuthenticated(),
-                    user: req.getAuthDetails().user.username,
-                    cid: req.params.id,
-                    prevpage: prevpage,
-                    nextpage: nextpage,
-                    page: req.params.page,
-                    editor: editor,
-                    meta_private: thePage.meta_private || 0,
-                    meta_icd: thePage.icd
-                });
-            }
-        });
-    });
-}
+exports.rendercase = rendercase;
 exports.getCases = getCases;
-exports.renderpage = renderpage;
 exports.newpage = newpage;
 exports.postImage2 = postImage2;

@@ -185,6 +185,7 @@ $(function(){
           if($("#meta_private", top.document).is(':checked')){return 1} else {return 0}
         };
         var targeturl = '/case/' + pathname[2] + '/newpage';
+        alert(targeturl);
         $.ajax({
             url: targeturl,
             type: 'POST',
@@ -192,8 +193,10 @@ $(function(){
             statusCode: {
                 404: function(){alert('page not found')},
                 200: function(redirect) {
+                       alert(redirect);
                        $('#save').trigger('click');
-                       parent.change_url(redirect);},
+                       parent.change_url(redirect);
+                    },
                 403: function(){alert('Forbidden')}
             }
         });
@@ -388,7 +391,7 @@ $(function(){
     $('#uploadarea').hide();
     var userFile = $('#userfile').val();
     $('#uploadform').attr({
-      action: "/image/",
+      action: $("#uploadform").attr('action'),
       method: "POST",
       userfile: userFile,
       enctype: "multipart/form-data",
@@ -412,7 +415,7 @@ $(function(){
           //alert("id" + url[0] + "images:" + url[1]);
           while(i<url[1]){
             $('.radio:last>.stack', top.document).append(
-            '<img class="stack_image" src="/image/' + url[0] + '.' + i + '"/>');
+            '<img class="stack_image" src="/img/' + url[0] + '.' + i + '"/>');
               i++;
           // alert(imgid);
           }
