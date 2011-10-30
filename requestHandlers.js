@@ -58,6 +58,25 @@ function popradios(req, res, theCase, db){
                     images.forEach(function(image, imgID){
                         theCase.radios[ID].images[imgID] = image;
                     });
+                    if(!radioIDs[ID+1])
+                    {
+                        console.log('last radio');
+                        return res.render('case', {
+                            title: theCase.title || ' - untitled',
+                            radios: theCase.radios || '',
+                            texts: [theCase.texts] || '',
+                            creator: theCase.creator || '',
+                            mdhelp: mdhelp,
+                            signed_in: req.isAuthenticated(),
+                            user: req.getAuthDetails().user.username,
+                            cid: req.params.id,
+                            prevpage: parseInt(req.params.page, 10) - 1,
+                            nextpage: parseInt(req.params.page, 10) + 1,
+                            page: req.params.page,
+                            editor: editor,
+                            meta_private: theCase.meta_private || 0
+                        });
+                    }
                     //console.dir(theCase.radios[ID].images);
                 });
             });
@@ -67,23 +86,40 @@ function popradios(req, res, theCase, db){
 function rendercase(req, res, theCase, editor, db){
     db.get("markdown-help", function(err, data){
         mdhelp = JSON.parse(data);
-        popradios(req, res, theCase, db);
-        console.dir(theCase);
-        return res.render('case', {
-        title: theCase.title || ' - untitled',
-        radios: theCase.radios || '',
-        texts: [theCase.texts] || '',
-        creator: theCase.creator || '',
-        mdhelp: mdhelp,
-        signed_in: req.isAuthenticated(),
-        user: req.getAuthDetails().user.username,
-        cid: req.params.id,
-        prevpage: parseInt(req.params.page, 10) - 1,
-        nextpage: parseInt(req.params.page, 10) + 1,
-        page: req.params.page,
-        editor: editor,
-        meta_private: theCase.meta_private || 0
-    });
+        db.lrange('case:' + req.params.id + ':page:' + req.params.page + ":radios",
+            0, -1, function(err, radioIDs){
+                theCase.radios = [];
+                radioIDs.forEach(function(radioID, ID){
+                    theCase.radios[ID] = [];
+                    theCase.radios[ID].ID = radioID;
+                    db.lrange("radio:" + radioID, 0, -1, function(err, images){
+                        theCase.radios[ID].images = [];
+                        images.forEach(function(image, imgID){
+                            theCase.radios[ID].images[imgID] = image;
+                        });
+                        if(!radioIDs[ID+1])
+                        {
+                            console.log('last radio');
+                            return res.render('case', {
+                                title: theCase.title || ' - untitled',
+                                radios: theCase.radios || '',
+                                texts: [theCase.texts] || '',
+                                creator: theCase.creator || '',
+                                mdhelp: mdhelp,
+                                signed_in: req.isAuthenticated(),
+                                user: req.getAuthDetails().user.username,
+                                cid: req.params.id,
+                                prevpage: parseInt(req.params.page, 10) - 1,
+                                nextpage: parseInt(req.params.page, 10) + 1,
+                                page: req.params.page,
+                                editor: editor,
+                                meta_private: theCase.meta_private || 0
+                            });
+                        }
+                        //console.dir(theCase.radios[ID].images);
+                    });
+                });
+            });
 });
 }
 
