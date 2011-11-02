@@ -17,35 +17,6 @@ function getCases(req, res, data, i, sendcases, db){
     } else{return 'No data'}
 }
 
-function popradios_old(req, res, theCase, editor, radioID, radios, db, i){
-    db.lrange('radio:' + radioID[i], 0, -1, function(err, images){
-        if(err || !images[0]){
-        //console.dir(radios);
-        return res.render('case', {
-            title: theCase.title || ' - untitled',
-            radios: radios || '',
-            texts: [theCase.texts] || '',
-            creator: theCase.creator || '',
-            mdhelp: mdhelp,
-            signed_in: req.isAuthenticated(),
-            user: req.getAuthDetails().user.username,
-            cid: req.params.id,
-            prevpage: parseInt(req.params.page, 10) - 1,
-            nextpage: parseInt(req.params.page, 10) + 1,
-            page: req.params.page,
-            editor: editor,
-            meta_private: theCase.meta_private || 0
-        });
-        }
-        else{
-            console.dir(images);
-            //radios[i].images = images;
-            i++;
-            popradios(req, res, theCase, editor, radioID, radios, db, i);
-        }
-    });
-}
-
 function popradios(req, res, theCase, db){
     db.lrange('case:' + req.params.id + ':page:' + req.params.page + ":radios",
         0, -1, function(err, radioIDs){
@@ -122,53 +93,30 @@ function rendercase(req, res, theCase, editor, db){
 });
 }
 
-
-function rendercase_old(req, res, theCase, editor, db){
-    db.get("markdown-help", function(err, data){
-      mdhelp = JSON.parse(data);
-      db.lrange("case:" + req.params.id + ":page:" + req.params.page + ':radios', 0, -1, function(err, radioID){
-        if(err || !radioID[0]){console.log('no radio found')}
-        else{console.log(radioID);
-             var radios = [];
-             var i = 0;
-             popradios(req, res, theCase, editor, radioID, radios, db, i);
-        }
-      });
-    });
-}
-
 function postImage2(req, res, db){
   var day = new Date();
-  var d = day.getTime().toString();
-  //console.log(d);
-  var i = 0;
+  var timems = day.getTime().toString();
+  var iteration = 0;
   var form = new formidable.IncomingForm(),
       files = [],
       fields = [];
-  //form.uploadDir = __dirname + '/img/';
   form
     .on('field', function(field, value) {
-        //console.log(field, value);
         fields.push([field, value]);
     })
     .on('fileBegin', function(field, file) {
-          //console.log(file.filename);
           if(file.type='image/jpeg') {
-            file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
-            db.rpush('radio:' + d, '/img/' + d + '.' + i + '.jpg');
-            i ++;
+            file.path = __dirname + '/img/' + timems + '.' + iteration + '.jpg';
+            db.rpush('radio:' + timems, '/img/' + timems + '.' + iteration + '.jpg');
+            iteration ++;
           }
-          //console.log(field, file);
           files.push([field, file]);
     })
     .on('end', function() {
         console.log('-> upload done');
-        db.sadd('image:' + d, req.params.id);
-        db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', d);
-        //console.log(util.inspect(fields));
-        //console.log(util.inspect(files));
-        res.send(d + '|' + i, 200);
-          // TODO: fix the image montage.
+        db.sadd('image:' + timems, req.params.id);
+        db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', timems);
+        res.send(timems + '|' + iteration, 200);
     });
   form.parse(req, function(err, fields, files){
   });
@@ -176,15 +124,14 @@ function postImage2(req, res, db){
 
 function newpage(req, res, cid, page, db, pagedata){
             var trypage = 'case:' + cid + ':page:' + page;
-            db.get(trypage, function(err, data){
-                if(!data){
-                    db.set(trypage, JSON.stringify(pagedata));
-                    // sends pageinfo to client after creation.
-                    res.send('/case/' + cid + '/' + page, 200);
-                } else {
-                    // if page exists, try another page
+            db.get(trypage, function(err, data) {
+                if (data) {
                     page++;
                     newpage(req, res, cid, page, db, pagedata);
+                } 
+                else {
+                    db.set(trypage, JSON.stringify(pagedata));
+                    res.send('/case/' + cid + '/' + page, 200);
                 }
             });
         }
