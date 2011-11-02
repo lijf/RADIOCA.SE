@@ -283,7 +283,7 @@ app.get('/about', function(req, res){
 
 app.get('/img/:id', function(req, res) {
     if(req.isAuthenticated()){
-    var image = __dirname + '/img/' + req.params.id + '.jpg';
+    var image = __dirname + '/img/' + req.params.id;
     fs.readFile(image, "binary", function(error, file) {
         if (error){ return res.send("huh?", 404);} else {
             res.statusCode = 200;
