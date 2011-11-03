@@ -18,6 +18,39 @@ function scrollfunction_mw() {
   });
 }
 
+function touchscroll() {
+  $('.stack > .stack_image', top.document).each(function() {
+    var visimg = $(this);
+    this.ontouchstart = function(e) {
+      return visimg = $(this);
+    };
+    this.ontouchmove = function(e) {
+      if (e.targetTouches.length == 1) {
+        samp++;
+        if (samp === 3) {
+          samp = 0;
+          var touch = e.touches[0];
+          if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
+              visimg.prev().show();
+              visimg.hide();
+              visimg.next().hide();
+              visimg = visimg.prev();
+          }
+          else if (visimg.next().length > 0) {
+            visimg.next().show();
+            visimg.hide();
+            visimg.prev().hide();
+            visimg = visimg.next();
+          }
+          //log(parseInt(touch.pageY, 10));
+          return lastY = parseInt(touch.pageY, 10);
+        }
+        e.preventDefault();
+      }
+    }
+  });
+}
+
 function rendermd() {
   $('.md', top.document).html(function() {
     var markdown = $(this).siblings(".mdtxt").val();
