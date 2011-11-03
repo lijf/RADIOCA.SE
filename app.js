@@ -159,7 +159,7 @@ app.get('/case/:id/:page', function(req, res) {
   if (!req.isAuthenticated()) res.redirect('/');
   else {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-      db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(err, theCase) {
+      db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
         if (err || !theCase.cid) res.redirect('back');
         if (!theCase.meta_private || (theCase.meta_private && editor)) {
           requestHandlers.rendercase(req, res, theCase, editor, db);

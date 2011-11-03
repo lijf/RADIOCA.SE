@@ -1,6 +1,12 @@
 var formidable = require('formidable');
 var url = require('url');
 
+// rendercase renders theCase
+// gets markdown-help
+// gets the list of radios case:(caseid):page:(pageno):radios
+// gets the list of images radio:(radioID) for each radio
+// all is combined to json-object which is passed off for rendering
+
 function rendercase(req, res, theCase, editor, db) {
   db.get('markdown-help', function(err, data) {
     mdhelp = JSON.parse(data);
@@ -39,6 +45,11 @@ function rendercase(req, res, theCase, editor, db) {
   });
 }
 
+// postImage2 takes care of posted jpg:s,
+// adds each filename to the list radio:(timems),
+// adds (caseid) to the set image:(timems)
+// adds (timems) to the list case:(caseid):page:(pageno),
+
 function postImage2(req, res, db) {
   var day = new Date();
   var timems = day.getTime().toString();
@@ -48,8 +59,8 @@ function postImage2(req, res, db) {
           fields = [];
   form
           .on('field', function(field, value) {
-    fields.push([field, value]);
-  })
+            fields.push([field, value]);
+          })
           .on('fileBegin', function(field, file) {
             if (file.type = 'image/jpeg') {
               file.path = __dirname + '/img/' + timems + '.' + iteration + '.jpg';
