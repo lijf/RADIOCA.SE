@@ -57,9 +57,6 @@ db.on('error', function(err) {
   console.log('Redis Error ' + err);
 });
 
-function include(arr, obj) {
-  return (arr.indexOf(obj) != -1);
-}
 // Helper functions
 
 function username(req, res) {
@@ -106,28 +103,6 @@ app.post('/newcase', function(req, res) {
     });
   }
 });
-
-function getCases(req, res, data, i, sendcases, db) {
-  if (!data[i]) return 'No data';
-  else {
-    db.hgetall('case:' + data[i] + ':page:1', function(err, sendcase) {
-      sendcases[i] = sendcase;
-      i++;
-      if (data[i]) {
-        getCases(data, i, sendcases)
-      }
-      else {
-        console.log('rendering cases');
-        res.render('cases', {
-          title: 'Cases',
-          signed_in: req.isAuthenticated(),
-          user: req.getAuthDetails().user.username,
-          cases: sendcases
-        })
-      }
-    });
-  }
-}
 
 app.get('/cases/:start/:finish', function(req, res) {
   if (!req.isAuthenticated()) res.redirect('/');
@@ -250,7 +225,7 @@ app.put('/case/:id/:page', function(req, res) {
 app.post('/case/:id/:page/delete', function(req, res) {
   console.dir('delete page triggered');
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-    if (!editor) res.send('FORBIDDEN', 403)
+    if (!editor) res.send('FORBIDDEN', 403);
     else {
       db.del('case:' + req.params.id + ':page:' + req.params.page);
       res.send('OK', 200);
@@ -258,7 +233,7 @@ app.post('/case/:id/:page/delete', function(req, res) {
   })
 });
 
-app.get('/sign_out', function(req, res, params) {
+app.get('/sign_out', function(req, res) {
   req.logout();
   res.send('<button id="twitbutt">Sign in with twitter</button>');
 });
@@ -303,7 +278,7 @@ app.get('/img/:img', function(req, res) {
 });
 
 app.post('/case/:id/feedback', function(req, res) {
-  feedback = req.body;
+  var feedback = req.body;
   console.dir(feedback);
   res.send('OK', 200);
 });

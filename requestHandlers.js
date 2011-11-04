@@ -13,32 +13,35 @@ function rendercase(req, res, theCase, editor, db) {
     db.lrange('case:' + req.params.id + ':page:' + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
       theCase.radios = [];
       radioIDs.forEach(function(radioID, ID) {
-        theCase.radios[ID] = [];
-        theCase.radios[ID].ID = radioID;
-        db.lrange("radio:" + radioID, 0, -1, function(err, images) {
-          theCase.radios[ID].images = [];
-          images.forEach(function(image, imgID) {
-            theCase.radios[ID].images[imgID] = image;
-          });
-          if (!radioIDs[ID + 1]) {
-            console.log('last radio');
-            console.dir(theCase);
-            return res.render('case', {
-              title: theCase.title || ' - untitled',
-              radios: theCase.radios || '',
-              texts: [theCase.texts] || '',
-              creator: theCase.creator || '',
-              mdhelp: mdhelp,
-              signed_in: req.isAuthenticated(),
-              user: req.getAuthDetails().user.username,
-              cid: req.params.id,
-              prevpage: parseInt(req.params.page, 10) - 1,
-              nextpage: parseInt(req.params.page, 10) + 1,
-              page: req.params.page,
-              editor: editor,
-              meta_private: theCase.meta_private || 0
+        db.get('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + radioID + ':caption', function(err, caption) {
+          theCase.radios[ID] = [];
+          theCase.radios[ID].ID = radioID;
+          theCase.radios[ID].caption = caption;
+          db.lrange("radio:" + radioID, 0, -1, function(err, images) {
+            theCase.radios[ID].images = [];
+            images.forEach(function(image, imgID) {
+              theCase.radios[ID].images[imgID] = image;
             });
-          }
+            if (!radioIDs[ID + 1]) {
+              //console.log('last radio');
+              //console.dir(theCase);
+              return res.render('case', {
+                title: theCase.title || ' - untitled',
+                radios: theCase.radios || '',
+                texts: [theCase.texts] || '',
+                creator: theCase.creator || '',
+                mdhelp: mdhelp,
+                signed_in: req.isAuthenticated(),
+                user: req.getAuthDetails().user.username,
+                cid: req.params.id,
+                prevpage: parseInt(req.params.page, 10) - 1,
+                nextpage: parseInt(req.params.page, 10) + 1,
+                page: req.params.page,
+                editor: editor,
+                meta_private: theCase.meta_private || 0
+              });
+            }
+          });
         });
       });
     });
@@ -59,8 +62,8 @@ function postImage2(req, res, db) {
           fields = [];
   form
           .on('field', function(field, value) {
-            fields.push([field, value]);
-          })
+    fields.push([field, value]);
+  })
           .on('fileBegin', function(field, file) {
             if (file.type = 'image/jpeg') {
               file.path = __dirname + '/img/' + timems + '.' + iteration + '.jpg';
@@ -73,6 +76,7 @@ function postImage2(req, res, db) {
             console.log('-> upload done');
             db.sadd('image:' + timems, req.params.id);
             db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', timems);
+            db.set('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + timems + ':caption', 'double click to add caption');
             res.send(timems + '|' + iteration, 200);
           });
   form.parse(req, function(err, fields, files) {
@@ -94,6 +98,5 @@ function newpage(req, res, cid, page, db, pagedata) {
 }
 
 exports.rendercase = rendercase;
-exports.getCases = getCases;
 exports.newpage = newpage;
 exports.postImage2 = postImage2;

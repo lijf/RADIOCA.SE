@@ -18,6 +18,9 @@ function scrollfunction_mw() {
   });
 }
 
+var lastY = 0;
+var samp = 0;
+
 function touchscroll() {
   $('.stack > .stack_image', top.document).each(function() {
     var visimg = $(this);
@@ -25,16 +28,16 @@ function touchscroll() {
       return visimg = $(this);
     };
     this.ontouchmove = function(e) {
-      if (e.targetTouches.length == 1) {
+      if (e.targetTouches.length === 1) {
         samp++;
         if (samp === 3) {
           samp = 0;
           var touch = e.touches[0];
           if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
-              visimg.prev().show();
-              visimg.hide();
-              visimg.next().hide();
-              visimg = visimg.prev();
+            visimg.prev().show();
+            visimg.hide();
+            visimg.next().hide();
+            visimg = visimg.prev();
           }
           else if (visimg.next().length > 0) {
             visimg.next().show();
@@ -100,7 +103,7 @@ function editclose() {
   $('#editbutton', top.document).show();
 }
 
-// TODO rewrite spiderpage - radios are no longer stored as part of json-object, better ignore here? I would have to solve how reordering radios on a page should work.
+// TODO rewrite spiderpage - radios are no longer stored as part of json-object, better ignore here? I would have to solve how reordering radios on a page should work. CAPTIONS?
 
 
 function spiderpage() {
@@ -115,10 +118,18 @@ function spiderpage() {
 //            radio.caption = $(this).children('.caption').children('.mdtxt').val();
 //            return radio;
 //          }).get();
+  json.radios = $('.radio', top.document).map(
+          function() {
+            var radio = {};
+            radio.id = $(this).attr('id');
+            radio.caption = $(this).children('.caption').children('.mdtxt').val();
+          }
+  ).get();
   json.texts = $('.txt>.mdtxt', top.document).map(
           function() {
             return($(this).val());
-          }).get();
+          }
+  ).get();
   return json;
 }
 
@@ -241,15 +252,11 @@ $(function() {
       var feedback = {};
       var targeturl = '/case/' + pathname[2] + '/feedback';
       feedback.text = $('#feedback_text', top.document).val();
-      feedback.toAuthor = function() {
-        return $('#feedback_author', top.document).is(':checked') ? 1 : 0;
-      };
-      //feedback.toPublic = function(){
-      //    if($("#feedback_public", top.document).is(':checked')){return 1} else {return 0}
-      //};
-      feedback.toCurator = function() {
-        return $('#feedback_curator', top.document).is(':checked') ? 1 : 0;
-      };
+      feedback.toAuthor = $('#feedback_author', top.document).is(':checked');
+//      feedback.toPublic = function() {
+//        return $("#feedback_public", top.document).is(':checked') ? 1 : 0;
+//      };
+      feedback.toCurator = $('#feedback_curator', top.document).is(':checked');
       $.ajax({
         url: targeturl,
         type: 'POST',
@@ -291,15 +298,17 @@ $(function() {
 
   $('#save').click(function(event) {
     event.preventDefault();
-    var data = spiderpage();
+    //var data = spiderpage();
     //alert(data);
-    var url = $('#savepage').attr('action').toString();
+    //var url = $('#savepage').attr('action').toString();
     $.ajax({
       type: 'PUT',
-      url: url,
-      data: data,
-      success: function(msg) {
-        //alert("Page Saved: " + msg);
+      url: $('#savepage').attr('action').toString(),
+      data: spiderpage(),
+      statusCode:{
+        200: function(msg) {
+          //alert("Page Saved: " + msg);
+        }
       }
     });
   });
