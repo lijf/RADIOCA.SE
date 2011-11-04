@@ -89,16 +89,16 @@ app.post('/newcase', function(req, res) {
     data.creator = req.getAuthDetails().user.username;
     //console.log(data);
     data.texts = ['Double click to add text'];
-    var day = new Date();
-    var cid = day.getTime().toString();
-    data.cid = cid;
-    if (!data.meta_private) db.lpush('cases', cid);
-    else db.sadd('private', cid);
-    db.sadd('cases:' + data.creator, cid);
-    db.hmset('case:' + cid + ':page:1', data, function(err) {
-      db.sadd('case:' + cid + ':users', req.getAuthDetails().user.user_id, function() {
-        console.log('created case: ' + cid);
-        res.send('/case/' + cid + '/1', 200);
+    db.incr('numberOfCases', function(err, cid) {
+      data.cid = cid;
+      if (!data.meta_private) db.lpush('cases', cid);
+      else db.sadd('private', cid);
+      db.sadd('cases:' + data.creator, cid);
+      db.hmset('case:' + cid + ':page:1', data, function(err) {
+        db.sadd('case:' + cid + ':users', req.getAuthDetails().user.user_id, function() {
+          console.log('created case: ' + cid);
+          res.send('/case/' + cid + '/1', 200);
+        });
       });
     });
   }
