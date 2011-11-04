@@ -216,6 +216,10 @@ app.put('/case/:id/:page', function(req, res) {
       data.cid = req.params.id;
       data.creator = req.getAuthDetails().user.username;
       db.hmset('case:' + req.params.id + ':page:' + req.params.page, data);
+      var date = new Date().toUTCString();
+
+      var lastUpdate =
+      if (!data.meta_private()) db.
       console.log('saved page');
       res.send('OK', 200)
     }
