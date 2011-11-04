@@ -54,32 +54,32 @@ function rendercase(req, res, theCase, editor, db) {
 // adds (timems) to the list case:(caseid):page:(pageno),
 
 function postImage2(req, res, db) {
-  var day = new Date();
-  var timems = day.getTime().toString();
-  var iteration = 0;
-  var form = new formidable.IncomingForm(),
-          files = [],
-          fields = [];
-  form
-          .on('field', function(field, value) {
-    fields.push([field, value]);
-  })
-          .on('fileBegin', function(field, file) {
-            if (file.type = 'image/jpeg') {
-              file.path = __dirname + '/img/' + timems + '.' + iteration + '.jpg';
-              db.rpush('radio:' + timems, '/img/' + timems + '.' + iteration + '.jpg');
-              iteration ++;
-            }
-            files.push([field, file]);
-          })
-          .on('end', function() {
-            console.log('-> upload done');
-            db.sadd('image:' + timems, req.params.id);
-            db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', timems);
-            db.set('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + timems + ':caption', 'double click to add caption');
-            res.send(timems + '|' + iteration, 200);
-          });
-  form.parse(req, function(err, fields, files) {
+  db.incr('numberOfRadios', function(err, radioID) {
+    var iteration = 0;
+    var form = new formidable.IncomingForm(),
+            files = [],
+            fields = [];
+    form
+            .on('field', function(field, value) {
+      fields.push([field, value]);
+    })
+            .on('fileBegin', function(field, file) {
+              if (file.type = 'image/jpeg') {
+                file.path = __dirname + '/img/' + radioID + '.' + iteration + '.jpg';
+                db.rpush('radio:' + radioID, '/img/' + radioID + '.' + iteration + '.jpg');
+                iteration ++;
+              }
+              files.push([field, file]);
+            })
+            .on('end', function() {
+              console.log('-> upload done');
+              db.sadd('image:' + radioID, req.params.id);
+              db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', radioID);
+              db.set('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + radioID + ':caption', 'double click to add caption');
+              res.send(radioID + '|' + iteration, 200);
+            });
+    form.parse(req, function(err, fields, files) {
+    });
   });
 }
 
@@ -91,7 +91,8 @@ function newpage(req, res, cid, page, db, pagedata) {
       newpage(req, res, cid, page, db, pagedata);
     }
     else {
-      db.set(trypage, JSON.stringify(pagedata));
+      //db.set(trypage, JSON.stringify(pagedata));
+      db.hmset(trypage, pagedata);
       res.send('/case/' + cid + '/' + page, 200);
     }
   });
