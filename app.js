@@ -38,7 +38,7 @@ app.configure(function() {
 });
 
 app.configure('development', function() {
-  // app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function() {
@@ -89,11 +89,15 @@ app.post('/newcase', function(req, res) {
     data.creator = req.getAuthDetails().user.username;
     //console.log(data);
     data.texts = ['Double click to add text'];
+    data.created = new Date().getTime();
+    data.lastEdit = data.created;
     db.incr('numberOfCases', function(err, cid) {
       data.cid = cid;
-      if (!data.meta_private) db.lpush('cases', cid);
-      else db.sadd('private', cid);
-      db.sadd('cases:' + data.creator, cid);
+      if (!data.private) {
+        db.zadd('casesLastEdit', data.lastEdit, cid);
+        db.zadd('cases', data.created, cid);
+      }
+      db.zadd('cases:' + data.creator, data.created, cid);
       db.hmset('case:' + cid + ':page:1', data, function(err) {
         db.sadd('case:' + cid + ':users', req.getAuthDetails().user.user_id, function() {
           console.log('created case: ' + cid);
@@ -136,7 +140,7 @@ app.get('/case/:id/:page', function(req, res) {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
       db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
         if (err || !theCase.cid) res.redirect('back');
-        if (!theCase.meta_private || (theCase.meta_private && editor)) {
+        if (!theCase.private || (theCase.private && editor)) {
           requestHandlers.rendercase(req, res, theCase, editor, db);
         }
         res.redirect('back');
@@ -214,12 +218,12 @@ app.put('/case/:id/:page', function(req, res) {
     else {
       var data = req.body;
       data.cid = req.params.id;
+      data.lastEdit = new Date().getTime();
       data.creator = req.getAuthDetails().user.username;
+      db.zadd('casesLastEdit', data.lastEdit, cid);
+      if (!data.private()) db.zadd('cases', data.created, data.cid);
+      else db.zrem('cases', data.cid);
       db.hmset('case:' + req.params.id + ':page:' + req.params.page, data);
-      var date = new Date().toUTCString();
-
-      var lastUpdate =
-      if (!data.meta_private()) db.
       console.log('saved page');
       res.send('OK', 200)
     }
@@ -299,3 +303,5 @@ app.listen(port, function() {
   //console.dir(process.env);
   console.log('Express server listening on port %d in %s mode', app.address().port, app.settings.env);
 });
+
+//var time = new Date().getTime();

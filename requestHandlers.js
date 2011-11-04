@@ -38,7 +38,7 @@ function rendercase(req, res, theCase, editor, db) {
                 nextpage: parseInt(req.params.page, 10) + 1,
                 page: req.params.page,
                 editor: editor,
-                meta_private: theCase.meta_private || 0
+                private: theCase.private || 0
               });
             }
           });

@@ -3,6 +3,8 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
     @#{creator}
+    #created(style='display:none')
+      #{created}
 - if('#{editor}')
     a.session(id='editbutton')
       | ◀

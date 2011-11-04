@@ -65,7 +65,8 @@ function pageMeta() {
   var json = {};
   json.title = $('#meta_title', top.document).val();
   json.icd = $('#meta_icd', top.document).val();
-  json.meta_private = $('#meta_private', top.document).is(':checked');
+  json.private = $('#meta_private', top.document).is(':checked');
+  json.created = $('#created', top.document).val();
   return json;
 }
 
