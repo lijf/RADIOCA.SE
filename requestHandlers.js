@@ -58,7 +58,43 @@ function rendercase(req, res, theCase, editor, db) {
 // adds (caseid) to the set image:(timems)
 // adds (timems) to the list case:(caseid):page:(pageno),
 
-function postImage2(req, res, db) {
+function postImage2(req, res, db){
+  var d = new Date().getTime().toString();
+  //console.log(d);
+  var i = 0;
+  var form = new formidable.IncomingForm(),
+          files = [],
+          fields = [];
+  //form.uploadDir = __dirname + '/img/';
+  form
+          .on('field', function(field, value) {
+    //console.log(field, value);
+    fields.push([field, value]);
+  })
+          .on('fileBegin', function(field, file) {
+            //console.log(file.filename);
+            if(file.type='image/jpeg') {
+              file.path = __dirname + '/img/' + d + '.' + i + '.jpg';
+              db.rpush('radio:' + d, '/img/' + d + '.' + i + '.jpg');
+              i ++;
+            }
+            //console.log(field, file);
+            files.push([field, file]);
+          })
+          .on('end', function() {
+            db.sadd('image:' + d, req.params.id);
+            db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', d);
+            db.set('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + d + ':caption', 'double click to add caption');
+            //console.log(util.inspect(fields));
+            //console.log(util.inspect(files));
+            res.send(d, 200);
+            // TODO: fix the image montage.
+            console.log('-> upload done');
+          });
+  form.parse(req, function(err, fields, files){
+  });
+}
+function postImage3(req, res, db) {
   db.incr('numberOfRadios', function(err, radioID) {
     console.log(radioID);
     var imgNumber = 0;
@@ -70,7 +106,6 @@ function postImage2(req, res, db) {
               fields.push([field, value]);
     })
             .on('fileBegin', function(field, file) {
-              console.dir(file);
               if (file.type = 'image/jpeg') {
                 file.path = __dirname + '/img/' + radioID + '.' + imgNumber + '.jpg';
                 db.rpush('radio:' + radioID, '/img/' + radioID + '.' + imgNumber + '.jpg');

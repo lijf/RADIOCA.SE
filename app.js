@@ -96,7 +96,7 @@ app.post('/newcase', function(req, res) {
       db.incr('case:' + cid + ':pages');
       db.sadd('case:' + cid + ':page:1:radios', '');
       db.set('case:' + cid + '')
-      if (data.private==='false') {
+      if (data.private === 'false') {
         db.zadd('casesLastEdit', data.lastEdit, cid);
         db.zadd('cases', data.created, cid);
       }
@@ -144,7 +144,7 @@ app.get('/case/:id/:page', function(req, res) {
       db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
         console.log(theCase.private);
         if (err || !theCase.cid) res.redirect('back');
-        if (theCase.private==='false' || (theCase.private==='true' && editor)) {
+        if (theCase.private === 'false' || (theCase.private === 'true' && editor)) {
           console.log('rendering case');
           requestHandlers.rendercase(req, res, theCase, editor, db);
         }
@@ -244,8 +244,8 @@ app.post('/case/:id/:page/delete', function(req, res) {
     if (!editor) res.send('FORBIDDEN', 403);
     else {
       db.del('case:' + req.params.id + ':page:' + req.params.page);
-      db.decr('case:' + req.params.id + ':pages', function(err, pages){
-        if(!pages) {
+      db.decr('case:' + req.params.id + ':pages', function(err, pages) {
+        if (!pages) {
           db.zrem('cases:' + req.getAuthDetails().user.username, req.params.id);
           db.zrem('cases', req.params.id);
         }
@@ -286,39 +286,60 @@ app.get('/about', function(req, res) {
   });
 });
 
-app.get('/img/:img', function(req, res) {
-  if (!req.isAuthenticated()) res.redirect('/');
-  else {
-    var image = __dirname + '/img/' + req.params.img;
-    fs.readFile(image, 'binary', function(error, file) {
-      if (error) return res.send('huh?', 404);
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'image/jpeg');
-      res.write(file, 'binary');
-      res.end();
+app.delete('/case/:id/:page/:radio', function(req, res) {
+  db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
+    if (!editor) res.send('FORBIDDEN', 403);
+    else {
+      db.del('case:' + req.params.id + ':page:' + req.params.page + ':radio:' + req.params.radio + ':caption');
+      db.lrem('case:' + req.params.id + ':page:' + req.params.page + ':radios', 0, req.params.radio);
+      db.srem('image:' + req.params.radio, req.params.id);
+      res.send('OK', 200);
+    }
+  });
+});
+  app.get('/radio/:id', function(req, res) {
+    var radio = {};
+    radio.ID = req.params.id;
+    db.lrange("radio:" + req.params.id, 0, -1, function(err, images) {
+      radio.images = [];
+      images.forEach(function(image, imgID) {
+        radio.images[imgID] = image;
+      });
+      res.partial('radio', {object: radio});
     });
-  }
-});
+  });
 
-app.post('/case/:id/feedback', function(req, res) {
-  var feedback = req.body;
-  console.dir(feedback);
-  res.send('OK', 200);
-});
+  app.get('/img/:img', function(req, res) {
+    if (!req.isAuthenticated()) res.redirect('/');
+    else {
+      var image = __dirname + '/img/' + req.params.img;
+      fs.readFile(image, 'binary', function(error, file) {
+        if (error) return res.send('huh?', 404);
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'image/jpeg');
+        res.write(file, 'binary');
+        res.end();
+      });
+    }
+  });
 
-app.post('/image/:id/:page', function(req, res) {
-  console.log('POST /image/ called');
-  var postdata = req.body;
-  console.dir(postdata);
-  if (!req.isAuthenticated()) res.send('not logged in', 200);
-  else requestHandlers.postImage2(req, res, db);
-});
+  app.post('/case/:id/feedback', function(req, res) {
+    var feedback = req.body;
+    console.dir(feedback);
+    res.send('OK', 200);
+  });
 
-var port = process.env.PORT || 3000;
+  app.post('/image/:id/:page', function(req, res) {
+    console.log('POST /image/ called');
+    if (!req.isAuthenticated()) res.send('not logged in', 200);
+    else requestHandlers.postImage2(req, res, db);
+  });
 
-app.listen(port, function() {
-  //console.dir(process.env);
-  console.log('Express server listening on port %d in %s mode', app.address().port, app.settings.env);
-});
+  var port = process.env.PORT || 3000;
+
+  app.listen(port, function() {
+    //console.dir(process.env);
+    console.log('Express server listening on port %d in %s mode', app.address().port, app.settings.env);
+  });
 
 //var time = new Date().getTime();

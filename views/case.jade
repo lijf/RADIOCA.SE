@@ -64,6 +64,14 @@ iframe(id='editbar', src='about:none', style='display:none')
     | OK
   button(id='cancelsave', type='button')
     | Cancel
+#deleteradio_dialog.dialog_box(style='display:none')
+  | Do you want to delete the selected stack/radio from this page?
+  br
+  br
+  button(type='button', id='deleteradio_confirm')
+    | Delete
+  button(type='button', id='cancel_deleteradio')
+    | Cancel
 #feedback_dialog.dialog_box(style='display:none')
   form(id='feedback')
     textarea(id='feedback_text')

@@ -157,7 +157,7 @@ $(function() {
 
   touchscroll();
   scrollfunction_mw();
-  $('.stack').children(':first').show();
+  $('.stack').children(':first-child').show();
 
   $('#user_settings').live({
     click: function() {
@@ -277,7 +277,36 @@ $(function() {
 
   $('.deletebutton').live({
     click: function() {
-      $(this).parent().remove();
+      $(this).parent().addClass('selected');
+      $('#deleteradio_dialog').show();
+    }
+  });
+
+  $('#deleteradio_confirm').live({
+    click: function() {
+      var pathname = window.location.pathname.split('/');
+      var targeturl = '/case/' + pathname[2] + '/' + pathname[3] + '/' + $('.selected').attr('ID');
+      alert(targeturl);
+      $.ajax({
+        url: targeturl,
+        type: 'DELETE',
+        statusCode: {
+          200: function() {
+            $('.selected').remove();
+            $('#deleteradio_dialog').hide();
+          },
+          404: function() {
+            alert('NOT FOUND');
+            $('.selected').removeClass('selected');
+            $('#deleteradio_dialog').hide();
+          },
+          403: function() {
+            alert('FORBIDDEN');
+            $('.selected').removeClass('selected');
+            $('#deleteradio_dialog').hide();
+          }
+        }
+      });
     }
   });
 
@@ -408,74 +437,76 @@ $(function() {
               '<div class="md"></div></div></div>').insertBefore('#addstack');
       rendermd();
       $('.radio:last', top.document).append($('<button type="button" class="deletebutton">X</button>'));
-
-      $('#postframe').one('load',
-              function() {
-                var iteration = 0;
-//                var url = $("iframe")[0].contentDocument.body.innerHTML.split('|');
-                var url = $("iframe")[0].html().split('|');
-                var numberOfImages = url[1];
-                var imageID = url[0];
-                while (iteration < numberOfImages) {
-                  $('.radio:last>.stack', top.document).append(
-                          '<img class="stack_image" src="/img/' + imageID + '.' + iteration + '"/>');
-                  iteration++;
-                }
-                scrollfunction_mw();
-                $('.stack:last').children(':first').show();
-              });
     }
   });
-
-  /*
-   * Auto-growing textareas; technique ripped from Facebook
-   */
-  $.fn.autogrow = function(options) {
-
-
-    this.filter('textarea', top.document).each(function() {
-
-      var $this = $(this),
-              minHeight = $this.height(),
-              lineHeight = $this.css('lineHeight');
-
-      var shadow = $('<div></div>').css({
-        position:   'absolute',
-        top:        -10000,
-        left:       -10000,
-        width:      $(this).width() - parseInt($this.css('paddingLeft')) - parseInt($this.css('paddingRight')),
-        fontSize:   $this.css('fontSize'),
-        fontFamily: $this.css('fontFamily'),
-        lineHeight: $this.css('lineHeight'),
-        resize:     'none'
-      }).appendTo(document.body);
-
-      var update = function() {
-
-        var times = function(string, number) {
-          for (var i = 0, r = ''; i < number; i ++) r += string;
-          return r;
-        };
-
-        var val = this.value.replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/&/g, '&amp;')
-                .replace(/\n$/, '<br/>&nbsp;')
-                .replace(/\n/g, '<br/>')
-                .replace(/ {2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' ' });
-
-        shadow.html(val);
-        $(this).css('height', Math.max(shadow.height() + 20, minHeight));
-
+  $('#postframe').one('load', function() {
+    var radioID = $('iframe')[0].contentDocument.body.innerHTML;
+    $('.radio:last').attr('ID', radioID);
+    $.ajax({
+      type: 'GET',
+      url: '/radio/' + radioID,
+      statusCode:{
+        200: function(data) {
+          $('.stack:last', top.document).html(data);
+          $('.stack:last', top.document).children(':first').show();
+          scrollfunction_mw();
+          touchscroll();
+        }
       }
-
-      $(this).change(update).keyup(update).keydown(update);
-
-      update.apply(this);
-
     });
-
-    return this;
-
-  }
+  });
 });
+
+/*
+ * Auto-growing textareas; technique ripped from Facebook
+ */
+$.fn.autogrow = function(options) {
+
+
+  this.filter('textarea', top.document).each(function() {
+
+    var $this = $(this),
+            minHeight = $this.height(),
+            lineHeight = $this.css('lineHeight');
+
+    var shadow = $('<div></div>').css({
+      position:   'absolute',
+      top:        -10000,
+      left:       -10000,
+      width:      $(this).width() - parseInt($this.css('paddingLeft')) - parseInt($this.css('paddingRight')),
+      fontSize:   $this.css('fontSize'),
+      fontFamily: $this.css('fontFamily'),
+      lineHeight: $this.css('lineHeight'),
+      resize:     'none'
+    }).appendTo(document.body);
+
+    var update = function() {
+
+      var times = function(string, number) {
+        for (var i = 0, r = ''; i < number; i ++) r += string;
+        return r;
+      };
+
+      var val = this.value.replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/&/g, '&amp;')
+              .replace(/\n$/, '<br/>&nbsp;')
+              .replace(/\n/g, '<br/>')
+              .replace(/ {2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' ' });
+
+      shadow.html(val);
+      $(this).css('height', Math.max(shadow.height() + 20, minHeight));
+
+    }
+
+    $(this).change(update).keyup(update).keydown(update);
+
+    update.apply(this);
+
+  });
+
+  return this;
+
+}
+})
+;
