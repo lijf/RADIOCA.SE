@@ -4,7 +4,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
     @#{creator}
     #created(style='display:none')
-      #{created}
+      | #{created}
 - if('#{editor}')
     a.session(id='editbutton')
       | ◀
@@ -54,7 +54,7 @@ iframe(id='editbar', src='about:none', style='display:none')
     | Title:
     input(type='text', id='meta_title', value='#{title}')
     | Private
-    input(type='checkbox', id='meta_private', value='1', name='meta_private')
+    input(type='checkbox', id='private', value='1', name='private')
     button(id='meta_ok', type='button')
       | OK
 #save_dialog.dialog_box(style='display:none')
@@ -94,7 +94,7 @@ iframe(id='editbar', src='about:none', style='display:none')
         button
           | Browse
     input.input1(id='upload', type='submit', value='Upload file(s)')
-    button(id='cancelupload')
+    button(id='cancel_upload')
       | cancel
 script(type='text/javascript')
   $(function(){
@@ -109,5 +109,5 @@ script(type='text/javascript')
         $(this).siblings(".md").show();
       }
     }); // hides the textbox and renders the markdown
-    if(#{meta_private}){$('#meta_private').attr('checked', true);}
+    if(#{private}){$('#private').attr('checked', true);}
   });

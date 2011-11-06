@@ -65,7 +65,7 @@ function pageMeta() {
   var json = {};
   json.title = $('#meta_title', top.document).val();
   json.icd = $('#meta_icd', top.document).val();
-  json.private = $('#meta_private', top.document).is(':checked');
+  json.private = $('#private', top.document).is(':checked');
   json.created = $('#created', top.document).val();
   return json;
 }
@@ -229,8 +229,9 @@ $(function() {
     }
   });
 
-  $('#cancelupload').live({
+  $('#cancel_upload').live({
     click: function() {
+      event.preventDefault();
       $('#uploadarea').hide();
     }
   });
@@ -390,6 +391,7 @@ $(function() {
     click: function() {
       $('#uploadarea').hide();
       var userFile = $('#userfile').val();
+      alert(userFile);
       $('#uploadform').attr({
         action: $('#uploadform').attr('action'),
         method: 'POST',

@@ -69,7 +69,7 @@ app.get('/', function(req, res) {
   res.render('index', {
     title: 'Home',
     signed_in: req.isAuthenticated(),
-    user: username(req, res)
+    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
   });
 });
 
@@ -87,13 +87,16 @@ app.post('/newcase', function(req, res) {
   else {
     var data = req.body;
     data.creator = req.getAuthDetails().user.username;
-    //console.log(data);
+    console.log(data);
     data.texts = ['Double click to add text'];
     data.created = new Date().getTime();
     data.lastEdit = data.created;
     db.incr('numberOfCases', function(err, cid) {
       data.cid = cid;
-      if (!data.private) {
+      db.incr('case:' + cid + ':pages');
+      db.sadd('case:' + cid + ':page:1:radios', '');
+      db.set('case:' + cid + '')
+      if (data.private==='false') {
         db.zadd('casesLastEdit', data.lastEdit, cid);
         db.zadd('cases', data.created, cid);
       }
@@ -113,7 +116,7 @@ app.get('/cases/:start/:finish', function(req, res) {
   else {
     var start = parseInt(req.params.start, 10);
     var end = parseInt(req.params.finish, 10);
-    db.lrange('cases', start, end, function(err, cases) {
+    db.zrange('cases', start, end, function(err, cases) {
       if (err || !cases[0]) res.send('404', 404);
       var sendcases = [];
       cases.forEach(function(theCase, iteration) {
@@ -139,11 +142,13 @@ app.get('/case/:id/:page', function(req, res) {
   else {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
       db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
+        console.log(theCase.private);
         if (err || !theCase.cid) res.redirect('back');
-        if (!theCase.private || (theCase.private && editor)) {
+        if (theCase.private==='false' || (theCase.private==='true' && editor)) {
+          console.log('rendering case');
           requestHandlers.rendercase(req, res, theCase, editor, db);
         }
-        res.redirect('back');
+        else res.redirect('back');
       });
     });
   }
@@ -196,6 +201,8 @@ app.get('/case/:id/:page/edit', function(req, res) {
   }
 });
 
+//TODO think about how pages within a case are stored and ordered.
+
 app.post('/case/:id/newpage', function(req, res) {
   console.log('newpage triggered');
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
@@ -207,6 +214,7 @@ app.post('/case/:id/newpage', function(req, res) {
       pagedata.texts = 'Double click to add text';
       pagedata.creator = req.getAuthDetails().user.username;
       pagedata.cid = req.params.id;
+      db.incr('case:' + cid + ':pages');
       requestHandlers.newpage(req, res, cid, page, db, pagedata);
     }
   });
@@ -236,6 +244,13 @@ app.post('/case/:id/:page/delete', function(req, res) {
     if (!editor) res.send('FORBIDDEN', 403);
     else {
       db.del('case:' + req.params.id + ':page:' + req.params.page);
+      db.decr('case:' + req.params.id + ':pages', function(err, pages){
+        if(!pages) {
+          db.zrem('cases:' + req.getAuthDetails().user.username, req.params.id);
+          db.zrem('cases', req.params.id);
+        }
+
+      });
       res.send('OK', 200);
     }
   })
@@ -251,7 +266,7 @@ app.get('/readme', function(req, res) {
   res.render('readme', {
     title: 'README',
     signed_in: req.isAuthenticated(),
-    user: username(req, res)
+    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
   });
 });
 
@@ -259,7 +274,7 @@ app.get('/colophon', function(req, res) {
   res.render('colophon', {
     title: 'Colophon',
     signed_in: req.isAuthenticated(),
-    user: username(req, res)
+    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
   });
 });
 
@@ -267,7 +282,7 @@ app.get('/about', function(req, res) {
   res.render('about', {
     title: 'About',
     signed_in: req.isAuthenticated(),
-    user: username(req, res)
+    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
   });
 });
 
@@ -293,6 +308,8 @@ app.post('/case/:id/feedback', function(req, res) {
 
 app.post('/image/:id/:page', function(req, res) {
   console.log('POST /image/ called');
+  var postdata = req.body;
+  console.dir(postdata);
   if (!req.isAuthenticated()) res.send('not logged in', 200);
   else requestHandlers.postImage2(req, res, db);
 });
