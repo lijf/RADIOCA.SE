@@ -21,8 +21,15 @@ html
         img(src='/images/RADIOCA.SE_small_logo.png')
     #container
       #session
-        button(id='twitbutt')
-          | Sign in with twitter
+        a.session(id='sign_in') Sign in with twitter
+      #userinfo.session(style='display:none')
+        a my cases
+        br
+        a(href='/radios/#{user}') my radios
+        br
+        a my messages
+        br
+        a(id='sign_out') sign out
       != body // this renders the body of an individual view
     #footer
       a(href='/')
@@ -42,5 +49,7 @@ html
 script(type='text/javascript')
   $(function(){
     var user = '#{user}';
-    if(#{signed_in}){sessionButton('#{user}')};
+    if(#{signed_in}){
+      $('#session').html('<a class="session" id="user_settings">#{user} ▼ </a>');
+    }
   });

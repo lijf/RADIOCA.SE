@@ -1,18 +1,18 @@
 #controls
   form(id='savepage', action='/case/#{caseid}/#{page}')
-    button(id='done', type='button')
-      | Done
+    a.session(id='done')
+      |  ,  ▶
     input(type='hidden', name='_method', value='put')
-    button(id='help', type='button')
-      | ?
-    button(id='save', type='button')
-      | Save
-    button(id='meta_button', type='button')
-      | Meta
-    button(id='newpage', type='button')
-      | New Page
-    button(id='delpage', type='button')
-      | Delete Page
+    a.session(id='help')
+      |  ,  ?  ,
+    a.session(id='show_save')
+      |  ,  ◉  ,
+    a.session(id='delpage')
+      |  ,  X  ,
+    a.session(id='meta_button')
+      |  ,  {m}  ,
+    a.session(id='newpage')
+      |    ＋  ,
 script(type='text/javascript')
   $(function(){
     $('#session').hide();

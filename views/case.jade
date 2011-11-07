@@ -2,24 +2,29 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
 #pageinfo
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}')
-    @#{creator}  
-button(id='#{edit_or_feedback}')
-  #{editfeedbacktext}
+    @#{creator}
+    #created(style='display:none')
+      | #{created}
+- if('#{editor}')
+    a.session(id='editbutton')
+      | ◀
+- if(!'#{editor}')
+    a.session(id='feedbackbutton')
 iframe(id='editbar', src='about:none', style='display:none')
 #texts
-  -each text in texts
-    .txt
-      textarea.mdtxt(style='display:none')
-        #{text}
-      .md
+  .txt
+    textarea.mdtxt(style='display:none')
+      #{texts}
+    .md
+  br
   -if('#{prevpage}')
     a(href='/case/#{cid}/#{prevpage}', style='float: left')
-      | <- prev page
+      | ◀
   a(href='/case/#{cid}/#{nextpage}', style='float: right')
-    |   next page ->
+    | ▶
 #radios
   - each r in radios
-    .radio
+    .radio(id='#{r.ID}')
       .stack
         - each i in r.images
           img.stack_image(src='#{i}')
@@ -27,14 +32,14 @@ iframe(id='editbar', src='about:none', style='display:none')
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-  button(id='addstack', style='display:none')
-    | +
-#markdown-help(style='display:none')
-  button(id='closehelp')
-    | X
-  textarea.mdtxt(style='display:none')
-    #{mdhelp}
-  .md
+  a.session(id='addstack', style='display:none')
+    | ＋
+  #markdown-help(style='display:none')
+    a.session(id='closehelp')
+      | X
+    textarea.mdtxt(style='display:none')
+      #{mdhelp}
+    .md
 #info(style='display:none')
 #delete_dialog.dialog_box(style='display:none')
   form(id='deletepage', action='/case/#{cid}/#{page}/delete')
@@ -49,16 +54,47 @@ iframe(id='editbar', src='about:none', style='display:none')
     | Title:
     input(type='text', id='meta_title', value='#{title}')
     | Private
-    input(type='checkbox', id='meta_private', value='meta_private', name='meta_private')
+    input(type='checkbox', id='private', value='1', name='private')
     button(id='meta_ok', type='button')
       | OK
+#save_dialog.dialog_box(style='display:none')
+  | Save page?
+  br
+  button(id='save', type='button')
+    | OK
+  button(id='cancelsave', type='button')
+    | Cancel
+#deleteradio_dialog.dialog_box(style='display:none')
+  | Do you want to delete the selected stack/radio from this page?
+  br
+  br
+  button(type='button', id='deleteradio_confirm')
+    | Delete
+  button(type='button', id='cancel_deleteradio')
+    | Cancel
+#feedback_dialog.dialog_box(style='display:none')
+  form(id='feedback')
+    textarea(id='feedback_text')
+    br
+    | Send to:
+    input(type='checkbox', id='feedback_author', value='1', name='author')
+    | Creator
+    input(type='checkbox', id='feedback_curator', value='1', name='curator')
+    | Curator
+    br
+    button(type='button', id='send_feedback')
+      | Send feedback
+    button(type='button', id='cancel_feedback')
+      | Cancel
 #uploadarea.dialog_box(style='display:none')
   | Please choose image(s) to upload.
   br
-  | If multiple images are uploaded together they will be combined to a stack.
+  | If multiple images are uploaded together,
+  br
+  | they will be combined to a stack.
   br
   br
-  form(id='uploadform')
+  form(id='uploadform', action='/image/#{cid}/#{page}')
     .fileinputs
       input.file(type='file', name='userfile', id='userfile', multiple='multiple')
       .fakefile
@@ -66,7 +102,7 @@ iframe(id='editbar', src='about:none', style='display:none')
         button
           | Browse
     input.input1(id='upload', type='submit', value='Upload file(s)')
-    button(id='cancelupload')
+    button(id='cancel_upload')
       | cancel
 script(type='text/javascript')
   $(function(){
@@ -81,5 +117,5 @@ script(type='text/javascript')
         $(this).siblings(".md").show();
       }
     }); // hides the textbox and renders the markdown
-    if(#{meta_private}){$('#meta_private').attr('checked', true);}
+    if(#{private}){$('#private').attr('checked', true);}
   });
