@@ -111,7 +111,7 @@ app.post('/newcase', function(req, res) {
 });
 
 app.get('/cases/:start/:finish', function(req, res) {
-  if (!req.isAuthenticated()) res.redirect('/');
+  if (!req.isAuthenticated()) return res.redirect('/');
   else {
     var start = parseInt(req.params.start, 10);
     var end = parseInt(req.params.finish, 10);
@@ -137,17 +137,16 @@ app.get('/cases/:start/:finish', function(req, res) {
 });
 
 app.get('/case/:id/:page', function(req, res) {
-  if (!req.isAuthenticated()) res.redirect('/');
+  if (!req.isAuthenticated()) return res.redirect('/');
   else {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
       db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
-        console.log(theCase.private);
-        if (err || !theCase.cid) res.redirect('back');
+        if (err || !theCase.cid) return res.redirect('back');
         if (theCase.private === 'false' || (theCase.private === 'true' && editor)) {
           console.log('rendering case');
           requestHandlers.rendercase(req, res, theCase, editor, db);
         }
-        else res.redirect('back');
+        else return res.redirect('back');
       });
     });
   }
@@ -182,13 +181,13 @@ app.get('/signed_in', function(req, res) {
 });
 
 app.get('/case/:id/:page/edit', function(req, res) {
-  if (!req.isAuthenticated()) res.redirect('/');
+  if (!req.isAuthenticated()) return res.redirect('/');
   else {
     db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, data) {
       //console.dir(data);
       if (!data) return res.send('NOT FOUND', 404);
       db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-        if (!editor) res.send('NOT ALLOWED', 403);
+        if (!editor) return res.send('NOT ALLOWED', 403);
         else {
           res.render('edit', {
             title: 'edit',
@@ -224,7 +223,7 @@ app.post('/case/:id/newpage', function(req, res) {
 
 app.put('/case/:id/:page', function(req, res) {
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-    if (!editor) res.send('FORBIDDEN', 403);
+    if (!editor) return res.send('FORBIDDEN', 403);
     else {
       var data = req.body;
       data.cid = req.params.id;
@@ -235,7 +234,7 @@ app.put('/case/:id/:page', function(req, res) {
       else db.zrem('cases', data.cid);
       db.hmset('case:' + req.params.id + ':page:' + req.params.page, data);
       console.log('saved page');
-      res.send('OK', 200)
+      res.send('OK', 200);
     }
   });
 });

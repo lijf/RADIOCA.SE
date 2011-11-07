@@ -8,8 +8,6 @@ var url = require('url');
 // all is combined to json-object which is passed off for rendering
 
 function render(req, res, theCase, editor) {
-  console.log('last radio');
-  console.dir(theCase);
   return res.render('case', {
     title: theCase.title || ' - untitled',
     radios: theCase.radios || '',
@@ -32,7 +30,6 @@ function rendercase(req, res, theCase, editor, db) {
   db.get('markdown-help', function(err, data) {
     mdhelp = JSON.parse(data);
     db.lrange('case:' + req.params.id + ':page:' + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
-      console.dir(radioIDs);
       if (radioIDs.length < 1) {
         return render(req, res, theCase, editor);
       }
