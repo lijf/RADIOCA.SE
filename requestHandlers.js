@@ -32,7 +32,10 @@ function rendercase(req, res, theCase, editor, db) {
   db.get('markdown-help', function(err, data) {
     mdhelp = JSON.parse(data);
     db.lrange('case:' + req.params.id + ':page:' + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
-      if (!radioIDs) return render(req, res, theCase, editor);
+      console.dir(radioIDs);
+      if (radioIDs.length < 1) {
+        return render(req, res, theCase, editor);
+      }
       theCase.radios = [];
       radioIDs.forEach(function(radioID, ID) {
         db.get('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + radioID + ':caption', function(err, caption) {

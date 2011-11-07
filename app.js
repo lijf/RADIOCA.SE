@@ -94,7 +94,7 @@ app.post('/newcase', function(req, res) {
     db.incr('numberOfCases', function(err, cid) {
       data.cid = cid;
       db.incr('case:' + cid + ':pages');
-      db.sadd('case:' + cid + ':page:1:radios', '');
+//      db.sadd('case:' + cid + ':page:1:radios', '');
       if (data.private === 'false') {
         db.zadd('casesLastEdit', data.lastEdit, cid);
         db.zadd('cases', data.created, cid);
