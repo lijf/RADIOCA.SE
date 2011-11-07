@@ -23,11 +23,13 @@ html
       #session
         a.session(id='sign_in') Sign in with twitter
       #userinfo.session(style='display:none')
-        a My cases
+        a my cases
         br
-        a My messages
+        a(href='/radios/#{user}') my radios
         br
-        a(id='sign_out') Sign out
+        a my messages
+        br
+        a(id='sign_out') sign out
       != body // this renders the body of an individual view
     #footer
       a(href='/')

@@ -28,7 +28,6 @@ function render(req, res, theCase, editor) {
   });
 }
 
-
 function rendercase(req, res, theCase, editor, db) {
   db.get('markdown-help', function(err, data) {
     mdhelp = JSON.parse(data);
@@ -84,6 +83,7 @@ function postImage2(req, res, db){
           .on('end', function() {
             db.sadd('image:' + d, req.params.id);
             db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', d);
+            db.rpush('user:' + req.getAuthDetails().user.username + ':radios', d);
             db.set('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + d + ':caption', 'double click to add caption');
             //console.log(util.inspect(fields));
             //console.log(util.inspect(files));
@@ -92,36 +92,6 @@ function postImage2(req, res, db){
             console.log('-> upload done');
           });
   form.parse(req, function(err, fields, files){
-  });
-}
-function postImage3(req, res, db) {
-  db.incr('numberOfRadios', function(err, radioID) {
-    console.log(radioID);
-    var imgNumber = 0;
-    var form = new formidable.IncomingForm(),
-            files = [],
-            fields = [];
-    form
-            .on('field', function(field, value) {
-              fields.push([field, value]);
-    })
-            .on('fileBegin', function(field, file) {
-              if (file.type = 'image/jpeg') {
-                file.path = __dirname + '/img/' + radioID + '.' + imgNumber + '.jpg';
-                db.rpush('radio:' + radioID, '/img/' + radioID + '.' + imgNumber + '.jpg');
-                imgNumber ++;
-              }
-              files.push([field, file]);
-            })
-            .on('end', function() {
-              console.log('-> upload done');
-              db.sadd('image:' + radioID, req.params.id);
-              db.rpush('case:' + req.params.id + ':page:' + req.params.page + ':radios', radioID);
-              db.set('case:' + req.params.id + ':page:' + req.params.page + ":radio:" + radioID + ':caption', 'double click to add caption');
-              res.send(radioID + '|' + imgNumber, 200);
-            });
-    form.parse(req, function(err, fields, files) {
-    });
   });
 }
 

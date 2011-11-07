@@ -286,7 +286,7 @@ $(function() {
     click: function() {
       var pathname = window.location.pathname.split('/');
       var targeturl = '/case/' + pathname[2] + '/' + pathname[3] + '/' + $('.selected').attr('ID');
-      alert(targeturl);
+      //alert(targeturl);
       $.ajax({
         url: targeturl,
         type: 'DELETE',
@@ -420,7 +420,7 @@ $(function() {
     click: function() {
       $('#uploadarea').hide();
       var userFile = $('#userfile').val();
-      alert(userFile);
+      //alert(userFile);
       $('#uploadform').attr({
         action: $('#uploadform').attr('action'),
         method: 'POST',
@@ -455,7 +455,6 @@ $(function() {
       }
     });
   });
-});
 
 /*
  * Auto-growing textareas; technique ripped from Facebook

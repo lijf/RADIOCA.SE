@@ -69,12 +69,12 @@ app.get('/', function(req, res) {
   res.render('index', {
     title: 'Home',
     signed_in: req.isAuthenticated(),
-    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
+    user: req.isAuthenticated() ? req.getAuthDetails().user.username : '0'
   });
 });
 
 app.get('/newcase', function(req, res) {
-  if (!req.isAuthenticated()) res.redirect('/');
+  if (!req.isAuthenticated()) return res.redirect('/');
   else res.render('newcase', {
     title: 'Create new case',
     signed_in: req.isAuthenticated(),
@@ -83,7 +83,7 @@ app.get('/newcase', function(req, res) {
 });
 
 app.post('/newcase', function(req, res) {
-  if (!req.isAuthenticated()) res.send('FORBIDDEN', 403);
+  if (!req.isAuthenticated()) return res.send('FORBIDDEN', 403);
   else {
     var data = req.body;
     data.creator = req.getAuthDetails().user.username;
@@ -95,14 +95,13 @@ app.post('/newcase', function(req, res) {
       data.cid = cid;
       db.incr('case:' + cid + ':pages');
       db.sadd('case:' + cid + ':page:1:radios', '');
-      db.set('case:' + cid + '')
       if (data.private === 'false') {
         db.zadd('casesLastEdit', data.lastEdit, cid);
         db.zadd('cases', data.created, cid);
       }
       db.zadd('cases:' + data.creator, data.created, cid);
-      db.hmset('case:' + cid + ':page:1', data, function(err) {
-        db.sadd('case:' + cid + ':users', req.getAuthDetails().user.user_id, function() {
+      db.hmset('case:' + cid + ':page:1', data, function(err, data) {
+        db.sadd('case:' + cid + ':users', req.getAuthDetails().user.user_id, function(err, data) {
           console.log('created case: ' + cid);
           res.send('/case/' + cid + '/1', 200);
         });
@@ -156,18 +155,21 @@ app.get('/case/:id/:page', function(req, res) {
 
 app.get('/signed_in', function(req, res) {
   var uid = req.getAuthDetails().user.user_id;
-  var userdata = JSON.stringify(req.getAuthDetails());
+  var userdata = req.getAuthDetails();
+  userdata.user_id = userdata.user.user_id;
+  userdata.username = userdata.user.username;
+  //var userdata = JSON.stringify(req.getAuthDetails());
   //console.dir(req.getAuthDetails());
   db.sismember('users', uid, function(err, registered) {
     if (registered) {
-      db.set('user:' + uid, userdata, function(err, data) {});
+      db.hmset('user:' + uid, userdata, function(err, data) {});
       res.send('OK', 200);
     }
     else {
       db.sismember('invitees', req.getAuthDetails().user.username, function(err, invited) {
         if (invited) {
           db.sadd('users', uid);
-          db.set('user:' + uid, userdata, function(err, data) {});
+          db.hmset('user:' + uid, userdata, function(err, data) {});
           res.send('new user, first login', 200);
         }
         else {
@@ -261,7 +263,6 @@ app.get('/sign_out', function(req, res) {
   res.send('<button id="twitbutt">Sign in with twitter</button>');
 });
 
-
 app.get('/readme', function(req, res) {
   res.render('readme', {
     title: 'README',
@@ -297,7 +298,40 @@ app.delete('/case/:id/:page/:radio', function(req, res) {
     }
   });
 });
-  app.get('/radio/:id', function(req, res) {
+
+app.get('/radios/:user', function(req, res) {
+  if (!req.isAuthenticated()) return res.redirect('/');
+  if (!req.getAuthDetails().user.username === req.params.user) return res.redirect('back');
+  else {
+    sendradios = [];
+    db.lrange('user:' + req.params.user + ':radios', 0, -1, function(err, radios) {
+      radios.forEach(function(radio, id) {
+        console.log(radio);
+        sendradios[id] = {};
+        sendradios[id].ID = radio;
+        db.lrange("radio:" + radio, 0, -1, function(err, images) {
+          sendradios[id].images = [];
+          images.forEach(function(image, imgID) {
+            sendradios[id].images[imgID] = image;
+          });
+          if (!radios[id + 1]) {
+            console.dir(sendradios);
+            return res.render('userradios', {
+              title: 'Radios - ' + req.params.user,
+              user: req.getAuthDetails().user.username,
+              signed_in: req.isAuthenticated(),
+              radios: sendradios
+            });
+          }
+        });
+      });
+    });
+  }
+});
+
+app.get('/radio/:id', function(req, res) {
+  if (!req.isAuthenticated()) return res.redirect('/');
+  else {
     var radio = {};
     radio.ID = req.params.id;
     db.lrange("radio:" + req.params.id, 0, -1, function(err, images) {
@@ -307,39 +341,40 @@ app.delete('/case/:id/:page/:radio', function(req, res) {
       });
       res.partial('radio', {object: radio});
     });
-  });
+  }
+});
 
-  app.get('/img/:img', function(req, res) {
-    if (!req.isAuthenticated()) res.redirect('/');
-    else {
-      var image = __dirname + '/img/' + req.params.img;
-      fs.readFile(image, 'binary', function(error, file) {
-        if (error) return res.send('huh?', 404);
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'image/jpeg');
-        res.write(file, 'binary');
-        res.end();
-      });
-    }
-  });
+app.get('/img/:img', function(req, res) {
+  if (!req.isAuthenticated()) return res.redirect('/');
+  else {
+    var image = __dirname + '/img/' + req.params.img;
+    fs.readFile(image, 'binary', function(error, file) {
+      if (error) return res.send('huh?', 404);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.write(file, 'binary');
+      res.end();
+    });
+  }
+});
 
-  app.post('/case/:id/feedback', function(req, res) {
-    var feedback = req.body;
-    console.dir(feedback);
-    res.send('OK', 200);
-  });
+app.post('/case/:id/feedback', function(req, res) {
+  var feedback = req.body;
+  console.dir(feedback);
+  res.send('OK', 200);
+});
 
-  app.post('/image/:id/:page', function(req, res) {
-    console.log('POST /image/ called');
-    if (!req.isAuthenticated()) res.send('not logged in', 200);
-    else requestHandlers.postImage2(req, res, db);
-  });
+app.post('/image/:id/:page', function(req, res) {
+  console.log('POST /image/ called');
+  if (!req.isAuthenticated()) res.send('not logged in', 200);
+  else requestHandlers.postImage2(req, res, db);
+});
 
-  var port = process.env.PORT || 3000;
+var port = process.env.PORT || 3000;
 
-  app.listen(port, function() {
-    //console.dir(process.env);
-    console.log('Express server listening on port %d in %s mode', app.address().port, app.settings.env);
-  });
+app.listen(port, function() {
+  //console.dir(process.env);
+  console.log('Express server listening on port %d in %s mode', app.address().port, app.settings.env);
+});
 
 //var time = new Date().getTime();
