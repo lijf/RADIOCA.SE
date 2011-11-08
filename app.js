@@ -34,8 +34,10 @@ app.configure(function() {
   app.use(require('stylus').middleware({ src: __dirname + '/public' }));
   app.use(easyoauth(require('./keys_file')));
   app.use(app.router);
+  app.use(express.favicon(__dirname + '/public/favicon.ico'));
   app.use(express.static(__dirname + '/public'));
 });
+
 
 app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
