@@ -268,7 +268,7 @@ app.get('/readme', function(req, res) {
   res.render('readme', {
     title: 'README',
     signed_in: req.isAuthenticated(),
-    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
+    user: req.isAuthenticated() ? req.getAuthDetails().user.username : '0'
   });
 });
 
@@ -276,7 +276,7 @@ app.get('/colophon', function(req, res) {
   res.render('colophon', {
     title: 'Colophon',
     signed_in: req.isAuthenticated(),
-    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
+    user: req.isAuthenticated() ? req.getAuthDetails().user.username : '0'
   });
 });
 
@@ -284,7 +284,7 @@ app.get('/about', function(req, res) {
   res.render('about', {
     title: 'About',
     signed_in: req.isAuthenticated(),
-    user: req.isAuthenticated() ? req.getAuthDetails.user.username : '0'
+    user: req.isAuthenticated() ? req.getAuthDetails().user.username : '0'
   });
 });
 
