@@ -282,6 +282,13 @@ $(function() {
     }
   });
 
+  $('#deleteradio_cancel').live({
+    click: function(){
+      $('.selected').removeClass('selected');
+      $('#deleteradio_dialog').hide();
+    }
+  });
+
   $('#deleteradio_confirm').live({
     click: function() {
       var pathname = window.location.pathname.split('/');
