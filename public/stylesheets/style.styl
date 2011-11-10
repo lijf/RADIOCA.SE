@@ -1,7 +1,16 @@
-#centerdiv
-    margin 0 auto
+#topleftdiv
+    float left
+    height 25px
+    width 55%
+#centerindiv
+    float right
+    position relative
+    left -50%
+    text-align left
     line-height 150%
-    width 50%
+#centereddiv
+    position relative
+    left 50%
 #container
     margin 0 auto
     width 90%
@@ -117,6 +126,8 @@
     background-image url("/images/paper/Texture0213.jpg")
     color #006
 @media screen and (max-width: 450px)
+    #centerdiv
+        width 100%
     #markdown-help
         width 100%
     #sl
@@ -134,6 +145,8 @@
     #texts
         width 100%
 @media screen and (max-width: 585px)
+    #centerdiv
+        width 80%
     .big_logo
         font-size 30pt
 @media screen and (min-width: 1024px)
@@ -153,7 +166,7 @@ textarea
     font-family monospace
     font-size 100%
 .md
-    padding 10px 20px
+    padding 10px 30px
 #markdown-help
     background-image url("/images/paper/Texture0213.jpg")
     color #006
