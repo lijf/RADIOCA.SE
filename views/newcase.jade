@@ -1,24 +1,24 @@
-br
-br
-#centerdiv
-  h2.damion(style='margin: 0') Create new case
-  br
-  form(id='newcase')
-    | Title
-    input(type='text', name='meta_title', id='meta_title')
+#centerindiv
+  #centereddiv
     br
-    | ICD-Code
-    sup *
-    input(type='text', name='meta_icd', id='meta_icd')
-    br
-    | Private
-    input(type='checkbox', name='private', id='private', value='private')
-    br
-    button(id='createcase', type='button')
-      | Create Case
-    br
-    br
-    sup
-      | * Swedish users can find ICD-codes at
-      a(href='http://www.icd.nu')
-        | icd.nu
+    h1.damion(style='text-align: left') Create new case
+    form(id='newcase')
+      br
+      | Title
+      input(type='text', name='meta_title', id='meta_title')
+      br
+      | ICD-Code
+      sup *
+      input(type='text', name='meta_icd', id='meta_icd')
+      br
+      | Private
+      input(type='checkbox', name='private', id='private', value='private')
+      br
+      button(id='createcase', type='button')
+        | Create Case
+      br
+      br
+      sup
+        | * Swedish users can find ICD-codes at
+        a(href='http://www.icd.nu')
+          | icd.nu

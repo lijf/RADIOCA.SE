@@ -211,14 +211,15 @@ app.post('/case/:id/newpage', function(req, res) {
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
     if (!editor) res.send('FORBIDDEN', 403);
     else {
-      var page = 2;
       var cid = req.params.id;
       var pagedata = req.body;
       pagedata.texts = 'Double click to add text';
       pagedata.creator = req.getAuthDetails().user.username;
       pagedata.cid = req.params.id;
-      db.incr('case:' + cid + ':pages');
-      requestHandlers.newpage(req, res, cid, page, db, pagedata);
+      db.incr('case:' + cid + ':pages', function(err, page){
+        db.hmset('case:' + cid + ':page:' + page, pagedata);
+        res.send('/case/' + cid + '/' + page, 200);
+      });
     }
   });
 });
@@ -228,11 +229,12 @@ app.put('/case/:id/:page', function(req, res) {
     if (!editor) return res.send('FORBIDDEN', 403);
     else {
       var data = req.body;
+      console.dir(data);
       data.cid = req.params.id;
       data.lastEdit = new Date().getTime();
       data.creator = req.getAuthDetails().user.username;
-      db.zadd('casesLastEdit', data.lastEdit, cid);
-      if (!data.private()) db.zadd('cases', data.created, data.cid);
+      db.zadd('casesLastEdit', data.lastEdit, data.cid);
+      if (data.private==='false') db.zadd('cases', data.created, data.cid);
       else db.zrem('cases', data.cid);
       db.hmset('case:' + req.params.id + ':page:' + req.params.page, data);
       console.log('saved page');

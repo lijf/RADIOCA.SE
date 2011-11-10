@@ -1,3 +1,4 @@
+#topleftdiv
 #cases
   h1.damion Cases
   a(href='/newcase') Create Case
@@ -5,7 +6,6 @@
   #cases_lc
     - each c in cases
       a(href='/case/#{c.cid}/1') #{c.title}
-      |
       br
   #cases_rc
     - each c in cases

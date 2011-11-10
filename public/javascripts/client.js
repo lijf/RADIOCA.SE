@@ -283,7 +283,7 @@ $(function() {
   });
 
   $('#deleteradio_cancel').live({
-    click: function(){
+    click: function() {
       $('.selected').removeClass('selected');
       $('#deleteradio_dialog').hide();
     }
@@ -322,7 +322,7 @@ $(function() {
     $(this).spin(opts);
   });
 
-  $('#showsave').live({
+  $('#show_save').live({
     click: function() {
       $('#save_dialog', top.document).show();
     }
@@ -330,25 +330,29 @@ $(function() {
 
   $('#cancelsave').live({
     click: function() {
-      $('save_dialog', top.document).hide();
+      $('#save_dialog', top.document).hide();
     }
   });
 
-  $('#save').click(function(event) {
-    event.preventDefault();
-    //var data = spiderpage();
-    //alert(data);
-    //var url = $('#savepage').attr('action').toString();
-    $.ajax({
-      type: 'PUT',
-      url: $('#savepage').attr('action').toString(),
-      data: spiderpage(),
-      statusCode:{
-        200: function(msg) {
-          //alert("Page Saved: " + msg);
+  $('#save').live({
+    click: function(event) {
+      event.preventDefault();
+      //var data = spiderpage();
+      //alert(data);
+      //var url = $('#savepage').attr('action').toString();
+      $.ajax({
+        type: 'PUT',
+        url: window.location.pathname,
+        data: spiderpage(),
+        statusCode:{
+          200: function(msg) {
+            alert("Page Saved: " + msg);
+            $('#save_dialog', top.document).hide();
+          },
+          403: function(){alert('FORBIDDEN')}
         }
-      }
-    });
+      });
+    }
   });
 
   $('#meta_button').click(function() {
@@ -463,56 +467,56 @@ $(function() {
     });
   });
 
-/*
- * Auto-growing textareas; technique ripped from Facebook
- */
-$.fn.autogrow = function(options) {
+  /*
+   * Auto-growing textareas; technique ripped from Facebook
+   */
+  $.fn.autogrow = function(options) {
 
 
-  this.filter('textarea', top.document).each(function() {
+    this.filter('textarea', top.document).each(function() {
 
-    var $this = $(this),
-            minHeight = $this.height(),
-            lineHeight = $this.css('lineHeight');
+      var $this = $(this),
+              minHeight = $this.height(),
+              lineHeight = $this.css('lineHeight');
 
-    var shadow = $('<div></div>').css({
-      position:   'absolute',
-      top:        -10000,
-      left:       -10000,
-      width:      $(this).width() - parseInt($this.css('paddingLeft')) - parseInt($this.css('paddingRight')),
-      fontSize:   $this.css('fontSize'),
-      fontFamily: $this.css('fontFamily'),
-      lineHeight: $this.css('lineHeight'),
-      resize:     'none'
-    }).appendTo(document.body);
+      var shadow = $('<div></div>').css({
+        position:   'absolute',
+        top:        -10000,
+        left:       -10000,
+        width:      $(this).width() - parseInt($this.css('paddingLeft')) - parseInt($this.css('paddingRight')),
+        fontSize:   $this.css('fontSize'),
+        fontFamily: $this.css('fontFamily'),
+        lineHeight: $this.css('lineHeight'),
+        resize:     'none'
+      }).appendTo(document.body);
 
-    var update = function() {
+      var update = function() {
 
-      var times = function(string, number) {
-        for (var i = 0, r = ''; i < number; i ++) r += string;
-        return r;
-      };
+        var times = function(string, number) {
+          for (var i = 0, r = ''; i < number; i ++) r += string;
+          return r;
+        };
 
-      var val = this.value.replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/&/g, '&amp;')
-              .replace(/\n$/, '<br/>&nbsp;')
-              .replace(/\n/g, '<br/>')
-              .replace(/ {2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' ' });
+        var val = this.value.replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/&/g, '&amp;')
+                .replace(/\n$/, '<br/>&nbsp;')
+                .replace(/\n/g, '<br/>')
+                .replace(/ {2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' ' });
 
-      shadow.html(val);
-      $(this).css('height', Math.max(shadow.height() + 20, minHeight));
+        shadow.html(val);
+        $(this).css('height', Math.max(shadow.height() + 20, minHeight));
 
-    }
+      }
 
-    $(this).change(update).keyup(update).keydown(update);
+      $(this).change(update).keyup(update).keydown(update);
 
-    update.apply(this);
+      update.apply(this);
 
-  });
+    });
 
-  return this;
+    return this;
 
-}
+  }
 })
-;
+        ;
