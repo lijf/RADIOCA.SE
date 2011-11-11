@@ -65,6 +65,12 @@ function username(req, res) {
   return req.isAuthenticated() ? req.getAuthDetails().user.username : '0';
 }
 
+// Route Middleware
+function loadUser(req, res, next){
+ if(!req.isAuthenticated()) return res.redirect('back');
+ else next();
+}
+
 // Routes
 
 app.get('/', function(req, res) {
@@ -183,13 +189,13 @@ app.get('/signed_in', function(req, res) {
 });
 
 app.get('/case/:id/:page/edit', function(req, res) {
-  if (!req.isAuthenticated()) return res.redirect('/');
+  if (!req.isAuthenticated()) return res.send('FORBIDDEN', 403);
   else {
     db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, data) {
       //console.dir(data);
       if (!data) return res.send('NOT FOUND', 404);
       db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-        if (!editor) return res.send('NOT ALLOWED', 403);
+        if (!editor) return res.send('FORBIDDEN', 403);
         else {
           res.render('edit', {
             title: 'edit',
@@ -209,7 +215,7 @@ app.get('/case/:id/:page/edit', function(req, res) {
 app.post('/case/:id/newpage', function(req, res) {
   console.log('newpage triggered');
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-    if (!editor) res.send('FORBIDDEN', 403);
+    if (!editor) return res.send('FORBIDDEN', 403);
     else {
       var cid = req.params.id;
       var pagedata = req.body;
@@ -243,7 +249,7 @@ app.put('/case/:id/:page', function(req, res) {
   });
 });
 
-app.post('/case/:id/:page/delete', function(req, res) {
+app.delete('/case/:id/:page', function(req, res) {
   console.dir('delete page triggered');
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
     if (!editor) res.send('FORBIDDEN', 403);

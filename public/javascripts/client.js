@@ -81,9 +81,23 @@ function editfunctions() {
 
   $('.mdtxt', top.document).live({
     blur: function() {
+      alert('hoho');
       $(this).hide();
       rendermd();
-      $(this).siblings(".md").show();
+      $(this).siblings('.md').show();
+      alert('hoho');
+      $.ajax({
+        type: 'PUT',
+        url: window.location.pathname,
+        data: spiderpage(),
+        statusCode:{
+          200: function(msg) {
+            alert("Page Saved: " + msg);
+            //$('#save_dialog', top.document).hide();
+          },
+          403: function() {alert('FORBIDDEN')}
+        }
+      });
     }
   }); // hides the textbox and renders the markdown
 
@@ -184,21 +198,33 @@ $(function() {
   });
 
   $('#newpage').click(function() {
-    var pathname = parent.window.location.pathname.split('/');
-    $.ajax({
-      url: '/case/' + pathname[2] + '/newpage',
-      type: 'POST',
-      data: pageMeta(),
-      statusCode: {
-        404: function() {alert('page not found')},
-        200: function(redirect) {
-          alert(redirect);
-          $('#save').trigger('click');
-          parent.change_url(redirect);
-        },
-        403: function() {alert('Forbidden')}
-      }
-    });
+    $('#newpage_dialog', top.document).show();
+  });
+
+  $('#newpage_cancel').live({
+    click: function() {
+      $('#newpage_dialog', top.document).hide();
+    }
+  });
+
+  $('#newpage_last').live({
+    click: function() {
+      var pathname = parent.window.location.pathname.split('/');
+      $.ajax({
+        url: '/case/' + pathname[2] + '/newpage',
+        type: 'POST',
+        data: pageMeta(),
+        statusCode: {
+          404: function() {alert('page not found')},
+          200: function(redirect) {
+            alert(redirect);
+            $('#save').trigger('click');
+            parent.change_url(redirect);
+          },
+          403: function() {alert('Forbidden')}
+        }
+      });
+    }
   });
 
   $('#createcase').click(function() {
@@ -317,11 +343,6 @@ $(function() {
     }
   });
 
-  $('.stack').live('toggleSpinner', function() {
-    alert('toggleSpinner triggered');
-    $(this).spin(opts);
-  });
-
   $('#show_save').live({
     click: function() {
       $('#save_dialog', top.document).show();
@@ -349,7 +370,7 @@ $(function() {
             alert("Page Saved: " + msg);
             $('#save_dialog', top.document).hide();
           },
-          403: function(){alert('FORBIDDEN')}
+          403: function() {alert('FORBIDDEN')}
         }
       });
     }
@@ -383,7 +404,6 @@ $(function() {
 
   $('#done').live({
     click: function() {
-      //$('#save').trigger('click');
       editclose();
     }
   });
@@ -409,11 +429,10 @@ $(function() {
   $('#deleteconfirmed').live({
     click: function() {
       $.ajax({
-        type: 'POST',
-        url: $('#deletepage').attr('action'),
+        type: 'DELETE',
+        url: top.document.location.pathname,
         statusCode: {
           200: function() {
-            //alert('page deleted');
             window.parent.history.go(-2);
           }
         }
