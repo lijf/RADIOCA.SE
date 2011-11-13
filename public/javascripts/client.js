@@ -55,7 +55,7 @@ function touchscroll() {
 }
 
 function rendermd() {
-  $('.md', top.document).html(function() {
+  $('.md').html(function() {
     var markdown = $(this).siblings(".mdtxt").val();
     return converter.makeHtml(markdown);
   });
@@ -63,84 +63,51 @@ function rendermd() {
 
 function pageMeta() {
   var json = {};
-  json.title = $('#meta_title', top.document).val();
-  json.icd = $('#meta_icd', top.document).val();
-  json.private = $('#private', top.document).is(':checked');
-  json.created = $('#created', top.document).val();
+  json.title = $('#meta_title').val();
+  json.private = $('#private').is(':checked');
+  json.created = $('#created').val();
   return json;
 }
 
-
 function editfunctions() {
-  $('.md', top.document).live({
+  $('.md').live({
     dblclick: function() {
       $(this).hide();
       $(this).siblings('.mdtxt').show().focus().autogrow();
     }
   }); // shows the textbox for editing on doubleclick
 
-  $('.mdtxt', top.document).live({
+  $('.mdtxt').live({
     blur: function() {
-      alert('hoho');
       $(this).hide();
       rendermd();
       $(this).siblings('.md').show();
-      alert('hoho');
       $.ajax({
         type: 'PUT',
         url: window.location.pathname,
         data: spiderpage(),
         statusCode:{
-          200: function(msg) {
-            alert("Page Saved: " + msg);
-            //$('#save_dialog', top.document).hide();
-          },
+          200: function(msg) {},
           403: function() {alert('FORBIDDEN')}
         }
       });
     }
   }); // hides the textbox and renders the markdown
 
-  $('.radio', top.document).append($('<button type="button" class="deletebutton">X</button>'));
+  $('.radio').append($('<a class="deleteradio abutton">&#x166d;<a>'));
   // adds deletebutton to radios
-  $('#addstack', top.document).show();
-  // $('#newpage', top.document).show();
 }
-
-function editclose() {
-  $('.md', top.document).die();
-  $('.mdtxt', top.document).die();
-  $('#markdown-help', top.document).hide();
-  $('#addstack', top.document).hide();
-  $('#uploadarea', top.document).hide();
-  $('#editbar', top.document).hide().attr('src', 'about:none');
-  $('.radio>.deletebutton', top.document).remove();
-  $('#editbutton', top.document).show();
-}
-
-// TODO rewrite spiderpage - radios are no longer stored as part of json-object, better ignore here? I would have to solve how reordering radios on a page should work. CAPTIONS?
-
 
 function spiderpage() {
   var json = pageMeta();
-//  json.radios = $('.radio', top.document).map(
-//          function() {
-//            var radio = {};
-//            radio.images = $(this).children('.stack').children('.stack_image').map(
-//                    function() {
-//                      return($(this).attr('src'));
-//                    }).get();
-//            radio.caption = $(this).children('.caption').children('.mdtxt').val();
-//            return radio;
-//          }).get();
-  json.radios = $('.radio', top.document).map(
+  json.radios = $('.radio').map(
           function() {
             var radio = {};
             radio.id = $(this).attr('id');
             radio.caption = $(this).children('.caption').children('.mdtxt').val();
           }
   ).get();
-  json.texts = $('.txt>.mdtxt', top.document).map(
+  json.texts = $('.txt>.mdtxt').map(
           function() {
             return($(this).val());
           }
@@ -179,6 +146,12 @@ $(function() {
     }
   });
 
+  $('#sign_in').live({
+    click: function() {
+      openEasyOAuthBox('twitter', authcallback)
+    }
+  });
+
   $('#sign_out').live({
     click: function() {
       window.open('http://twitter.com/#!/logout');
@@ -186,40 +159,36 @@ $(function() {
         url: '/sign_out',
         statusCode: {
           200: function(data) {
-            editclose();
-            $('#editbutton').hide();
             $('#session').html('<a class="session" id="sign_in">Sign in with twitter</a>');
           }}
       });
       $('#userinfo').hide();
-      $('#editbutton').attr('id', 'feedbackbutton').html('Feedback');
-      $('#feedbackbutton').show();
     }
   });
 
-  $('#newpage').click(function() {
-    $('#newpage_dialog', top.document).show();
+  $('#newpage').live({
+    click:function() {
+      $('#newpage_dialog').show();
+    }
   });
 
   $('#newpage_cancel').live({
     click: function() {
-      $('#newpage_dialog', top.document).hide();
+      $('#newpage_dialog').hide();
     }
   });
 
-  $('#newpage_last').live({
+  $('#newpage_confirm').live({
     click: function() {
-      var pathname = parent.window.location.pathname.split('/');
       $.ajax({
-        url: '/case/' + pathname[2] + '/newpage',
+        url: window.location.pathname + '/newpage',
         type: 'POST',
         data: pageMeta(),
         statusCode: {
           404: function() {alert('page not found')},
-          200: function(redirect) {
-            alert(redirect);
+          200: function(url) {
             $('#save').trigger('click');
-            parent.change_url(redirect);
+            document.location.href = url;
           },
           403: function() {alert('Forbidden')}
         }
@@ -227,64 +196,68 @@ $(function() {
     }
   });
 
-  $('#createcase').click(function() {
-//    var json = {};
-//    json.title = $('#title').val();
-//    json.icd = $('#ICD').val();
-//    json.meta_private = $('#meta_private').is(':checked');
-    $.ajax({
-      url: '/newcase',
-      type: 'POST',
-      data: pageMeta(),
-      statusCode: {
-        403 : function() {alert('Forbidden - are you logged in?')},
-        200 : function(msg) {document.location = msg}
-      }
-    });
-  });
-
-  $('#addstack', top.document).live({
-    click: function() {
-      $('#uploadarea').show();
+  $('#createcase').live({
+    click:function() {
+      var json = {};
+      json.title = $('#title').val();
+      json.listed = $('#listed').is(':checked');
+      json.icd = $('#icd').val();
+      $.ajax({
+        url: '/newcase',
+        type: 'POST',
+        data: json,
+        statusCode: {
+          403 : function() {alert('Forbidden - are you logged in?')},
+          200 : function(url) {document.location = url}
+        }
+      });
     }
   });
 
-  $('#sign_in').live({
-    click: function() {
-      openEasyOAuthBox('twitter', authcallback)
-    }
-  });
-
-  $('#cancel_upload').live({
-    click: function() {
+  $('#savepage_confirm').live({
+    click: function(event) {
       event.preventDefault();
-      $('#uploadarea').hide();
+      //var data = spiderpage();
+      //alert(data);
+      //var url = $('#savepage').attr('action').toString();
+      $.ajax({
+        type: 'PUT',
+        url: window.location.pathname,
+        data: spiderpage(),
+        statusCode:{
+          200: function(msg) {
+            alert("Page Saved: " + msg);
+            $('#save_dialog').hide();
+          },
+          403: function() {alert('FORBIDDEN')}
+        }
+      });
     }
   });
 
-  $('#feedbackbutton').live({
+  $('#feedback').live({
     click: function() {
-      $('#feedback_dialog', top.document).show();
+      $('#feedback_dialog').show();
     }
   });
 
-  $('#cancel_feedback').live({
+  $('#feedback_cancel').live({
     click: function() {
-      $('#feedback_dialog', top.document).hide();
+      $('#feedback_dialog').hide();
     }
   });
 
-  $('#send_feedback').live({
+  $('#feedback_confirm').live({
     click: function() {
       var pathname = window.location.pathname.split('/');
       var feedback = {};
       var targeturl = '/case/' + pathname[2] + '/feedback';
-      feedback.text = $('#feedback_text', top.document).val();
-      feedback.toAuthor = $('#feedback_author', top.document).is(':checked');
+      feedback.text = $('#feedback_text').val();
+      feedback.toAuthor = $('#feedback_author').is(':checked');
 //      feedback.toPublic = function() {
 //        return $("#feedback_public", top.document).is(':checked') ? 1 : 0;
 //      };
-      feedback.toCurator = $('#feedback_curator', top.document).is(':checked');
+      feedback.toCurator = $('#feedback_curator').is(':checked');
       $.ajax({
         url: targeturl,
         type: 'POST',
@@ -293,7 +266,7 @@ $(function() {
           404: function() {alert('page not found')},
           200: function(response) {
             alert(response);
-            $('#feedback_dialog', top.document).hide();
+            $('#feedback_dialog').hide();
           },
           403: function() {alert('Forbidden')}
         }
@@ -301,7 +274,117 @@ $(function() {
     }
   });
 
-  $('.deletebutton').live({
+  $('#meta').live({
+    click: function() {
+      $('#meta_dialog').show();
+    }
+  });
+
+  $('#meta_cancel').live({
+    click: function() {
+      $('#meta_dialog').hide();
+    }
+  });
+
+  $('#meta_confirm').live({
+    click:function() {
+      $('#meta_dialog').hide();
+    }
+  });
+
+  $('#help').live({
+    click:function() {
+      $('#markdown-help').show();
+    }
+  });
+
+  $('#help_cancel').live({
+    click: function() {
+      $('#markdown-help').hide();
+    }
+  });
+
+  $('#deletepage').live({
+    click: function() {
+      $('#deletepage_dialog').show();
+    }
+  });
+
+  $('#deletepage_cancel').live({
+    click: function() {
+      $('#deletepage_dialog').hide();
+    }
+  });
+
+  $('#deletepage_confirm').live({
+    click: function() {
+      $.ajax({
+        type: 'DELETE',
+        url: top.document.location.pathname,
+        statusCode: {
+          200: function() {
+            window.location.replace($('#prevpage').attr('href'));
+          }
+        }
+      });
+    }
+  });
+
+  $('#addstack').live({
+    click: function() {
+      $('#addstack_dialog').show();
+    }
+  });
+
+  $('#addstack_cancel').live({
+    click: function() {
+      event.preventDefault();
+      $('#addstack_dialog').hide();
+    }
+  });
+
+  $('#addstack_confirm').live({
+    click: function() {
+      $('#addstack_dialog').hide();
+      var userFile = $('#userfile').val();
+      //alert(userFile);
+      $('#uploadform').attr({
+        action: $('#uploadform').attr('action'),
+        method: 'POST',
+        userfile: userFile,
+        enctype: 'multipart/form-data',
+        encoding: 'multipart/form-data',
+        target: 'postframe'
+      });
+      $('#uploadform').submit();
+      $('<div class="radio"><div class="stack"></div>' +
+              '<div class="caption">' +
+              '<textarea class="mdtxt" style="display:none">' +
+              '(double-click to change caption) </textarea>' +
+              '<div class="md"></div></div></div>').insertBefore('#addstack');
+      rendermd();
+      $('.radio:last').append($('<button type="button" class="deletebutton">X</button>'));
+    }
+  });
+
+  $('#postframe').one('load', function() {
+    var radioID = $('iframe')[0].contentDocument.body.innerHTML;
+    $('.radio:last').attr('ID', radioID);
+    $.ajax({
+      type: 'GET',
+      url: '/radio/' + radioID,
+      statusCode:{
+        200: function(data) {
+          $('.stack:last', top.document).html(data);
+          $('.stack:last', top.document).children(':first').show();
+          scrollfunction_mw();
+          touchscroll();
+        }
+      }
+    });
+  });
+
+  $('.deleteradio').live({
     click: function() {
       $(this).parent().addClass('selected');
       $('#deleteradio_dialog').show();
@@ -342,150 +425,6 @@ $(function() {
       });
     }
   });
-
-  $('#show_save').live({
-    click: function() {
-      $('#save_dialog', top.document).show();
-    }
-  });
-
-  $('#cancelsave').live({
-    click: function() {
-      $('#save_dialog', top.document).hide();
-    }
-  });
-
-  $('#save').live({
-    click: function(event) {
-      event.preventDefault();
-      //var data = spiderpage();
-      //alert(data);
-      //var url = $('#savepage').attr('action').toString();
-      $.ajax({
-        type: 'PUT',
-        url: window.location.pathname,
-        data: spiderpage(),
-        statusCode:{
-          200: function(msg) {
-            alert("Page Saved: " + msg);
-            $('#save_dialog', top.document).hide();
-          },
-          403: function() {alert('FORBIDDEN')}
-        }
-      });
-    }
-  });
-
-  $('#meta_button').click(function() {
-    $('#meta_dialog', top.document).show();
-  });
-
-  $('#meta_ok').click(function() {
-    $('#meta_dialog', top.document).hide();
-  });
-
-  $('#help').click(function() {
-    $('#markdown-help', top.document).show();
-  });
-
-  $('#closehelp').live({
-    click: function() {
-      $('#markdown-help', top.document).hide();
-    }
-  });
-
-  $('#editbutton').live({
-    click: function() {
-      path = top.document.location.pathname.split('/');
-      $('#editbar', top.document).attr('src', '/' + path[1] + '/' + path[2] + '/' + path[3] + '/edit').show();
-      $(this).hide();
-    }
-  });
-
-  $('#done').live({
-    click: function() {
-      editclose();
-    }
-  });
-
-  $('#upload_new').live({
-    click: function() {
-      $('#uploadarea').hide();
-      var iframe = $('<iframe name="postframe" id="postframe" class="hidden" src="about:none" />');
-      $('#iframe').append(iframe);
-      $('#uploadform').attr({
-        target: 'postframe'
-      });
-      $('#uploadform').submit();
-    }
-  });
-
-  $('#canceldelete').live({
-    click: function() {
-      $('#delete_dialog', top.document).hide();
-    }
-  });
-
-  $('#deleteconfirmed').live({
-    click: function() {
-      $.ajax({
-        type: 'DELETE',
-        url: top.document.location.pathname,
-        statusCode: {
-          200: function() {
-            window.parent.history.go(-2);
-          }
-        }
-      });
-    }
-  });
-
-  $('#delpage').live({
-    click: function() {
-      $('#delete_dialog', top.document).show();
-    }
-  });
-
-  $('#upload').live({
-    click: function() {
-      $('#uploadarea').hide();
-      var userFile = $('#userfile').val();
-      //alert(userFile);
-      $('#uploadform').attr({
-        action: $('#uploadform').attr('action'),
-        method: 'POST',
-        userfile: userFile,
-        enctype: 'multipart/form-data',
-        encoding: 'multipart/form-data',
-        target: 'postframe'
-      });
-      $('#uploadform').submit();
-      $('<div class="radio"><div class="stack"></div>' +
-              '<div class="caption">' +
-              '<textarea class="mdtxt" style="display:none">' +
-              '(double-click to change caption) </textarea>' +
-              '<div class="md"></div></div></div>').insertBefore('#addstack');
-      rendermd();
-      $('.radio:last', top.document).append($('<button type="button" class="deletebutton">X</button>'));
-    }
-  });
-  $('#postframe').one('load', function() {
-    var radioID = $('iframe')[0].contentDocument.body.innerHTML;
-    $('.radio:last').attr('ID', radioID);
-    $.ajax({
-      type: 'GET',
-      url: '/radio/' + radioID,
-      statusCode:{
-        200: function(data) {
-          $('.stack:last', top.document).html(data);
-          $('.stack:last', top.document).children(':first').show();
-          scrollfunction_mw();
-          touchscroll();
-        }
-      }
-    });
-  });
-
   /*
    * Auto-growing textareas; technique ripped from Facebook
    */

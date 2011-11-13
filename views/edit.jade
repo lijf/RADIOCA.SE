@@ -1,15 +1,13 @@
 #controls
-  a.abutton(id='done')
+  a.abutton(id='done', title='Hide editbar')
     |  ◀ &#x2002;
-  a.abutton(id='help')
+  a.abutton(id='help', title='Help')
     |  &#x2002; ? &#x2002;
-  a.abutton(id='show_save')
-    | &#x2002; ◉ &#x2002;
-  a.abutton(id='delpage')
-    |  &#x2002; &#x166d; &#x2002;
-  a.abutton(id='meta_button')
+  a.abutton(id='meta_button', title='Change metadata')
     |  &#x2002; {m} &#x2002;
-  a.abutton(id='newpage')
+  a.abutton(id='delpage', title='Delete page')
+    |  &#x2002; &#x166d; &#x2002;
+  a.abutton(id='newpage', title='New page')
     |  &#x2002; ＋ &#x2002;
 script(type='text/javascript')
   $(function(){

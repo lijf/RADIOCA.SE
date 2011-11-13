@@ -66,9 +66,9 @@ function username(req, res) {
 }
 
 // Route Middleware
-function loadUser(req, res, next){
- if(!req.isAuthenticated()) return res.redirect('back');
- else next();
+function loadUser(req, res, next) {
+  if (!req.isAuthenticated()) return res.redirect('back');
+  else next();
 }
 
 // Routes
@@ -99,15 +99,16 @@ app.post('/newcase', function(req, res) {
     data.texts = ['Double click to add text'];
     data.created = new Date().getTime();
     data.lastEdit = data.created;
+    data.nextpage = '0';
+    data.prevpage = '0';
     db.incr('numberOfCases', function(err, cid) {
       data.cid = cid;
       db.incr('case:' + cid + ':pages');
 //      db.sadd('case:' + cid + ':page:1:radios', '');
-      if (data.private === 'false') {
-        db.zadd('casesLastEdit', data.lastEdit, cid);
-        db.zadd('cases', data.created, cid);
-      }
+      db.zadd('casesLastEdit', data.lastEdit, cid);
+      if (data.listed === 'true') db.zadd('listed', data.created, cid);
       db.zadd('cases:' + data.creator, data.created, cid);
+      db.set('case:' + cid + ':firstpage', '1');
       db.hmset('case:' + cid + ':page:1', data, function(err, data) {
         db.sadd('case:' + cid + ':users', req.getAuthDetails().user.user_id, function(err, data) {
           console.log('created case: ' + cid);
@@ -123,7 +124,7 @@ app.get('/cases/:start/:finish', function(req, res) {
   else {
     var start = parseInt(req.params.start, 10);
     var end = parseInt(req.params.finish, 10);
-    db.zrange('cases', start, end, function(err, cases) {
+    db.zrange('listed', start, end, function(err, cases) {
       if (err || !cases[0]) res.send('404', 404);
       var sendcases = [];
       cases.forEach(function(theCase, iteration) {
@@ -150,7 +151,7 @@ app.get('/case/:id/:page', function(req, res) {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
       db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
         if (err || !theCase.cid) return res.redirect('back');
-        if (theCase.private === 'false' || (theCase.private === 'true' && editor)) {
+        if (theCase.listed === 'true' || (theCase.listed === 'false' && editor)) {
           console.log('rendering case');
           requestHandlers.rendercase(req, res, theCase, editor, db);
         }
@@ -188,31 +189,7 @@ app.get('/signed_in', function(req, res) {
   });
 });
 
-app.get('/case/:id/:page/edit', function(req, res) {
-  if (!req.isAuthenticated()) return res.send('FORBIDDEN', 403);
-  else {
-    db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, data) {
-      //console.dir(data);
-      if (!data) return res.send('NOT FOUND', 404);
-      db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-        if (!editor) return res.send('FORBIDDEN', 403);
-        else {
-          res.render('edit', {
-            title: 'edit',
-            caseid: req.params.id,
-            page: req.params.page,
-            signed_in: req.isAuthenticated(),
-            user: req.getAuthDetails().user.username
-          });
-        }
-      });
-    });
-  }
-});
-
-//TODO think about how pages within a case are stored and ordered.
-
-app.post('/case/:id/newpage', function(req, res) {
+app.post('/case/:id/:page/newpage', function(req, res) {
   console.log('newpage triggered');
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
     if (!editor) return res.send('FORBIDDEN', 403);
@@ -222,9 +199,16 @@ app.post('/case/:id/newpage', function(req, res) {
       pagedata.texts = 'Double click to add text';
       pagedata.creator = req.getAuthDetails().user.username;
       pagedata.cid = req.params.id;
-      db.incr('case:' + cid + ':pages', function(err, page){
-        db.hmset('case:' + cid + ':page:' + page, pagedata);
-        res.send('/case/' + cid + '/' + page, 200);
+      db.incr('case:' + cid + ':pages', function(err, page) {
+        prevpage = req.params.page;
+        db.hget('case:' + cid + ':page:' + prevpage, 'nextpage', function(err, nextpage) {
+          pagedata.prevpage = prevpage;
+          pagedata.nextpage = nextpage;
+          db.hmset('case:' + cid + ':page:' + page, pagedata);
+          db.hset('case:' + cid + ':page:' + prevpage, 'nextpage', page);
+          db.hset('case:' + cid + ':page:' + nextpage, 'prevpage', page);
+          res.send('/case/' + cid + '/' + page, 200);
+        });
       });
     }
   });
@@ -240,7 +224,7 @@ app.put('/case/:id/:page', function(req, res) {
       data.lastEdit = new Date().getTime();
       data.creator = req.getAuthDetails().user.username;
       db.zadd('casesLastEdit', data.lastEdit, data.cid);
-      if (data.private==='false') db.zadd('cases', data.created, data.cid);
+      if (data.private === 'false') db.zadd('cases', data.created, data.cid);
       else db.zrem('cases', data.cid);
       db.hmset('case:' + req.params.id + ':page:' + req.params.page, data);
       console.log('saved page');
@@ -254,17 +238,27 @@ app.delete('/case/:id/:page', function(req, res) {
   db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
     if (!editor) res.send('FORBIDDEN', 403);
     else {
-      db.del('case:' + req.params.id + ':page:' + req.params.page);
-      db.decr('case:' + req.params.id + ':pages', function(err, pages) {
-        if (!pages) {
-          db.zrem('cases:' + req.getAuthDetails().user.username, req.params.id);
-          db.zrem('cases', req.params.id);
-        }
-
+      db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
+        if (theCase.prevpage === '0') db.set('case:' + req.params.id + ':firstpage', theCase.nextpage);
+        db.hset('case:' + req.params.id + ':page:' + theCase.prevpage, 'nextpage', theCase.nextpage);
+        db.hset('case:' + req.params.id + ':page:' + theCase.nextpage, 'prevpage', theCase.prevpage);
+        db.del('case:' + req.params.id + ':page:' + req.params.page);
       });
       res.send('OK', 200);
     }
   })
+});
+
+app.delete('/case/:id/:page/:radio', function(req, res) {
+  db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
+    if (!editor) res.send('FORBIDDEN', 403);
+    else {
+      db.del('case:' + req.params.id + ':page:' + req.params.page + ':radio:' + req.params.radio + ':caption');
+      db.lrem('case:' + req.params.id + ':page:' + req.params.page + ':radios', 0, req.params.radio);
+      db.srem('image:' + req.params.radio, req.params.id);
+      res.send('OK', 200);
+    }
+  });
 });
 
 app.get('/sign_out', function(req, res) {
@@ -293,18 +287,6 @@ app.get('/about', function(req, res) {
     title: 'About',
     signed_in: req.isAuthenticated(),
     user: req.isAuthenticated() ? req.getAuthDetails().user.username : '0'
-  });
-});
-
-app.delete('/case/:id/:page/:radio', function(req, res) {
-  db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
-    if (!editor) res.send('FORBIDDEN', 403);
-    else {
-      db.del('case:' + req.params.id + ':page:' + req.params.page + ':radio:' + req.params.radio + ':caption');
-      db.lrem('case:' + req.params.id + ':page:' + req.params.page + ':radios', 0, req.params.radio);
-      db.srem('image:' + req.params.radio, req.params.id);
-      res.send('OK', 200);
-    }
   });
 });
 

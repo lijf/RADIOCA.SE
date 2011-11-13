@@ -18,8 +18,8 @@ function render(req, res, theCase, editor) {
     signed_in: req.isAuthenticated(),
     user: req.getAuthDetails().user.username,
     cid: req.params.id,
-    prevpage: parseInt(req.params.page, 10) - 1,
-    nextpage: parseInt(req.params.page, 10) + 1,
+    prevpage: theCase.prevpage,
+    nextpage: theCase.nextpage,
     page: req.params.page,
     editor: editor,
     private: theCase.private || 0

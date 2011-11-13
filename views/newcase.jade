@@ -5,14 +5,14 @@
     form(id='newcase')
       br
       | Title
-      input(type='text', name='meta_title', id='meta_title')
+      input(type='text', name='title', id='title')
       br
       | ICD-Code
       sup *
-      input(type='text', name='meta_icd', id='meta_icd')
+      input(type='text', name='icd', id='icd')
       br
-      | Private
-      input(type='checkbox', name='private', id='private', value='private')
+      | List Case
+      input(type='checkbox', name='listed', id='listed', value='listed')
       br
       button(id='createcase', type='button')
         | Create Case

@@ -1,27 +1,32 @@
 iframe.hidden(name="postframe", id="postframe", src="about:none")
 #pageinfo
   | by:
-  a(href='https://twitter.com/intent/user?screen_name=#{creator}')
+  a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
-  | -
-  a.abutton(id='feedbackbutton', style='float:none')
-    &#x1f4ac; &#x2002;
-  - if('#{editor}')
-    a.abutton(id='editbutton', style='float:none')
-      | ▶ &#x2002;
+  | &#x2002;
+  a.abutton(id='feedbackbutton', style='float:none', title='Send feedback')
+    &#x1f4ac;
+  | &#x2002;
+  -if('#{editor}')
+    a.abutton(id='help', title='Help')
+      |  &#x2002; ? &#x2002;
+    a.abutton(id='meta', title='Change metadata')
+      |  &#x2002; {m} &#x2002;
+    a.abutton(id='deletepage', title='Delete page')
+      |  &#x2002; &#x166d; &#x2002;
+    a.abutton(id='newpage', title='New page')
+      |  &#x2002; ＋ &#x2002;
   #created(style='display:none')
     | #{created}
-iframe(id='editbar', src='about:none', style='display:none')
 #texts
   .txt
     textarea.mdtxt(style='display:none')
       #{texts}
     .md
   br
-  -if('#{prevpage}')
-    a(href='/case/#{cid}/#{prevpage}', style='float: left')
-      | ◀
-  a(href='/case/#{cid}/#{nextpage}', style='float: right')
+  a(id='prevpage', href='/case/#{cid}/#{prevpage}', style='float: left')
+    | ◀
+  a(id='nextpage', href='/case/#{cid}/#{nextpage}', style='float: right')
     | ▶
 #radios
   - each r in radios
@@ -33,36 +38,36 @@ iframe(id='editbar', src='about:none', style='display:none')
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-  a.session(id='addstack', style='display:none')
-    | ＋
+  -if('#{editor}')
+    a.abutton(id='addstack')
+      | &#x2295;
   #markdown-help(style='display:none')
-    a.session(id='closehelp')
+    a.session(id='help_cancel')
       | X
     textarea.mdtxt(style='display:none')
       #{mdhelp}
     .md
 #info(style='display:none')
 #newpage_dialog.dialog_box(style='display:none')
-  | New page:
-  button(id='newpage_next', type='button')
-    | after this one
-  button(id='newpage_last', type='button')
-    | at the end
+  button(id='newpage_confirm', type='button')
+    | New page
   button(id='newpage_cancel', type='button')
     | Cancel
-#delete_dialog.dialog_box(style='display:none')
-  button(id='deleteconfirmed', type='button')
+#deletepage_dialog.dialog_box(style='display:none')
+  button(id='deletepage_confirm', type='button')
     | Delete Page
-  button(id='canceldelete', type='button')
+  button(id='deletepage_cancel', type='button')
     | Cancel
 #meta_dialog.dialog_box(style='display:none')
-  form(id='meta')
+  form
     | Title:
     input(type='text', id='meta_title', value='#{title}')
     | Private
     input(type='checkbox', id='private', value='1', name='private')
-    button(id='meta_ok', type='button')
+    button(id='meta_confirm', type='button')
       | OK
+    button(id='meta_cancel', type='button')
+      | Cancel
 #save_dialog.dialog_box(style='display:none')
   button(id='save', type='button')
     | Save Page
@@ -90,7 +95,7 @@ iframe(id='editbar', src='about:none', style='display:none')
       | Send feedback
     button(type='button', id='cancel_feedback')
       | Cancel
-#uploadarea.dialog_box(style='display:none')
+#addstack_dialog.dialog_box(style='display:none')
   | Please choose image(s) to upload.
   br
   | If multiple images are uploaded together,
@@ -105,15 +110,14 @@ iframe(id='editbar', src='about:none', style='display:none')
         input
         button
           | Browse
-    input.input1(id='upload', type='submit', value='Upload file(s)')
-    button(id='cancel_upload')
+    input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
+    button(id='addstack_cancel')
       | cancel
 script(type='text/javascript')
   $(function(){
+    if(#{editor}){editfunctions()}
     $('.stack').children(':first').show();
-
     rendermd(); // renders the markdown textareas.
-    
     $(".mdtxt").live({
       blur: function() {
         $(this).hide();
