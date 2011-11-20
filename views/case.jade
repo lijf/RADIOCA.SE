@@ -23,6 +23,9 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       #{texts}
     .md
+    - if('#{editor}')
+      a.abutton.textedit.session Edit
+  br
   br
   a(id='prevpage', href='/case/#{cid}/#{prevpage}', style='float: left')
     | ◀
@@ -38,6 +41,8 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
+        - if('#{editor}')
+          a.abutton.textedit.session Edit
   -if('#{editor}')
     a.abutton(id='addstack')
       | &#x2295;

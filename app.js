@@ -282,6 +282,14 @@ app.get('/colophon', function(req, res) {
   });
 });
 
+app.get('/disclaimer', function(req, res) {
+  res.render('disclaimer', {
+    title: 'Disclaimer',
+    signed_in: req.isAuthenticated(),
+    user: req.isAuthenticated() ? req.getAuthDetails().user.username : '0'
+  });
+});
+
 app.get('/about', function(req, res) {
   res.render('about', {
     title: 'About',
