@@ -120,15 +120,6 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       | cancel
 script(type='text/javascript')
   $(function(){
-    if(#{editor}){editfunctions()}
-    $('.stack').children(':first').show();
-    rendermd(); // renders the markdown textareas.
-    $(".mdtxt").live({
-      blur: function() {
-        $(this).hide();
-        rendermd();
-        $(this).siblings(".md").show();
-      }
-    }); // hides the textbox and renders the markdown
+    if(#{editor}) $(".radio").append($('<a class="deleteradio abutton">&#x166d;<a>'));
     if(#{private}){$('#private').attr('checked', true);}
   });

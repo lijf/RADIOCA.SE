@@ -1,162 +1,280 @@
-scrollfunction = ->
-  $(".stack", top.document).mousewheel (event, delta) ->
-    if delta > 0
-      $(this).css "background-position", parseInt($(this).css("background-position"), 10) - parseInt($(this).css("width"), 10)
-    else $(this).css "background-position", parseInt($(this).css("background-position"), 10) + parseInt($(this).css("width"), 10)  if delta < 0
-    event.preventDefault()
+change_url = (url) ->
+  document.location = url
+
+touchscroll = ->
+  $(".stack > .stack_image").each ->
+    visimg = $(this)
+    @ontouchstart = (e) ->
+      visimg = $(this)
+    @ontouchmove = (e) ->
+      if e.targetTouches.length is 1
+        samp++
+        if samp is 3
+          samp = 0
+          touch = e.touches[0]
+          if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
+            visimg.prev().show()
+            visimg.hide()
+            visimg.next().hide()
+            visimg = visimg.prev()
+          else if visimg.next().length > 0
+            visimg.next().show()
+            visimg.hide()
+            visimg.prev().hide()
+            visimg = visimg.next()
+          return lastY = parseInt(touch.pageY, 10)
+        e.preventDefault()
+
 rendermd = ->
-  $(".md", top.document).html ->
+  $(".md").html ->
     markdown = $(this).siblings(".mdtxt").val()
     converter.makeHtml markdown
-editfunctions = ->
-  $(".md", top.document).live dblclick: ->
-    $(this).hide()
-    $(this).siblings(".mdtxt").show().focus().autogrow()
 
-  $(".mdtxt", top.document).live blur: ->
-    $(this).hide()
-    rendermd()
-    $(this).siblings(".md").show()
+pageMeta = ->
+  json = {}
+  json.title = $("#meta_title").val()
+  json.private = $("#private").is(":checked")
+  json.created = $("#created").val()
+  json
 
-  $(".stack", top.document).append $("<button type=\"button\" class=\"deletebutton\">X</button>")
-  $("#addstack", top.document).show()
-editclose = ->
-  $(".md", top.document).die()
-  $(".mdtxt", top.document).die()
-  $("#markdown-help", top.document).hide()
-  $("#addstack", top.document).hide()
-  $("#uploadarea", top.document).hide()
-  $("#editbar", top.document).hide().attr "src", "about:none"
-  $(".stack>.deletebutton", top.document).remove()
-  $("#editbutton", top.document).show()
 spiderpage = ->
-  jsonpage = {}
-  jsonpage.title = $("title", top.document).html()
-  jsonpage.radios = $(".radio", top.document).map(->
+  json = pageMeta()
+  json.radios = $(".radio").map(->
     radio = {}
-    radio.img = $(this).children(".stack").attr("url")
+    radio.id = $(this).attr("id")
     radio.caption = $(this).children(".caption").children(".mdtxt").val()
-    radio
   ).get()
-  jsonpage.texts = $(".txt>.mdtxt", top.document).map(->
+  json.texts = $(".txt>.mdtxt").map(->
     $(this).val()
   ).get()
-  jsonpage
+  json
+
+sessionButton = (user) ->
+  $("#session").html "<button id=\"sign_out\">Sign out " + user + "</button>"
 converter = new Showdown.converter()
-opts =
-  lines: 12
-  length: 7
-  width: 4
-  radius: 10
-  color: "#fff"
-  speed: 1
-  trail: 33
-  shadow: true
-
-$.fn.spin = (opts) ->
-  @each ->
-    $this = $(this)
-    data = $this.data()
-    if data.spinner
-      data.spinner.stop()
-      delete data.spinner
-    data.spinner = new Spinner($.extend(color: $this.css("color"), opts)).spin(this)  if opts != false
-
-  this
+lastY = 0
+samp = 0
 
 authcallback = (data) ->
-  $("#session").html "<button id=\"sign_out\">Sign out " + data.user.username + "</button>"
   $.ajax
     url: "/signed_in"
-    success: (data) ->
-      $("#info").html("new user").show()  if data == "new user"
+    statusCode:
+      200: ->
+        $("#session").html "<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>"
+        $("#feedbackbutton").attr("id", "editbutton").html "Edit"
 
-  $("#editbutton").show()
+      403: (data) ->
+        alert "not allowed - if you feel that this is an error, please write to info@radioca.se"
 
 $ ->
-  scrollfunction()
-  $("#sign_out").live click: ->
+  rendermd()
+  touchscroll()
+  $(".stack").children(":first-child").show()
+
+  $(document
+
+  ).on("click", ".textedit", ->
+    $(this).siblings(".mdtxt").toggle().focus().autogrow()
+    $(this).siblings(".md").toggle()
+    (if $(this).html() is "Edit" then $(this).html("Save") else $(this).html("Edit"))
+
+  ).on("blur", ".mdtxt", ->
+    event.preventDefault()
+
+  ).on("mousewheel", ".stack > .stack_image", (e) ->
+    delta = e.originalEvent.wheelDelta
+    if delta > 0 and $(this).next().length > 0
+      $(this).css "display", "none"
+      $(this).prev().css "display", "none"
+      $(this).next().css "display", "inline"
+    else if delta < 0 and $(this).prev().length > 0
+      $(this).css "display", "none"
+      $(this).next().css "display", "none"
+      $(this).prev().css "display", "inline"
+    e.preventDefault()
+
+  ).on("click", "#user_settings", ->
+    $("#userinfo").toggle()
+
+  ).on("click", "#sign_in", ->
+    openEasyOAuthBox "twitter", authcallback
+
+  ).on("click", "#sign_out", ->
     window.open "http://twitter.com/#!/logout"
     $.ajax
       url: "/sign_out"
-      success: (data) ->
-        editclose()
-        $("#editbutton").hide()
-        $("#session").html data
+      statusCode:
+        200: (data) ->
+          $("#session").html "<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>"
 
-  $("#addstack", top.document).live click: ->
-    $("#uploadarea").show()
+    $("#userinfo").hide()
 
-  $("#twitbutt").live click: ->
-    openEasyOAuthBox "twitter", authcallback
-    $(this).hide()
+  ).on("click", "#newpage", ->
+    $("#newpage_dialog").show()
 
-  $("#cancelupload").live click: ->
-    $("#uploadarea").hide()
+  ).on("click", "#newpage_cancel", ->
+    $("#newpage_dialog").hide()
 
-  $("#facebutt").click ->
-    openEasyOAuthBox "facebook", authcallback
+  ).on("click", "#newpage_confirm", ->
+    $.ajax
+      url: window.location.pathname + "/newpage"
+      type: "POST"
+      data: pageMeta()
+      statusCode:
+        404: ->
+          alert "Page not found"
+        200: (url) ->
+          $("#save").trigger "click"
+          document.location.href = url
+        403: ->
+          alert "Forbidden, page not saved"
 
-  $(".deletebutton").live click: ->
-    $(this).parent().parent().remove()
+  ).on("click", "#createcase", ->
+    json = {}
+    json.title = $("#title").val()
+    json.listed = $("#listed").is(":checked")
+    json.icd = $("#icd").val()
+    $.ajax
+      url: "/newcase"
+      type: "POST"
+      data: json
+      statusCode:
+        403: ->
+          alert "Forbidden - are you logged in?"
+        200: (url) ->
+          document.location = url
 
-  $(".stack").live "toggleSpinner", ->
-    alert "toggleSpinner triggered"
-    $(this).spin opts
-
-  $("#save").click (event) ->
+  ).on("click", "#savepage_confirm", ->
     event.preventDefault()
-    data = spiderpage()
-    url = $("#savepage").attr("action").toString()
     $.ajax
       type: "PUT"
-      url: url
-      dataType: "json"
-      data: data
-      success: (msg) ->
-        alert "Page Saved: " + msg
+      url: window.location.pathname
+      data: spiderpage()
+      statusCode:
+        200: (msg) ->
+          alert "Page Saved: " + msg
+          $("#save_dialog").hide()
+        403: ->
+          alert "FORBIDDEN"
 
-  $("#help").click ->
-    $("#markdown-help", top.document).show()
+  ).on("click", "#feedback", ->
+    $("#feedback_dialog").show()
 
-  $("#closehelp").live click: ->
-    $("#markdown-help", top.document).hide()
+  ).on("click", "#feedback_cancel", ->
+    $("#feedback_dialog").hide()
 
-  $("#sendstring").live click: ->
+  ).on("click", "#feedback_confirm", ->
+    pathname = window.location.pathname.split("/")
+    feedback = {}
+    targeturl = "/case/" + pathname[2] + "/feedback"
+    feedback.text = $("#feedback_text").val()
+    feedback.toAuthor = $("#feedback_author").is(":checked")
+    feedback.toCurator = $("#feedback_curator").is(":checked")
     $.ajax
-      url: "/put-test"
-      method: "put"
+      url: targeturl
+      type: "POST"
+      data: feedback
+      statusCode:
+        404: ->
+          alert "page not found"
+        200: (response) ->
+          alert response
+          $("#feedback_dialog").hide()
+        403: ->
+          alert "Forbidden"
 
-  $("#editbutton").live click: ->
-    path = top.document.location.pathname.split("/")
-    $("#editbar", top.document).attr("src", "/" + path[1] + "/" + path[2] + "/" + path[3] + "/edit").show()
-    $(this).hide()
+  ).on("click", "#meta", ->
+    $("#meta_dialog").show()
 
-  $("#done").live click: ->
-    editclose()
+  ).on("click", "#meta_cancel", ->
+    $("#meta_dialog").hide()
 
-  $("#upload").live click: ->
-    $("#uploadarea").hide()
+  ).on("click", "#meta_confirm", ->
+    $("#meta_dialog").hide()
+
+  ).on("click", "#help", ->
+    $("#markdown-help").show()
+
+  ).on("click", "#help_cancel", ->
+    $("#markdown-help").hide()
+
+  ).on("click", "#deletepage", ->
+    $("#deletepage_dialog").show()
+
+  ).on("click", "#deletepage_cancel", ->
+    $("#deletepage_dialog").hide()
+
+  ).on("click", "#deletepage_confirm", ->
+    $.ajax
+      type: "DELETE"
+      url: top.document.location.pathname
+      statusCode:
+        200: ->
+          window.location.replace $("#prevpage").attr("href")
+
+  ).on("click", "#addstack", ->
+    $("#addstack_dialog").show()
+
+  ).on("click", "#addstack_cancel", ->
+    event.preventDefault()
+    $("#addstack_dialog").hide()
+
+  ).on("click", "#addstack_confirm", ->
+    $("#addstack_dialog").hide()
     userFile = $("#userfile").val()
-    iframe = $("<iframe name=\"postframe\" id=\"postframe\" class=\"hidden\" src=\"about:none\" />")
-    $("#iframe").append iframe
     $("#uploadform").attr
-      action: "/image/"
+      action: $("#uploadform").attr("action")
       method: "POST"
-      userfile: $("#userfile").val()
+      userfile: userFile
       enctype: "multipart/form-data"
       encoding: "multipart/form-data"
       target: "postframe"
 
     $("#uploadform").submit()
-    $("#radios", top.document).append "<div class='radio'><div url='', class='stack img512'></div>" + "<div class='caption'>" + "<textarea class='mdtxt' style='display:none'>" + "(double-click to change caption) </textarea>" + "<div class='md'></div></div></div>"
+    $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore "#addstack"
     rendermd()
-    $(".radio:last>.stack", top.document).append $("<button type=\"button\" class=\"deletebutton\">X</button>")
-    $(".radio:last>.stack", top.document).spin()
-    $("#postframe").load ->
-      url = $("iframe")[0].contentDocument.body.innerHTML
-      $(".radio:last>.stack", top.document).attr "url", url
-      scrollfunction()
+    $(".radio:last").append $("<a class=\"deleteradio abutton\">&#x166d;<a>")
+    $(".caption:last").append $("<a class=\"abutton session textedit\">Edit</a>")
+
+  ).on("click", ".deleteradio", ->
+    $(this).parent().addClass "selected"
+    $("#deleteradio_dialog").show()
+
+  ).on("click", "deleteradio_cancel", ->
+    $(".selected").removeClass "selected"
+    $("#deleteradio_dialog").hide()
+
+  ).on "click", "#deleteradio_confirm", ->
+    pathname = window.location.pathname.split("/")
+    targeturl = "/case/" + pathname[2] + "/" + pathname[3] + "/" + $(".selected").attr("ID")
+    $.ajax
+      url: targeturl
+      type: "DELETE"
+      statusCode:
+        200: ->
+          $(".selected").remove()
+          $("#deleteradio_dialog").hide()
+        404: ->
+          alert "NOT FOUND"
+          $(".selected").removeClass "selected"
+          $("#deleteradio_dialog").hide()
+        403: ->
+          alert "FORBIDDEN"
+          $(".selected").removeClass "selected"
+          $("#deleteradio_dialog").hide()
+
+  $("#postframe").one "load", ->
+    radioID = $("iframe")[0].contentDocument.body.innerHTML
+    $(".radio:last").attr "ID", radioID
+    $.ajax
+      type: "GET"
+      url: "/radio/" + radioID
+      statusCode:
+        200: (data) ->
+          $(".stack:last", top.document).html data
+          $(".stack:last", top.document).children(":first").show()
+          scrollfunction_mw()
+          touchscroll()
 
   $.fn.autogrow = (options) ->
     @filter("textarea", top.document).each ->
@@ -177,12 +295,10 @@ $ ->
         times = (string, number) ->
           i = 0
           r = ""
-
           while i < number
             r += string
             i++
           r
-
         val = @value.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;").replace(/\n$/, "<br/>&nbsp;").replace(/\n/g, "<br/>").replace(RegExp(" {2,}", "g"), (space) ->
           times("&nbsp;", space.length - 1) + " "
         )
@@ -191,5 +307,42 @@ $ ->
 
       $(this).change(update).keyup(update).keydown update
       update.apply this
-
     this
+
+  jQuery.fn.autoGrow = ->
+    @each ->
+      colsDefault = @cols
+      rowsDefault = @rows
+      grow = ->
+        growByRef this
+      growByRef = (obj) ->
+        linesCount = 0
+        lines = obj.value.split("\n")
+        i = lines.length - 1
+        while i >= 0
+          linesCount += Math.floor((lines[i].length / colsDefault) + 1)
+          --i
+        if linesCount >= rowsDefault
+          obj.rows = linesCount + 1
+        else
+          obj.rows = rowsDefault
+      characterWidth = (obj) ->
+        characterWidth = 0
+        temp1 = 0
+        temp2 = 0
+        tempCols = obj.cols
+        obj.cols = 1
+        temp1 = obj.offsetWidth
+        obj.cols = 2
+        temp2 = obj.offsetWidth
+        characterWidth = temp2 - temp1
+        obj.cols = tempCols
+        characterWidth
+      @style.width = "auto"
+      @style.height = "auto"
+      @style.overflow = "hidden"
+      @style.width = ((characterWidth(this) * @cols) + 6) + "px"
+      @onkeyup = grow
+      @onfocus = grow
+      @onblur = grow
+      growByRef this
