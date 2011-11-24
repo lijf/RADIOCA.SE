@@ -1,5 +1,5 @@
 (function() {
-  var authcallback, change_url, converter, lastY, pageMeta, rendermd, samp, sessionButton, spiderpage, touchscroll;
+  var authcallback, change_url, converter, getTitle, lastY, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
   change_url = function(url) {
     return document.location = url;
   };
@@ -42,10 +42,15 @@
       return converter.makeHtml(markdown);
     });
   };
+  getTitle = function() {
+    var pattern;
+    pattern = /[^#+].+/;
+    return $("#title>.txt>.mdtxt").val().match(pattern);
+  };
   pageMeta = function() {
     var json;
     json = {};
-    json.title = $("#meta_title").val();
+    json.title = getTitle();
     json.private = $("#private").is(":checked");
     json.created = $("#created").val();
     return json;
@@ -59,7 +64,7 @@
       radio.id = $(this).attr("id");
       return radio.caption = $(this).children(".caption").children(".mdtxt").val();
     }).get();
-    json.texts = $(".txt>.mdtxt").map(function() {
+    json.texts = $("#texts>.txt>.mdtxt").map(function() {
       return $(this).val();
     }).get();
     return json;
@@ -84,6 +89,22 @@
       }
     });
   };
+  savepage = function() {
+    return $.ajax({
+      type: "PUT",
+      url: window.location.pathname,
+      data: spiderpage(),
+      statusCode: {
+        200: function(msg) {
+          $("#save_dialog").hide();
+          return document.title = "RADIOCA.SE - " + getTitle();
+        },
+        403: function() {
+          return alert("FORBIDDEN");
+        }
+      }
+    });
+  };
   $(function() {
     rendermd();
     touchscroll();
@@ -92,6 +113,7 @@
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
       rendermd();
+      savepage();
       if ($(this).html() === "Edit") {
         return $(this).html("Save");
       } else {
@@ -216,14 +238,16 @@
           }
         }
       });
-    }).on("click", "#meta", function() {
-      return $("#meta_dialog").show();
-    }).on("click", "#meta_cancel", function() {
-      return $("#meta_dialog").hide();
-    }).on("click", "#meta_confirm", function() {
-      return $("#meta_dialog").hide();
     }).on("click", "#help", function() {
       return $("#markdown-help").show();
+    }).on("change", "#private", function() {
+      return $("#savepage_confirm").trigger('click');
+    }).on("click", "#private_page", function() {
+      if ($("#private").is(':checked')) {
+        return $("#private").attr('checked', false);
+      } else {
+        return $("#private").attr('checked', true);
+      }
     }).on("click", "#help_cancel", function() {
       return $("#markdown-help").hide();
     }).on("click", "#deletepage", function() {
@@ -265,7 +289,7 @@
     }).on("click", ".deleteradio", function() {
       $(this).parent().addClass("selected");
       return $("#deleteradio_dialog").show();
-    }).on("click", "deleteradio_cancel", function() {
+    }).on("click", "#deleteradio_cancel", function() {
       $(".selected").removeClass("selected");
       return $("#deleteradio_dialog").hide();
     }).on("click", "#deleteradio_confirm", function() {

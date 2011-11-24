@@ -150,6 +150,7 @@ app.get('/case/:id/:page', function(req, res) {
   if (!req.isAuthenticated()) return res.redirect('/');
   else {
     db.sismember('case:' + req.params.id + ':users', req.getAuthDetails().user.user_id, function(err, editor) {
+      console.log(editor);
       db.hgetall('case:' + req.params.id + ':page:' + req.params.page, function(err, theCase) {
         if (err || !theCase.cid) return res.redirect('back');
         if (theCase.listed === 'true' || (theCase.listed === 'false' && editor)) {

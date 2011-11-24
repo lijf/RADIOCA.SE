@@ -30,9 +30,16 @@ rendermd = ->
     markdown = $(this).siblings(".mdtxt").val()
     converter.makeHtml markdown
 
+getTitle = ->
+  pattern = ///
+    [^#+] # match the hashes, and ignore them
+    .+  #match what comes after the hashes
+    ///
+  $("#title>.txt>.mdtxt").val().match(pattern)
+
 pageMeta = ->
   json = {}
-  json.title = $("#meta_title").val()
+  json.title = getTitle()
   json.private = $("#private").is(":checked")
   json.created = $("#created").val()
   json
@@ -44,7 +51,7 @@ spiderpage = ->
     radio.id = $(this).attr("id")
     radio.caption = $(this).children(".caption").children(".mdtxt").val()
   ).get()
-  json.texts = $(".txt>.mdtxt").map(->
+  json.texts = $("#texts>.txt>.mdtxt").map(->
     $(this).val()
   ).get()
   json
@@ -66,6 +73,18 @@ authcallback = (data) ->
       403: (data) ->
         alert "not allowed - if you feel that this is an error, please write to info@radioca.se"
 
+savepage = ->
+    $.ajax
+      type: "PUT"
+      url: window.location.pathname
+      data: spiderpage()
+      statusCode:
+        200: (msg) ->
+          $("#save_dialog").hide()
+          document.title = "RADIOCA.SE - " + getTitle()
+        403: ->
+          alert "FORBIDDEN"
+
 $ ->
   rendermd()
   touchscroll()
@@ -77,6 +96,7 @@ $ ->
     $(this).siblings(".mdtxt").toggle().focus().autogrow()
     $(this).siblings(".md").toggle()
     rendermd()
+    savepage()
     (if $(this).html() is "Edit" then $(this).html("Save") else $(this).html("Edit"))
 
   ).on("blur", ".mdtxt", ->
@@ -186,17 +206,14 @@ $ ->
         403: ->
           alert "Forbidden"
 
-  ).on("click", "#meta", ->
-    $("#meta_dialog").show()
-
-  ).on("click", "#meta_cancel", ->
-    $("#meta_dialog").hide()
-
-  ).on("click", "#meta_confirm", ->
-    $("#meta_dialog").hide()
-
   ).on("click", "#help", ->
     $("#markdown-help").show()
+
+  ).on("change", "#private", ->
+    $("#savepage_confirm").trigger('click')
+
+  ).on("click", "#private_page", ->
+    if $("#private").is(':checked') then $("#private").attr('checked', false) else $("#private").attr('checked', true)
 
   ).on("click", "#help_cancel", ->
     $("#markdown-help").hide()
@@ -243,7 +260,7 @@ $ ->
     $(this).parent().addClass "selected"
     $("#deleteradio_dialog").show()
 
-  ).on("click", "deleteradio_cancel", ->
+  ).on("click", "#deleteradio_cancel", ->
     $(".selected").removeClass "selected"
     $("#deleteradio_dialog").hide()
 

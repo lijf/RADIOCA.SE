@@ -8,6 +8,7 @@ var url = require('url');
 // all is combined to json-object which is passed off for rendering
 
 function render(req, res, theCase, editor) {
+  console.log('editor = ' + editor);
   return res.render('case', {
     title: theCase.title || ' - untitled',
     radios: theCase.radios || '',

@@ -7,15 +7,16 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   a.abutton(id='feedbackbutton', style='float:none', title='Send feedback')
     &#x1f4ac;
   | &#x2002;
-  -if('#{editor}')
+  span#controls
     a.abutton(id='help', title='Help')
       |  &#x2002; ? &#x2002;
-    a.abutton(id='meta', title='Change metadata')
-      |  &#x2002; {m} &#x2002;
     a.abutton(id='deletepage', title='Delete page')
       |  &#x2002; &#x166d; &#x2002;
     a.abutton(id='newpage', title='New page')
       |  &#x2002; ＋ &#x2002;
+    a.abutton(id='private_page', title='Private Page')
+      | &#x2002; &#128272;
+    input(type='checkbox', id='private', value='1', name='private')
   #created(style='display:none')
     | #{created}
 #title
@@ -23,15 +24,13 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       ##{title}
     .md
-    - if('#{editor}')
-      a.abutton.textedit.session Edit
+    a.abutton.textedit.session Edit
 #texts
   .txt
     textarea.mdtxt(style='display:none')
       #{texts}
     .md
-    - if('#{editor}')
-      a.abutton.textedit.session Edit
+    a.abutton.textedit.session Edit
   br
   br
   a(id='prevpage', href='/case/#{cid}/#{prevpage}', style='float: left')
@@ -48,10 +47,8 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-        - if('#{editor}')
-          a.abutton.textedit.session Edit
-  -if('#{editor}')
-    a.abutton(id='addstack')
+        a.abutton.textedit.session Edit
+    a.abutton(id='addstack', style='display:none')
       | &#x2295;
   #markdown-help(style='display:none')
     a.session(id='help_cancel')
@@ -127,6 +124,11 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       | cancel
 script(type='text/javascript')
   $(function(){
-    if(#{editor}) $(".radio").append($('<a class="deleteradio abutton">&#x166d;<a>'));
-    if(#{private}){$('#private').attr('checked', true);}
+    if(#{editor}=='1') {
+      $(".radio").append($('<a class="deleteradio abutton">&#x166d;<a>'))
+      $("#controls").show();
+      $(".textedit").show();
+      $("#addstack").show();  
+      };
+    if(#{private}=='1'){$('#private').attr('checked', true);}
   });
