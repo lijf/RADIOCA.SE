@@ -91,6 +91,7 @@
     $(document).on("click", ".textedit", function() {
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
+      rendermd();
       if ($(this).html() === "Edit") {
         return $(this).html("Save");
       } else {
@@ -100,14 +101,17 @@
       return event.preventDefault();
     }).on("mousewheel", ".stack > .stack_image", function(e) {
       var delta;
-      delta = e.originalEvent.wheelDelta;
+      delta = e.originalEvent.detail;
+      if (!delta) {
+        delta = e.originalEvent.wheelDelta;
+      }
       if (delta > 0 && $(this).next().length > 0) {
-        $(this).css("display", "none");
         $(this).prev().css("display", "none");
+        $(this).css("display", "none");
         $(this).next().css("display", "inline");
       } else if (delta < 0 && $(this).prev().length > 0) {
-        $(this).css("display", "none");
         $(this).next().css("display", "none");
+        $(this).css("display", "none");
         $(this).prev().css("display", "inline");
       }
       return e.preventDefault();

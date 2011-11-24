@@ -76,20 +76,23 @@ $ ->
   ).on("click", ".textedit", ->
     $(this).siblings(".mdtxt").toggle().focus().autogrow()
     $(this).siblings(".md").toggle()
+    rendermd()
     (if $(this).html() is "Edit" then $(this).html("Save") else $(this).html("Edit"))
 
   ).on("blur", ".mdtxt", ->
     event.preventDefault()
 
   ).on("mousewheel", ".stack > .stack_image", (e) ->
-    delta = e.originalEvent.wheelDelta
+    delta = e.originalEvent.detail
+    if !delta
+      delta = e.originalEvent.wheelDelta
     if delta > 0 and $(this).next().length > 0
+      $(this).prev().css "display","none"
       $(this).css "display", "none"
-      $(this).prev().css "display", "none"
       $(this).next().css "display", "inline"
     else if delta < 0 and $(this).prev().length > 0
-      $(this).css "display", "none"
       $(this).next().css "display", "none"
+      $(this).css "display", "none"
       $(this).prev().css "display", "inline"
     e.preventDefault()
 

@@ -18,6 +18,13 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       |  &#x2002; ＋ &#x2002;
   #created(style='display:none')
     | #{created}
+#title
+  .txt
+    textarea.mdtxt(style='display:none')
+      ##{title}
+    .md
+    - if('#{editor}')
+      a.abutton.textedit.session Edit
 #texts
   .txt
     textarea.mdtxt(style='display:none')
