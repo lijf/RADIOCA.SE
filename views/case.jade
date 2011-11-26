@@ -56,6 +56,15 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       #{mdhelp}
     .md
+  #feedbackarea(style='display:none')
+    - each f in feedback
+      p #{f}
+    textarea#feedbackbox
+    br
+    button(id='feedback_cancel', type='button')
+      | Cancel
+    button(id='feedback_confirm', type='button')
+      | Send
 #info(style='display:none')
 #newpage_dialog.dialog_box(style='display:none')
   button(id='newpage_confirm', type='button')
@@ -128,7 +137,7 @@ script(type='text/javascript')
       $(".radio").append($('<a class="deleteradio abutton">&#x166d;<a>'))
       $("#controls").show();
       $(".textedit").show();
-      $("#addstack").show();  
+      $("#addstack").show();
       };
     if(#{private}=='1'){$('#private').attr('checked', true);}
   });

@@ -180,13 +180,13 @@ $ ->
         403: ->
           alert "FORBIDDEN"
 
-  ).on("click", "#feedback", ->
-    $("#feedback_dialog").show()
+  ).on("click", "#feedbackbutton", ->
+    $("#feedbackarea").show()
 
   ).on("click", "#feedback_cancel", ->
     $("#feedback_dialog").hide()
 
-  ).on("click", "#feedback_confirm", ->
+  ).on("click", "#feedback_confirm_old", ->
     pathname = window.location.pathname.split("/")
     feedback = {}
     targeturl = "/case/" + pathname[2] + "/feedback"

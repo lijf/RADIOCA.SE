@@ -209,11 +209,11 @@
           }
         }
       });
-    }).on("click", "#feedback", function() {
-      return $("#feedback_dialog").show();
+    }).on("click", "#feedbackbutton", function() {
+      return $("#feedbackarea").show();
     }).on("click", "#feedback_cancel", function() {
       return $("#feedback_dialog").hide();
-    }).on("click", "#feedback_confirm", function() {
+    }).on("click", "#feedback_confirm_old", function() {
       var feedback, pathname, targeturl;
       pathname = window.location.pathname.split("/");
       feedback = {};

@@ -5,7 +5,7 @@ render = (req, res, theCase, editor) ->
     texts: [ theCase.texts ] or ""
     creator: theCase.creator or ""
     created: theCase.created
-    mdhelp: mdhelp
+    mdhelp: theCase.mdhelp
     signed_in: req.isAuthenticated()
     user: req.getAuthDetails().user.username
     cid: req.params.id
@@ -14,9 +14,11 @@ render = (req, res, theCase, editor) ->
     page: req.params.page
     editor: editor
     private: theCase.private or 0
+    feedback: theCase.feedback or ''
+
 rendercase = (req, res, theCase, editor, db) ->
   db.get "markdown-help", (err, data) ->
-    mdhelp = JSON.parse(data)
+    theCase.mdhelp = JSON.parse(data)
     db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
       return render(req, res, theCase, editor)  if radioIDs.length < 1
       theCase.radios = []
@@ -29,8 +31,13 @@ rendercase = (req, res, theCase, editor, db) ->
             theCase.radios[ID].images = []
             images.forEach (image, imgID) ->
               theCase.radios[ID].images[imgID] = image
-
-            render req, res, theCase, editor  unless radioIDs[ID + 1]
+            theCase.feedback = []
+            db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+              console.dir feedback
+              feedback.forEach (fb, fbID) ->
+                theCase.feedback[fbID] = fb
+              console.log theCase.feedback
+              render req, res, theCase, editor  unless radioIDs[ID + 1]
 postImage2 = (req, res, db) ->
   d = new Date().getTime().toString()
   i = 0
