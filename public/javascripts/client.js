@@ -1,558 +1,260 @@
-var converter = new Showdown.converter();
-
-function change_url(url) { document.location = url; }
-
-function scrollfunction_mw() {
-  $('.stack > .stack_image', top.document).mousewheel(function(event, delta) {
-    if (delta > 0 && $(this).next().length > 0) {
-      $(this).css('display', 'none');
-      $(this).prev().css('display', 'none');
-      $(this).next().css('display', 'inline');
-    } else if (delta < 0 && $(this).prev().length > 0) {
-      $(this).css('display', 'none');
-      $(this).next().css('display', 'none');
-      $(this).prev().css('display', 'inline');
-    }
-    //console.log(delta);
-    event.preventDefault();
-  });
-}
-
-var lastY = 0;
-var samp = 0;
-
-function touchscroll() {
-  $('.stack > .stack_image', top.document).each(function() {
-    var visimg = $(this);
-    this.ontouchstart = function(e) {
-      return visimg = $(this);
-    };
-    this.ontouchmove = function(e) {
-      if (e.targetTouches.length === 1) {
-        samp++;
-        if (samp === 3) {
-          samp = 0;
-          var touch = e.touches[0];
-          if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
-            visimg.prev().show();
-            visimg.hide();
-            visimg.next().hide();
-            visimg = visimg.prev();
-          }
-          else if (visimg.next().length > 0) {
-            visimg.next().show();
-            visimg.hide();
-            visimg.prev().hide();
-            visimg = visimg.next();
-          }
-          //log(parseInt(touch.pageY, 10));
-          return lastY = parseInt(touch.pageY, 10);
-        }
-        e.preventDefault();
-      }
-    }
-  });
-}
-
-function rendermd() {
-  $('.md').html(function() {
-    var markdown = $(this).siblings(".mdtxt").val();
-    return converter.makeHtml(markdown);
-  });
-}
-
-function pageMeta() {
-  var json = {};
-  json.title = $('#meta_title').val();
-  json.private = $('#private').is(':checked');
-  json.created = $('#created').val();
-  return json;
-}
-
-function editfunctions() {
-  $('.textedit').live({
-    click: function() {
-      $(this).siblings('.mdtxt').toggle().focus().autogrow();
-      $(this).siblings('.md').toggle();
-      $(this).html() == 'Edit' ? $(this).html('Save') : $(this).html('Edit');
-    }
-  });
-
-  $('.mdtxt').live({
-    blur: function() {
-      event.preventDefault();
-    }
-  });
-
-  $('.textedit2').live({
-    click: function() {
-      $(this).removeClass('textedit');
-      $(this).addClass('textsave');
-      $(this).html('Save');
-      $(this).siblings('.md').hide();
-      $(this).siblings('.mdtxt').show().focus();
-    }
-  });
-
-  $('.textsave2').live({
-    click: function() {
-      $(this).removeClass('textsave');
-      $(this).addClass('textedit');
-      $(this).html('Edit');
-      $(this).siblings('.mdtxt').hide();
-      $(this).siblings('.md').show();
-      $.ajax({
-        type: 'PUT',
-        url: window.location.pathname,
-        data: spiderpage(),
-        statusCode:{
-          403: function() {alert('FORBIDDEN')}
-        }
-      });
-    }
-  });
-
-  $('.radio').append($('<a class="deleteradio abutton">&#x166d;<a>'));
-  // adds deletebutton to radios
-}
-
-function spiderpage() {
-  var json = pageMeta();
-  json.radios = $('.radio').map(
-          function() {
-            var radio = {};
-            radio.id = $(this).attr('id');
-            radio.caption = $(this).children('.caption').children('.mdtxt').val();
-          }
-  ).get();
-  json.texts = $('.txt>.mdtxt').map(
-          function() {
-            return($(this).val());
-          }
-  ).get();
-  return json;
-}
-
-function sessionButton(user) {
-  $('#session').html('<button id="sign_out">Sign out ' + user + '</button>');
-}
-
-var authcallback = function(data) {
-  $.ajax({
-    url: '/signed_in',
-    statusCode: {
-      200: function() {
-        $('#session').html('<a class="session" id="user_settings">' + data.user.username + ' ▼ </a>');
-        $('#feedbackbutton').attr('id', 'editbutton').html('Edit');
-      },
-      403: function(data) {
-        alert('not allowed - if you feel that this is an error, please write to info@radioca.se');
-      }
-    }
-  });
-};
-
-$(function() {
-
-  touchscroll();
-  scrollfunction_mw();
-  $('.stack').children(':first-child').show();
-
-  $('#user_settings').live({
-    click: function() {
-      $('#userinfo').toggle();
-    }
-  });
-
-  $('#sign_in').live({
-    click: function() {
-      openEasyOAuthBox('twitter', authcallback)
-    }
-  });
-
-  $('#sign_out').live({
-    click: function() {
-      window.open('http://twitter.com/#!/logout');
-      $.ajax({
-        url: '/sign_out',
-        statusCode: {
-          200: function(data) {
-            $('#session').html('<a class="session" id="sign_in">Sign in with twitter</a>');
-          }}
-      });
-      $('#userinfo').hide();
-    }
-  });
-
-  $('#newpage').live({
-    click:function() {
-      $('#newpage_dialog').show();
-    }
-  });
-
-  $('#newpage_cancel').live({
-    click: function() {
-      $('#newpage_dialog').hide();
-    }
-  });
-
-  $('#newpage_confirm').live({
-    click: function() {
-      $.ajax({
-        url: window.location.pathname + '/newpage',
-        type: 'POST',
-        data: pageMeta(),
-        statusCode: {
-          404: function() {alert('page not found')},
-          200: function(url) {
-            $('#save').trigger('click');
-            document.location.href = url;
-          },
-          403: function() {alert('Forbidden')}
-        }
-      });
-    }
-  });
-
-  $('#createcase').live({
-    click:function() {
-      var json = {};
-      json.title = $('#title').val();
-      json.listed = $('#listed').is(':checked');
-      json.icd = $('#icd').val();
-      $.ajax({
-        url: '/newcase',
-        type: 'POST',
-        data: json,
-        statusCode: {
-          403 : function() {alert('Forbidden - are you logged in?')},
-          200 : function(url) {document.location = url}
-        }
-      });
-    }
-  });
-
-  $('#savepage_confirm').live({
-    click: function(event) {
-      event.preventDefault();
-      //var data = spiderpage();
-      //alert(data);
-      //var url = $('#savepage').attr('action').toString();
-      $.ajax({
-        type: 'PUT',
-        url: window.location.pathname,
-        data: spiderpage(),
-        statusCode:{
-          200: function(msg) {
-            alert("Page Saved: " + msg);
-            $('#save_dialog').hide();
-          },
-          403: function() {alert('FORBIDDEN')}
-        }
-      });
-    }
-  });
-
-  $('#feedback').live({
-    click: function() {
-      $('#feedback_dialog').show();
-    }
-  });
-
-  $('#feedback_cancel').live({
-    click: function() {
-      $('#feedback_dialog').hide();
-    }
-  });
-
-  $('#feedback_confirm').live({
-    click: function() {
-      var pathname = window.location.pathname.split('/');
-      var feedback = {};
-      var targeturl = '/case/' + pathname[2] + '/feedback';
-      feedback.text = $('#feedback_text').val();
-      feedback.toAuthor = $('#feedback_author').is(':checked');
-//      feedback.toPublic = function() {
-//        return $("#feedback_public", top.document).is(':checked') ? 1 : 0;
-//      };
-      feedback.toCurator = $('#feedback_curator').is(':checked');
-      $.ajax({
-        url: targeturl,
-        type: 'POST',
-        data: feedback,
-        statusCode: {
-          404: function() {alert('page not found')},
-          200: function(response) {
-            alert(response);
-            $('#feedback_dialog').hide();
-          },
-          403: function() {alert('Forbidden')}
-        }
-      });
-    }
-  });
-
-  $('#meta').live({
-    click: function() {
-      $('#meta_dialog').show();
-    }
-  });
-
-  $('#meta_cancel').live({
-    click: function() {
-      $('#meta_dialog').hide();
-    }
-  });
-
-  $('#meta_confirm').live({
-    click:function() {
-      $('#meta_dialog').hide();
-    }
-  });
-
-  $('#help').live({
-    click:function() {
-      $('#markdown-help').show();
-    }
-  });
-
-  $('#help_cancel').live({
-    click: function() {
-      $('#markdown-help').hide();
-    }
-  });
-
-  $('#deletepage').live({
-    click: function() {
-      $('#deletepage_dialog').show();
-    }
-  });
-
-  $('#deletepage_cancel').live({
-    click: function() {
-      $('#deletepage_dialog').hide();
-    }
-  });
-
-  $('#deletepage_confirm').live({
-    click: function() {
-      $.ajax({
-        type: 'DELETE',
-        url: top.document.location.pathname,
-        statusCode: {
-          200: function() {
-            window.location.replace($('#prevpage').attr('href'));
-          }
-        }
-      });
-    }
-  });
-
-  $('#addstack').live({
-    click: function() {
-      $('#addstack_dialog').show();
-    }
-  });
-
-  $('#addstack_cancel').live({
-    click: function() {
-      event.preventDefault();
-      $('#addstack_dialog').hide();
-    }
-  });
-
-  $('#addstack_confirm').live({
-    click: function() {
-      $('#addstack_dialog').hide();
-      var userFile = $('#userfile').val();
-      //alert(userFile);
-      $('#uploadform').attr({
-        action: $('#uploadform').attr('action'),
-        method: 'POST',
-        userfile: userFile,
-        enctype: 'multipart/form-data',
-        encoding: 'multipart/form-data',
-        target: 'postframe'
-      });
-      $('#uploadform').submit();
-      $('<div class="radio"><div class="stack"></div>' +
-              '<div class="caption">' +
-              '<textarea class="mdtxt" style="display:none">' +
-              'placeholder </textarea>' +
-              '<div class="md"></div></div></div>').insertBefore('#addstack');
-      rendermd();
-      $('.radio:last').append($('<a class="deleteradio abutton">&#x166d;<a>'));
-      $('.caption:last').append($('<a class="abutton session textedit">Edit</a>'));
-    }
-  });
-
-  $('#postframe').one('load', function() {
-    var radioID = $('iframe')[0].contentDocument.body.innerHTML;
-    $('.radio:last').attr('ID', radioID);
-    $.ajax({
-      type: 'GET',
-      url: '/radio/' + radioID,
-      statusCode:{
-        200: function(data) {
-          $('.stack:last', top.document).html(data);
-          $('.stack:last', top.document).children(':first').show();
-          scrollfunction_mw();
-          touchscroll();
+(function() {
+  var authcallback, converter, editclose, editfunctions, opts, rendermd, scrollfunction, spiderpage;
+  scrollfunction = function() {
+    return $(".stack", top.document).mousewheel(function(event, delta) {
+      if (delta > 0) {
+        $(this).css("background-position", parseInt($(this).css("background-position"), 10) - parseInt($(this).css("width"), 10));
+      } else {
+        if (delta < 0) {
+          $(this).css("background-position", parseInt($(this).css("background-position"), 10) + parseInt($(this).css("width"), 10));
         }
       }
-    });
-  });
-
-  $('.deleteradio').live({
-    click: function() {
-      $(this).parent().addClass('selected');
-      $('#deleteradio_dialog').show();
-    }
-  });
-
-  $('#deleteradio_cancel').live({
-    click: function() {
-      $('.selected').removeClass('selected');
-      $('#deleteradio_dialog').hide();
-    }
-  });
-
-  $('#deleteradio_confirm').live({
-    click: function() {
-      var pathname = window.location.pathname.split('/');
-      var targeturl = '/case/' + pathname[2] + '/' + pathname[3] + '/' + $('.selected').attr('ID');
-      //alert(targeturl);
-      $.ajax({
-        url: targeturl,
-        type: 'DELETE',
-        statusCode: {
-          200: function() {
-            $('.selected').remove();
-            $('#deleteradio_dialog').hide();
-          },
-          404: function() {
-            alert('NOT FOUND');
-            $('.selected').removeClass('selected');
-            $('#deleteradio_dialog').hide();
-          },
-          403: function() {
-            alert('FORBIDDEN');
-            $('.selected').removeClass('selected');
-            $('#deleteradio_dialog').hide();
-          }
-        }
-      });
-    }
-  });
-  /*
-   * Auto-growing textareas; technique ripped from Facebook
-   */
-  $.fn.autogrow = function(options) {
-
-
-    this.filter('textarea', top.document).each(function() {
-
-      var $this = $(this),
-              minHeight = $this.height(),
-              lineHeight = $this.css('lineHeight');
-
-      var shadow = $('<div></div>').css({
-        position:   'absolute',
-        top:        -10000,
-        left:       -10000,
-        width:      $(this).width() - parseInt($this.css('paddingLeft')) - parseInt($this.css('paddingRight')),
-        fontSize:   $this.css('fontSize'),
-        fontFamily: $this.css('fontFamily'),
-        lineHeight: $this.css('lineHeight'),
-        resize:     'none'
-      }).appendTo(document.body);
-
-      var update = function() {
-
-        var times = function(string, number) {
-          for (var i = 0, r = ''; i < number; i ++) r += string;
-          return r;
-        };
-
-        var val = this.value.replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/&/g, '&amp;')
-                .replace(/\n$/, '<br/>&nbsp;')
-                .replace(/\n/g, '<br/>')
-                .replace(/ {2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' ' });
-
-        shadow.html(val);
-        $(this).css('height', Math.max(shadow.height() + 20, minHeight));
-
-      }
-
-      $(this).change(update).keyup(update).keydown(update);
-
-      update.apply(this);
-
-    });
-
-    return this;
-
-  }
-  /*!
-   * Autogrow Textarea Plugin Version v2.0
-   * http://www.technoreply.com/autogrow-textarea-plugin-version-2-0
-   *
-   * Copyright 2011, Jevin O. Sewaruth
-   *
-   * Date: March 13, 2011
-   */
-  jQuery.fn.autoGrow = function() {
-    return this.each(function() {
-      // Variables
-      var colsDefault = this.cols;
-      var rowsDefault = this.rows;
-
-      //Functions
-      var grow = function() {
-        growByRef(this);
-      }
-
-      var growByRef = function(obj) {
-        var linesCount = 0;
-        var lines = obj.value.split('\n');
-
-        for (var i = lines.length - 1; i >= 0; --i) {
-          linesCount += Math.floor((lines[i].length / colsDefault) + 1);
-        }
-
-        if (linesCount >= rowsDefault)
-          obj.rows = linesCount + 1;
-        else
-          obj.rows = rowsDefault;
-      }
-
-      var characterWidth = function (obj) {
-        var characterWidth = 0;
-        var temp1 = 0;
-        var temp2 = 0;
-        var tempCols = obj.cols;
-
-        obj.cols = 1;
-        temp1 = obj.offsetWidth;
-        obj.cols = 2;
-        temp2 = obj.offsetWidth;
-        characterWidth = temp2 - temp1;
-        obj.cols = tempCols;
-
-        return characterWidth;
-      }
-
-      // Manipulations
-      this.style.width = "auto";
-      this.style.height = "auto";
-      this.style.overflow = "hidden";
-      this.style.width = ((characterWidth(this) * this.cols) + 6) + "px";
-      this.onkeyup = grow;
-      this.onfocus = grow;
-      this.onblur = grow;
-      growByRef(this);
+      return event.preventDefault();
     });
   };
-});
+  rendermd = function() {
+    return $(".md", top.document).html(function() {
+      var markdown;
+      markdown = $(this).siblings(".mdtxt").val();
+      return converter.makeHtml(markdown);
+    });
+  };
+  editfunctions = function() {
+    $(".md", top.document).live({
+      dblclick: function() {
+        $(this).hide();
+        return $(this).siblings(".mdtxt").show().focus().autogrow();
+      }
+    });
+    $(".mdtxt", top.document).live({
+      blur: function() {
+        $(this).hide();
+        rendermd();
+        return $(this).siblings(".md").show();
+      }
+    });
+    $(".stack", top.document).append($("<button type=\"button\" class=\"deletebutton\">X</button>"));
+    return $("#addstack", top.document).show();
+  };
+  editclose = function() {
+    $(".md", top.document).die();
+    $(".mdtxt", top.document).die();
+    $("#markdown-help", top.document).hide();
+    $("#addstack", top.document).hide();
+    $("#uploadarea", top.document).hide();
+    $("#editbar", top.document).hide().attr("src", "about:none");
+    $(".stack>.deletebutton", top.document).remove();
+    return $("#editbutton", top.document).show();
+  };
+  spiderpage = function() {
+    var jsonpage;
+    jsonpage = {};
+    jsonpage.title = $("title", top.document).html();
+    jsonpage.radios = $(".radio", top.document).map(function() {
+      var radio;
+      radio = {};
+      radio.img = $(this).children(".stack").attr("url");
+      radio.caption = $(this).children(".caption").children(".mdtxt").val();
+      return radio;
+    }).get();
+    jsonpage.texts = $(".txt>.mdtxt", top.document).map(function() {
+      return $(this).val();
+    }).get();
+    return jsonpage;
+  };
+  converter = new Showdown.converter();
+  opts = {
+    lines: 12,
+    length: 7,
+    width: 4,
+    radius: 10,
+    color: "#fff",
+    speed: 1,
+    trail: 33,
+    shadow: true
+  };
+  $.fn.spin = function(opts) {
+    this.each(function() {
+      var $this, data;
+      $this = $(this);
+      data = $this.data();
+      if (data.spinner) {
+        data.spinner.stop();
+        delete data.spinner;
+      }
+      if (opts !== false) {
+        return data.spinner = new Spinner($.extend({
+          color: $this.css("color")
+        }, opts)).spin(this);
+      }
+    });
+    return this;
+  };
+  authcallback = function(data) {
+    $("#session").html("<button id=\"sign_out\">Sign out " + data.user.username + "</button>");
+    $.ajax({
+      url: "/signed_in",
+      success: function(data) {
+        if (data === "new user") {
+          return $("#info").html("new user").show();
+        }
+      }
+    });
+    return $("#editbutton").show();
+  };
+  $(function() {
+    scrollfunction();
+    $("#sign_out").live({
+      click: function() {
+        window.open("http://twitter.com/#!/logout");
+        return $.ajax({
+          url: "/sign_out",
+          success: function(data) {
+            editclose();
+            $("#editbutton").hide();
+            return $("#session").html(data);
+          }
+        });
+      }
+    });
+    $("#addstack", top.document).live({
+      click: function() {
+        return $("#uploadarea").show();
+      }
+    });
+    $("#twitbutt").live({
+      click: function() {
+        openEasyOAuthBox("twitter", authcallback);
+        return $(this).hide();
+      }
+    });
+    $("#cancelupload").live({
+      click: function() {
+        return $("#uploadarea").hide();
+      }
+    });
+    $("#facebutt").click(function() {
+      return openEasyOAuthBox("facebook", authcallback);
+    });
+    $(".deletebutton").live({
+      click: function() {
+        return $(this).parent().parent().remove();
+      }
+    });
+    $(".stack").live("toggleSpinner", function() {
+      alert("toggleSpinner triggered");
+      return $(this).spin(opts);
+    });
+    $("#save").click(function(event) {
+      var data, url;
+      event.preventDefault();
+      data = spiderpage();
+      url = $("#savepage").attr("action").toString();
+      return $.ajax({
+        type: "PUT",
+        url: url,
+        dataType: "json",
+        data: data,
+        success: function(msg) {
+          return alert("Page Saved: " + msg);
+        }
+      });
+    });
+    $("#help").click(function() {
+      return $("#markdown-help", top.document).show();
+    });
+    $("#closehelp").live({
+      click: function() {
+        return $("#markdown-help", top.document).hide();
+      }
+    });
+    $("#sendstring").live({
+      click: function() {
+        return $.ajax({
+          url: "/put-test",
+          method: "put"
+        });
+      }
+    });
+    $("#editbutton").live({
+      click: function() {
+        var path;
+        path = top.document.location.pathname.split("/");
+        $("#editbar", top.document).attr("src", "/" + path[1] + "/" + path[2] + "/" + path[3] + "/edit").show();
+        return $(this).hide();
+      }
+    });
+    $("#done").live({
+      click: function() {
+        return editclose();
+      }
+    });
+    $("#upload").live({
+      click: function() {
+        var iframe, userFile;
+        $("#uploadarea").hide();
+        userFile = $("#userfile").val();
+        iframe = $("<iframe name=\"postframe\" id=\"postframe\" class=\"hidden\" src=\"about:none\" />");
+        $("#iframe").append(iframe);
+        $("#uploadform").attr({
+          action: "/image/",
+          method: "POST",
+          userfile: $("#userfile").val(),
+          enctype: "multipart/form-data",
+          encoding: "multipart/form-data",
+          target: "postframe"
+        });
+        $("#uploadform").submit();
+        $("#radios", top.document).append("<div class='radio'><div url='', class='stack img512'></div>" + "<div class='caption'>" + "<textarea class='mdtxt' style='display:none'>" + "(double-click to change caption) </textarea>" + "<div class='md'></div></div></div>");
+        rendermd();
+        $(".radio:last>.stack", top.document).append($("<button type=\"button\" class=\"deletebutton\">X</button>"));
+        $(".radio:last>.stack", top.document).spin();
+        return $("#postframe").load(function() {
+          var url;
+          url = $("iframe")[0].contentDocument.body.innerHTML;
+          $(".radio:last>.stack", top.document).attr("url", url);
+          return scrollfunction();
+        });
+      }
+    });
+    return $.fn.autogrow = function(options) {
+      this.filter("textarea", top.document).each(function() {
+        var $this, lineHeight, minHeight, shadow, update;
+        $this = $(this);
+        minHeight = $this.height();
+        lineHeight = $this.css("lineHeight");
+        shadow = $("<div></div>").css({
+          position: "absolute",
+          top: -10000,
+          left: -10000,
+          width: $(this).width() - parseInt($this.css("paddingLeft")) - parseInt($this.css("paddingRight")),
+          fontSize: $this.css("fontSize"),
+          fontFamily: $this.css("fontFamily"),
+          lineHeight: $this.css("lineHeight"),
+          resize: "none"
+        }).appendTo(document.body);
+        update = function() {
+          var times, val;
+          times = function(string, number) {
+            var i, r;
+            i = 0;
+            r = "";
+            while (i < number) {
+              r += string;
+              i++;
+            }
+            return r;
+          };
+          val = this.value.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;").replace(/\n$/, "<br/>&nbsp;").replace(/\n/g, "<br/>").replace(RegExp(" {2,}", "g"), function(space) {
+            return times("&nbsp;", space.length - 1) + " ";
+          });
+          shadow.html(val);
+          return $(this).css("height", Math.max(shadow.height() + 20, minHeight));
+        };
+        $(this).change(update).keyup(update).keydown(update);
+        return update.apply(this);
+      });
+      return this;
+    };
+  });
+}).call(this);
