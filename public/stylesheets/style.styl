@@ -1,19 +1,57 @@
+a
+    -webkit-user-select none
+    -khtml-user-select none
+    -moz-user-select none
+    -o-user-select none
+    user-select none
 #cheatsheet
     td,th
         padding 5px
+#feedbackbutton
+    float left
+    clear both
+    margin-top 10px
+span#lock
+    display none
+span#open
+    display none
+span#controls
+    display none
+.deleteradio
+    display none
 #disclaimer
     clear both
+#timestamp
+    font-family helvetica arial
+    font-size 12px
+#feedbackarea
+    clear both
+    width 100%
+#feedbackarea > textarea
+    width 100%
 #colophon
     clear both
 #topleftdiv
     float left
     height 25px
     width 55%
+#title>.txt>.textedit
+    margin-top -2em
+#title>.txt>.mdtxt
+    text-align center
+#title>.txt>.md
+    background-image url('/images/OffGray.jpg')
+    margin 0 auto
+    text-align center
+.txt>.abutton
+    margin-bottom 0px
 .textedit
     float right
+    margin -20px 5px
+    display none
 .abutton
-    padding-top 3px
     cursor pointer
+    font-size 1.2em
 #centerindiv
     float right
     position relative
@@ -40,10 +78,7 @@
     background #333
 .session
     font-family helvetica, arial
-    padding-top 3px
     cursor pointer
-    float right
-    line-height 1.3
 .big_logo
     color #bca
     font-family "Orbitron"
@@ -224,7 +259,7 @@ body
     line-height 1
     height 100%
     background-image url('/images/OffGray.jpg')
-h1, h2, h3, h4 
+h1, h2
     color #e90
     font-weight 400
 h1, h2, h3, h4, h5, p 
