@@ -33,11 +33,10 @@ rendercase = (req, res, theCase, editor, db) ->
               theCase.radios[ID].images[imgID] = image
             theCase.feedback = []
             db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
-              console.dir feedback
               feedback.forEach (fb, fbID) ->
                 theCase.feedback[fbID] = fb
-              console.log theCase.feedback
               render req, res, theCase, editor  unless radioIDs[ID + 1]
+
 postImage2 = (req, res, db) ->
   d = new Date().getTime().toString()
   i = 0

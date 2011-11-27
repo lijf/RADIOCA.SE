@@ -4,12 +4,17 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
   | &#x2002;
-  a.abutton(id='feedbackbutton', style='float:none', title='Send feedback')
-    &#x1f4ac;
-  | &#x2002;
+  span#lock
+    a.abutton(id='lock', title='Edit Page')
+      span#locked
+        | &#128274; &#x2002;
+      span#open
+        | &#128275; &#x2002;
   span#controls
     a.abutton(id='help', title='Help')
       |  &#x2002; ? &#x2002;
+    a.abutton(id='savepage', title='Save page')
+      | &#x2002; &#x29be; &#x2002;
     a.abutton(id='deletepage', title='Delete page')
       |  &#x2002; &#x166d; &#x2002;
     a.abutton(id='newpage', title='New page')
@@ -48,6 +53,8 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
           #{r.caption}
         .md
         a.abutton.textedit.session Edit
+      a.deleteradio.abutton(style='display:none)
+        | &#x166d;
     a.abutton(id='addstack', style='display:none')
       | &#x2295;
   #markdown-help(style='display:none')
@@ -56,16 +63,20 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       #{mdhelp}
     .md
-  #feedbackarea(style='display:none')
-    - each f in feedback
-      p #{f}
-    textarea#feedbackbox
-    br
-    button(id='feedback_cancel', type='button')
-      | Cancel
-    button(id='feedback_confirm', type='button')
-      | Send
+a.abutton(id='feedbackbutton', title='Show comments')
+  &#x1f4ac;
+#feedbackarea(style='display:none')
+  #feedbacktext
+  textarea#feedbackbox
+  br
+  button(id='feedback_confirm', type='button')
+    | Send
 #info(style='display:none')
+#savepage_dialog.dialog_box(style='display:none')
+  button(id='savepage_confirm', type='button')
+    | Save page
+  button(id='savepage_cancel', type='button')
+    | Cancel
 #newpage_dialog.dialog_box(style='display:none')
   button(id='newpage_confirm', type='button')
     | New page
@@ -76,21 +87,6 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     | Delete Page
   button(id='deletepage_cancel', type='button')
     | Cancel
-#meta_dialog.dialog_box(style='display:none')
-  form
-    | Title:
-    input(type='text', id='meta_title', value='#{title}')
-    | Private
-    input(type='checkbox', id='private', value='1', name='private')
-    button(id='meta_confirm', type='button')
-      | OK
-    button(id='meta_cancel', type='button')
-      | Cancel
-#save_dialog.dialog_box(style='display:none')
-  button(id='save', type='button')
-    | Save Page
-  button(id='cancelsave', type='button')
-    | Cancel
 #deleteradio_dialog.dialog_box(style='display:none')
   | Do you want to delete the selected stack/radio from this page?
   br
@@ -99,20 +95,6 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     | Delete
   button(type='button', id='deleteradio_cancel')
     | Cancel
-#feedback_dialog.dialog_box(style='display:none')
-  form(id='feedback')
-    textarea(id='feedback_text')
-    br
-    | Send to:
-    input(type='checkbox', id='feedback_author', value='1', name='author')
-    | Creator
-    input(type='checkbox', id='feedback_curator', value='1', name='curator')
-    | Curator
-    br
-    button(type='button', id='send_feedback')
-      | Send feedback
-    button(type='button', id='cancel_feedback')
-      | Cancel
 #addstack_dialog.dialog_box(style='display:none')
   | Please choose image(s) to upload.
   br
@@ -134,10 +116,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
 script(type='text/javascript')
   $(function(){
     if(#{editor}=='1') {
-      $(".radio").append($('<a class="deleteradio abutton">&#x166d;<a>'))
-      $("#controls").show();
-      $(".textedit").show();
-      $("#addstack").show();
+      $("#lock").show();
       };
     if(#{private}=='1'){$('#private').attr('checked', true);}
   });

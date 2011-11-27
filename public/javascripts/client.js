@@ -1,7 +1,29 @@
 (function() {
-  var authcallback, change_url, converter, getTitle, lastY, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
+  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
   change_url = function(url) {
     return document.location = url;
+  };
+  editfunctions = function() {
+    $('#locked').toggle();
+    $('#open').toggle();
+    $('.deleteradio').toggle();
+    $("#controls").toggle();
+    $(".textedit").toggle();
+    return $("#addstack").toggle();
+  };
+  getfeedback = function() {
+    return $.ajax({
+      type: "GET",
+      url: window.location.pathname + '/feedback',
+      statusCode: {
+        200: function(data) {
+          return $("#feedbacktext").html(data);
+        },
+        403: function() {
+          return document.location = '/';
+        }
+      }
+    });
   };
   touchscroll = function() {
     return $(".stack > .stack_image").each(function() {
@@ -62,7 +84,8 @@
       var radio;
       radio = {};
       radio.id = $(this).attr("id");
-      return radio.caption = $(this).children(".caption").children(".mdtxt").val();
+      radio.caption = $(this).children(".caption").children(".mdtxt").val();
+      return radio;
     }).get();
     json.texts = $("#texts>.txt>.mdtxt").map(function() {
       return $(this).val();
@@ -96,11 +119,11 @@
       data: spiderpage(),
       statusCode: {
         200: function(msg) {
-          $("#save_dialog").hide();
-          return document.title = "RADIOCA.SE - " + getTitle();
+          document.title = "RADIOCA.SE - " + getTitle();
+          return $('#savepage_dialog').hide();
         },
         403: function() {
-          return alert("FORBIDDEN");
+          return alert("Cannot save - Maybe your session has timed out?");
         }
       }
     });
@@ -113,9 +136,8 @@
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
       rendermd();
-      savepage();
       if ($(this).html() === "Edit") {
-        return $(this).html("Save");
+        return $(this).html("Done");
       } else {
         return $(this).html("Edit");
       }
@@ -170,7 +192,7 @@
             return document.location.href = url;
           },
           403: function() {
-            return alert("Forbidden, page not saved");
+            return alert("Forbidden, no new page created");
           }
         }
       });
@@ -193,48 +215,37 @@
           }
         }
       });
+    }).on("click", "#savepage", function() {
+      return $("#savepage_dialog").show();
     }).on("click", "#savepage_confirm", function() {
-      event.preventDefault();
-      return $.ajax({
-        type: "PUT",
-        url: window.location.pathname,
-        data: spiderpage(),
-        statusCode: {
-          200: function(msg) {
-            alert("Page Saved: " + msg);
-            return $("#save_dialog").hide();
-          },
-          403: function() {
-            return alert("FORBIDDEN");
-          }
-        }
-      });
+      return savepage();
+    }).on("click", "#savepage_cancel", function() {
+      return $("#savepage_dialog").hide();
+    }).on("click", "#open", function() {
+      return editfunctions();
+    }).on("click", "#locked", function() {
+      return editfunctions();
     }).on("click", "#feedbackbutton", function() {
-      return $("#feedbackarea").show();
-    }).on("click", "#feedback_cancel", function() {
-      return $("#feedback_dialog").hide();
-    }).on("click", "#feedback_confirm_old", function() {
-      var feedback, pathname, targeturl;
-      pathname = window.location.pathname.split("/");
-      feedback = {};
-      targeturl = "/case/" + pathname[2] + "/feedback";
-      feedback.text = $("#feedback_text").val();
-      feedback.toAuthor = $("#feedback_author").is(":checked");
-      feedback.toCurator = $("#feedback_curator").is(":checked");
+      $("#feedbackarea").toggle();
+      return getfeedback();
+    }).on("click", "#feedback_confirm", function() {
+      var data, feedbackurl;
+      feedbackurl = window.location.pathname + '/feedback';
+      data = {};
+      data.feedback = $("#feedbackbox").val();
       return $.ajax({
-        url: targeturl,
+        url: feedbackurl,
         type: "POST",
-        data: feedback,
+        data: data,
         statusCode: {
           404: function() {
-            return alert("page not found");
+            return alert("Page not found");
           },
-          200: function(response) {
-            alert(response);
-            return $("#feedback_dialog").hide();
+          200: function() {
+            return getfeedback();
           },
           403: function() {
-            return alert("Forbidden");
+            return alert("Forbidden, maybe your session timed out?");
           }
         }
       });

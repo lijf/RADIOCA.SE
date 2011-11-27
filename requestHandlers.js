@@ -41,11 +41,9 @@
               });
               theCase.feedback = [];
               return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
-                console.dir(feedback);
                 feedback.forEach(function(fb, fbID) {
                   return theCase.feedback[fbID] = fb;
                 });
-                console.log(theCase.feedback);
                 if (!radioIDs[ID + 1]) {
                   return render(req, res, theCase, editor);
                 }

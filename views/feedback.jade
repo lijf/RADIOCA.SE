@@ -1,0 +1,8 @@
+- each fb in feedback
+  p
+    a(href='https://twitter.com/intent/user?screen_name=#{fb.user}', title='Link to twitter')
+      @#{fb.user}
+    | - #{fb.feedback}
+    br
+    span#timestamp #{fb.time}
+

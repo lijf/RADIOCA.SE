@@ -1,6 +1,24 @@
 change_url = (url) ->
   document.location = url
 
+editfunctions = ->
+  $('#locked').toggle()
+  $('#open').toggle()
+  $('.deleteradio').toggle()
+  $("#controls").toggle()
+  $(".textedit").toggle()
+  $("#addstack").toggle()
+
+getfeedback = ->
+  $.ajax
+    type: "GET"
+    url: window.location.pathname + '/feedback'
+    statusCode:
+      200: (data) ->
+        $("#feedbacktext").html data
+      403: ->
+        document.location = '/'
+        
 touchscroll = ->
   $(".stack > .stack_image").each ->
     visimg = $(this)
@@ -50,10 +68,12 @@ spiderpage = ->
     radio = {}
     radio.id = $(this).attr("id")
     radio.caption = $(this).children(".caption").children(".mdtxt").val()
+    radio
   ).get()
   json.texts = $("#texts>.txt>.mdtxt").map(->
     $(this).val()
   ).get()
+  #alert JSON.stringify json
   json
 
 sessionButton = (user) ->
@@ -69,21 +89,20 @@ authcallback = (data) ->
       200: ->
         $("#session").html "<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>"
         $("#feedbackbutton").attr("id", "editbutton").html "Edit"
-
       403: (data) ->
         alert "not allowed - if you feel that this is an error, please write to info@radioca.se"
 
 savepage = ->
-    $.ajax
-      type: "PUT"
-      url: window.location.pathname
-      data: spiderpage()
-      statusCode:
-        200: (msg) ->
-          $("#save_dialog").hide()
-          document.title = "RADIOCA.SE - " + getTitle()
-        403: ->
-          alert "FORBIDDEN"
+  $.ajax
+    type: "PUT"
+    url: window.location.pathname
+    data: spiderpage()
+    statusCode:
+      200: (msg) ->
+        document.title = "RADIOCA.SE - " + getTitle()
+        $('#savepage_dialog').hide()
+      403: ->
+        alert "Cannot save - Maybe your session has timed out?"
 
 $ ->
   rendermd()
@@ -96,8 +115,7 @@ $ ->
     $(this).siblings(".mdtxt").toggle().focus().autogrow()
     $(this).siblings(".md").toggle()
     rendermd()
-    savepage()
-    (if $(this).html() is "Edit" then $(this).html("Save") else $(this).html("Edit"))
+    (if $(this).html() is "Edit" then $(this).html("Done") else $(this).html("Edit"))
 
   ).on("blur", ".mdtxt", ->
     event.preventDefault()
@@ -150,7 +168,7 @@ $ ->
           $("#save").trigger "click"
           document.location.href = url
         403: ->
-          alert "Forbidden, page not saved"
+          alert "Forbidden, no new page created"
 
   ).on("click", "#createcase", ->
     json = {}
@@ -167,44 +185,40 @@ $ ->
         200: (url) ->
           document.location = url
 
+  ).on("click", "#savepage", ->
+    $("#savepage_dialog").show()
+
   ).on("click", "#savepage_confirm", ->
-    event.preventDefault()
-    $.ajax
-      type: "PUT"
-      url: window.location.pathname
-      data: spiderpage()
-      statusCode:
-        200: (msg) ->
-          alert "Page Saved: " + msg
-          $("#save_dialog").hide()
-        403: ->
-          alert "FORBIDDEN"
+    savepage()
+
+  ).on("click", "#savepage_cancel", ->
+    $("#savepage_dialog").hide()
+    
+  ).on("click", "#open", ->
+    editfunctions()
+
+  ).on("click", "#locked", ->
+    editfunctions()
 
   ).on("click", "#feedbackbutton", ->
-    $("#feedbackarea").show()
+    $("#feedbackarea").toggle()
+    getfeedback()
 
-  ).on("click", "#feedback_cancel", ->
-    $("#feedback_dialog").hide()
-
-  ).on("click", "#feedback_confirm_old", ->
-    pathname = window.location.pathname.split("/")
-    feedback = {}
-    targeturl = "/case/" + pathname[2] + "/feedback"
-    feedback.text = $("#feedback_text").val()
-    feedback.toAuthor = $("#feedback_author").is(":checked")
-    feedback.toCurator = $("#feedback_curator").is(":checked")
+  ).on("click", "#feedback_confirm", ->
+    feedbackurl = window.location.pathname + '/feedback'
+    data = {}
+    data.feedback = $("#feedbackbox").val()
     $.ajax
-      url: targeturl
+      url: feedbackurl
       type: "POST"
-      data: feedback
+      data: data
       statusCode:
         404: ->
-          alert "page not found"
-        200: (response) ->
-          alert response
-          $("#feedback_dialog").hide()
+          alert "Page not found"
+        200: ->
+          getfeedback()
         403: ->
-          alert "Forbidden"
+          alert "Forbidden, maybe your session timed out?"
 
   ).on("click", "#help", ->
     $("#markdown-help").show()
