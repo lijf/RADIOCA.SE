@@ -1,18 +1,14 @@
 #controls
-  form(id='savepage', action='/case/#{caseid}/#{page}')
-    a.session(id='done')
-      |  ,  ▶
-    input(type='hidden', name='_method', value='put')
-    a.session(id='help')
-      |  ,  ?  ,
-    a.session(id='show_save')
-      |  ,  ◉  ,
-    a.session(id='delpage')
-      |  ,  X  ,
-    a.session(id='meta_button')
-      |  ,  {m}  ,
-    a.session(id='newpage')
-      |    ＋  ,
+  a.abutton(id='done', title='Hide editbar')
+    |  ◀ &#x2002;
+  a.abutton(id='help', title='Help')
+    |  &#x2002; ? &#x2002;
+  a.abutton(id='meta_button', title='Change metadata')
+    |  &#x2002; {m} &#x2002;
+  a.abutton(id='delpage', title='Delete page')
+    |  &#x2002; &#x166d; &#x2002;
+  a.abutton(id='newpage', title='New page')
+    |  &#x2002; ＋ &#x2002;
 script(type='text/javascript')
   $(function(){
     $('#session').hide();

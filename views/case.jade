@@ -1,26 +1,46 @@
 iframe.hidden(name="postframe", id="postframe", src="about:none")
 #pageinfo
   | by:
-  a(href='https://twitter.com/intent/user?screen_name=#{creator}')
+  a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
-    #created(style='display:none')
-      | #{created}
-- if('#{editor}')
-    a.session(id='editbutton')
-      | ◀
-- if(!'#{editor}')
-    a.session(id='feedbackbutton')
-iframe(id='editbar', src='about:none', style='display:none')
+  | &#x2002;
+  span#lock
+    a.abutton(id='lock', title='Edit Page')
+      span#locked
+        | &#128274; &#x2002;
+      span#open
+        | &#128275; &#x2002;
+  span#controls
+    a.abutton(id='help', title='Help')
+      |  &#x2002; ? &#x2002;
+    a.abutton(id='savepage', title='Save page')
+      | &#x2002; &#x29be; &#x2002;
+    a.abutton(id='deletepage', title='Delete page')
+      |  &#x2002; &#x166d; &#x2002;
+    a.abutton(id='newpage', title='New page')
+      |  &#x2002; ＋ &#x2002;
+    a.abutton(id='private_page', title='Private Page')
+      | &#x2002; &#128272;
+    input(type='checkbox', id='private', value='1', name='private')
+  #created(style='display:none')
+    | #{created}
+#title
+  .txt
+    textarea.mdtxt(style='display:none')
+      ##{title}
+    .md
+    a.abutton.textedit.session Edit
 #texts
   .txt
     textarea.mdtxt(style='display:none')
       #{texts}
     .md
+    a.abutton.textedit.session Edit
   br
-  -if('#{prevpage}')
-    a(href='/case/#{cid}/#{prevpage}', style='float: left')
-      | ◀
-  a(href='/case/#{cid}/#{nextpage}', style='float: right')
+  br
+  a(id='prevpage', href='/case/#{cid}/#{prevpage}', style='float: left')
+    | ◀
+  a(id='nextpage', href='/case/#{cid}/#{nextpage}', style='float: right')
     | ▶
 #radios
   - each r in radios
@@ -32,35 +52,40 @@ iframe(id='editbar', src='about:none', style='display:none')
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-  a.session(id='addstack', style='display:none')
-    | ＋
+        a.abutton.textedit.session Edit
+      a.deleteradio.abutton(style='display:none)
+        | &#x166d;
+    a.abutton(id='addstack', style='display:none')
+      | &#x2295;
   #markdown-help(style='display:none')
-    a.session(id='closehelp')
+    a.session(id='help_cancel')
       | X
     textarea.mdtxt(style='display:none')
       #{mdhelp}
     .md
+a.abutton(id='feedbackbutton', title='Show comments')
+  &#x1f4ac;
+#feedbackarea(style='display:none')
+  #feedbacktext
+  textarea#feedbackbox
+  br
+  button(id='feedback_confirm', type='button')
+    | Send
 #info(style='display:none')
-#delete_dialog.dialog_box(style='display:none')
-  form(id='deletepage', action='/case/#{cid}/#{page}/delete')
-    | Are you sure you want to delete this page?
-    br
-    button(id='deleteconfirmed', type='button')
-      | Confirm
-    button(id='canceldelete', type='button')
-      | Cancel
-#meta_dialog.dialog_box(style='display:none')
-  form(id='meta')
-    | Title:
-    input(type='text', id='meta_title', value='#{title}')
-    | Private
-    input(type='checkbox', id='private', value='1', name='private')
-    button(id='meta_ok', type='button')
-      | OK
-#save_dialog.dialog_box(style='display:none')
-  button(id='save', type='button')
-    | Save Page
-  button(id='cancelsave', type='button')
+#savepage_dialog.dialog_box(style='display:none')
+  button(id='savepage_confirm', type='button')
+    | Save page
+  button(id='savepage_cancel', type='button')
+    | Cancel
+#newpage_dialog.dialog_box(style='display:none')
+  button(id='newpage_confirm', type='button')
+    | New page
+  button(id='newpage_cancel', type='button')
+    | Cancel
+#deletepage_dialog.dialog_box(style='display:none')
+  button(id='deletepage_confirm', type='button')
+    | Delete Page
+  button(id='deletepage_cancel', type='button')
     | Cancel
 #deleteradio_dialog.dialog_box(style='display:none')
   | Do you want to delete the selected stack/radio from this page?
@@ -70,21 +95,7 @@ iframe(id='editbar', src='about:none', style='display:none')
     | Delete
   button(type='button', id='deleteradio_cancel')
     | Cancel
-#feedback_dialog.dialog_box(style='display:none')
-  form(id='feedback')
-    textarea(id='feedback_text')
-    br
-    | Send to:
-    input(type='checkbox', id='feedback_author', value='1', name='author')
-    | Creator
-    input(type='checkbox', id='feedback_curator', value='1', name='curator')
-    | Curator
-    br
-    button(type='button', id='send_feedback')
-      | Send feedback
-    button(type='button', id='cancel_feedback')
-      | Cancel
-#uploadarea.dialog_box(style='display:none')
+#addstack_dialog.dialog_box(style='display:none')
   | Please choose image(s) to upload.
   br
   | If multiple images are uploaded together,
@@ -99,21 +110,13 @@ iframe(id='editbar', src='about:none', style='display:none')
         input
         button
           | Browse
-    input.input1(id='upload', type='submit', value='Upload file(s)')
-    button(id='cancel_upload')
+    input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
+    button(id='addstack_cancel')
       | cancel
 script(type='text/javascript')
   $(function(){
-    $('.stack').children(':first').show();
-
-    rendermd(); // renders the markdown textareas.
-    
-    $(".mdtxt").live({
-      blur: function() {
-        $(this).hide();
-        rendermd();
-        $(this).siblings(".md").show();
-      }
-    }); // hides the textbox and renders the markdown
-    if(#{private}){$('#private').attr('checked', true);}
+    if(#{editor}=='1') {
+      $("#lock").show();
+      };
+    if(#{private}=='1'){$('#private').attr('checked', true);}
   });
