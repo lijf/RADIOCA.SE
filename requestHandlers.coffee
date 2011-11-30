@@ -1,5 +1,8 @@
+formidable = require("formidable")
+url = require("url")
+
 render = (req, res, theCase, editor) ->
-  res.render "case",
+  res.render theCase.pagetype,
     title: theCase.title or " - untitled"
     radios: theCase.radios or ""
     texts: [ theCase.texts ] or ""
@@ -15,6 +18,7 @@ render = (req, res, theCase, editor) ->
     editor: editor
     private: theCase.private or 0
     feedback: theCase.feedback or ''
+    style: theCase.style
 
 rendercase = (req, res, theCase, editor, db) ->
   db.get "markdown-help", (err, data) ->
@@ -40,6 +44,7 @@ rendercase = (req, res, theCase, editor, db) ->
 postImage2 = (req, res, db) ->
   d = new Date().getTime().toString()
   i = 0
+  console.log "postimage 2"
   form = new formidable.IncomingForm()
   files = []
   fields = []
@@ -47,6 +52,7 @@ postImage2 = (req, res, db) ->
     fields.push [ field, value ]
   ).on("fileBegin", (field, file) ->
     if file.type = "image/jpeg"
+      console.log "image"
       file.path = __dirname + "/img/" + d + "." + i + ".jpg"
       db.rpush "radio:" + d, "/img/" + d + "." + i + ".jpg"
       i++
@@ -60,6 +66,9 @@ postImage2 = (req, res, db) ->
     console.log "-> upload done"
 
   form.parse req, (err, fields, files) ->
+    if err
+      console.log err
+
 newpage = (req, res, cid, page, db, pagedata) ->
   trypage = "case:" + cid + ":page:" + page
   db.get trypage, (err, data) ->
@@ -69,8 +78,6 @@ newpage = (req, res, cid, page, db, pagedata) ->
     else
       db.hmset trypage, pagedata
       res.send "/case/" + cid + "/" + page, 200
-formidable = require("formidable")
-url = require("url")
 exports.rendercase = rendercase
 exports.newpage = newpage
 exports.postImage2 = postImage2

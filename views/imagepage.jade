@@ -1,0 +1,110 @@
+iframe.hidden(name="postframe", id="postframe", src="about:none")
+#pageinfo
+  | by:
+  a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
+    @#{creator}
+  | &#x2002;
+  span#lock
+    a.abutton(id='lock', title='Edit Page')
+      span#locked
+        | &#128274; &#x2002;
+      span#open
+        | &#128275; &#x2002;
+  span#controls
+    a.abutton(id='help', title='Help')
+      |  &#x2002; ? &#x2002;
+    a.abutton(id='savepage', title='Save page')
+      | &#x2002; &#x29be; &#x2002;
+    a.abutton(id='deletepage', title='Delete page')
+      |  &#x2002; &#x166d; &#x2002;
+    a.abutton(id='newpage', title='New page')
+      |  &#x2002; ＋ &#x2002;
+    a.abutton(id='private_page', title='Private Page')
+      | &#x2002; &#128272;
+    input(type='checkbox', id='private', value='1', name='private')
+  #created(style='display:none')
+    | #{created}
+#title
+  .txt
+    textarea.mdtxt(style='display:none')
+      ##{title}
+    .md
+    a.abutton.textedit.session Edit
+#radios
+  - each r in radios
+    .radio(id='#{r.ID}')
+      .stack
+        - each i in r.images
+          img.stack_image(src='#{i}')
+      .caption
+        textarea.mdtxt(style='display:none')
+          #{r.caption}
+        .md
+        a.abutton.textedit.session Edit
+      a.deleteradio.abutton(style='display:none)
+        | &#x166d;
+  a.abutton(id='addstack', style='display:none')
+    | &#x2295;
+  #markdown-help(style='display:none')
+    a.session(id='help_cancel')
+      | X
+    textarea.mdtxt(style='display:none')
+      #{mdhelp}
+    .md
+a.abutton(id='feedbackbutton', title='Show comments')
+  &#x1f4ac;
+#feedbackarea(style='display:none')
+  #feedbacktext
+  textarea#feedbackbox
+  br
+  button(id='feedback_confirm', type='button')
+    | Send
+#info(style='display:none')
+#savepage_dialog.dialog_box(style='display:none')
+  button(id='savepage_confirm', type='button')
+    | Save page
+  button(id='savepage_cancel', type='button')
+    | Cancel
+#newpage_dialog.dialog_box(style='display:none')
+  button(id='newpage_confirm', type='button')
+    | New page
+  button(id='newpage_cancel', type='button')
+    | Cancel
+#deletepage_dialog.dialog_box(style='display:none')
+  button(id='deletepage_confirm', type='button')
+    | Delete Page
+  button(id='deletepage_cancel', type='button')
+    | Cancel
+#deleteradio_dialog.dialog_box(style='display:none')
+  | Do you want to delete the selected stack/radio from this page?
+  br
+  br
+  button(type='button', id='deleteradio_confirm')
+    | Delete
+  button(type='button', id='deleteradio_cancel')
+    | Cancel
+#addstack_dialog.dialog_box(style='display:none')
+  | Please choose image(s) to upload.
+  br
+  | If multiple images are uploaded together,
+  br
+  | they will be combined to a stack.
+  br
+  br
+  form(id='uploadform', action='/image/#{cid}/#{page}')
+    .fileinputs
+      input.file(type='file', name='userfile', id='userfile', multiple='multiple')
+      .fakefile
+        input
+        button
+          | Browse
+    input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
+    button(id='addstack_cancel')
+      | cancel
+script(type='text/javascript')
+  $(function(){
+    if(#{editor}=='1') {
+      $("#lock").show();
+      };
+    if(#{private}=='1'){$('#private').attr('checked', true);}
+  });

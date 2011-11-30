@@ -7,7 +7,7 @@ html
     link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
     link(rel='stylesheet', href='/stylesheets/reset.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-
+    link(rel='stylesheet', href='/stylesheets/#{style}')
     script(src = '/javascripts/jquery-1.7.min.js')
     script(src = '/auth/client')
     script(src = 'http://platform.twitter.com/widgets.js')
@@ -31,6 +31,15 @@ html
         br
         a(id='sign_out') sign out
       != body // this renders the body of an individual view
+    #centerindiv
+      #centereddiv
+        br
+        h1.damion(style='text-align:left') Create new case
+        h3 - Choose page layout for first page
+        #pagetypes
+          img.pageimage#casestandarpage(src='/images/standardpage.svg', alt='Standard')
+          img.pageimage#casetextpage(src='/images/textpage.svg', alt='Textpage')
+          img.pageimage#caseimagepage(src='/images/imagepage.svg', alt='Imagepage')
     #footer
       a(href='/')
         | Home

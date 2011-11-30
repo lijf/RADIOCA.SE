@@ -42,8 +42,7 @@
     app.use(easyoauth(require("./keys_file")));
     app.use(app.router);
     app.use(express.favicon(__dirname + "/public/favicon.ico"));
-    app.use(express.static(__dirname + "/public"));
-    return app.use(express.bodyParser());
+    return app.use(express.static(__dirname + "/public"));
   });
   app.configure("development", function() {
     return app.use(express.errorHandler({
@@ -65,100 +64,127 @@
     return res.render("index", {
       title: "Home",
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+      style: ''
     });
   });
   app.get("/newcase", function(req, res) {
     if (!req.isAuthenticated()) {
       return res.redirect("/");
-    } else {
-      return res.render("newcase", {
-        title: "Create new case",
-        signed_in: req.isAuthenticated(),
-        user: req.getAuthDetails().user.username
-      });
     }
+    return res.render("newcase", {
+      title: "Create new case",
+      signed_in: req.isAuthenticated(),
+      user: req.getAuthDetails().user.username,
+      style: ''
+    });
   });
   app.post("/newcase", function(req, res) {
     var data;
     if (!req.isAuthenticated()) {
-      return res.redirect("back");
-    } else {
-      data = req.body;
-      data.creator = req.getAuthDetails().user.username;
-      console.log(data);
-      data.texts = ["Double click to add text"];
-      data.created = new Date().getTime();
-      data.lastEdit = data.created;
-      data.nextpage = "0";
-      data.prevpage = "0";
-      return db.incr("numberOfCases", function(err, cid) {
-        data.cid = cid;
-        db.incr("case:" + cid + ":pages");
-        db.zadd("casesLastEdit", data.lastEdit, cid);
-        if (data.listed === "true") {
-          db.zadd("listed", data.created, cid);
-        }
-        db.zadd("cases:" + data.creator, data.created, cid);
-        db.set("case:" + cid + ":firstpage", "1");
-        return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
-          return db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, data) {
-            console.log("created case: " + cid);
-            return res.send("/case/" + cid + "/1", 200);
-          });
+      return res.send("FORBIDDEN", 403);
+    }
+    data = req.body;
+    data.creator = req.getAuthDetails().user.username;
+    data.texts = [""];
+    data.created = new Date().getTime();
+    data.lastEdit = data.created;
+    data.listed = "true";
+    data.nextpage = "0";
+    data.prevpage = "0";
+    return db.incr("numberOfCases", function(err, cid) {
+      data.cid = cid;
+      db.incr("case:" + cid + ":pages");
+      db.zadd("casesLastEdit", data.lastEdit, cid);
+      if (data.listed === "true") {
+        db.zadd("listed", data.created, cid);
+      }
+      db.zadd("cases:" + data.creator, data.created, cid);
+      db.set("case:" + cid + ":firstpage", "1");
+      return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
+        return db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, data) {
+          console.log("created case: " + cid);
+          return res.send("/case/" + cid + "/1", 200);
         });
       });
+    });
+  });
+  app.post("/newcase_old", function(req, res) {
+    var data;
+    if (!req.isAuthenticated()) {
+      return res.redirect("back");
     }
+    data = req.body;
+    data.creator = req.getAuthDetails().user.username;
+    console.log(data);
+    data.texts = ["Double click to add text"];
+    data.created = new Date().getTime();
+    data.lastEdit = data.created;
+    data.nextpage = "0";
+    data.prevpage = "0";
+    return db.incr("numberOfCases", function(err, cid) {
+      data.cid = cid;
+      db.incr("case:" + cid + ":pages");
+      db.zadd("casesLastEdit", data.lastEdit, cid);
+      if (data.listed === "true") {
+        db.zadd("listed", data.created, cid);
+      }
+      db.zadd("cases:" + data.creator, data.created, cid);
+      db.set("case:" + cid + ":firstpage", "1");
+      return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
+        return db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, data) {
+          console.log("created case: " + cid);
+          return res.send("/case/" + cid + "/1", 200);
+        });
+      });
+    });
   });
   app.get("/cases/:start/:finish", function(req, res) {
     var end, start;
     if (!req.isAuthenticated()) {
       return res.redirect("back");
-    } else {
-      start = parseInt(req.params.start, 10);
-      end = parseInt(req.params.finish, 10);
-      return db.zrange("listed", start, end, function(err, cases) {
-        var sendcases;
-        if (err || !cases[0]) {
-          res.send("404", 404);
-        }
-        sendcases = [];
-        return cases.forEach(function(theCase, iteration) {
-          return db.hgetall("case:" + theCase + ":page:1", function(err, sendcase) {
-            sendcases[iteration] = sendcase;
-            if (!cases[iteration + 1]) {
-              console.log("rendering cases");
-              return res.render("cases", {
-                title: "Cases",
-                signed_in: req.isAuthenticated(),
-                user: req.getAuthDetails().user.username,
-                cases: sendcases
-              });
-            }
-          });
+    }
+    start = parseInt(req.params.start, 10);
+    end = parseInt(req.params.finish, 10);
+    return db.zrange("listed", start, end, function(err, cases) {
+      var sendcases;
+      if (err || !cases[0]) {
+        res.send("404", 404);
+      }
+      sendcases = [];
+      return cases.forEach(function(theCase, iteration) {
+        return db.hgetall("case:" + theCase + ":page:1", function(err, sendcase) {
+          sendcases[iteration] = sendcase;
+          if (!cases[iteration + 1]) {
+            console.log("rendering cases");
+            return res.render("cases", {
+              title: "Cases",
+              signed_in: req.isAuthenticated(),
+              user: req.getAuthDetails().user.username,
+              cases: sendcases,
+              style: ''
+            });
+          }
         });
       });
-    }
+    });
   });
   app.get("/case/:id/:page", function(req, res) {
     if (!req.isAuthenticated()) {
       return res.redirect("back");
-    } else {
-      return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
-        console.log(editor);
-        return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(err, theCase) {
-          if (err || !theCase.cid) {
-            return res.redirect("back");
-          }
-          if (theCase.listed === "true" || (theCase.listed === "false" && editor)) {
-            console.log("rendering case");
-            return requestHandlers.rendercase(req, res, theCase, editor, db);
-          } else {
-            return res.redirect("back");
-          }
-        });
-      });
     }
+    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
+      return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(err, theCase) {
+        if (err || !theCase.cid) {
+          return res.redirect("back");
+        }
+        if (!(theCase.listed === "true" || (theCase.listed === "false" && editor))) {
+          return res.redirect("back");
+        }
+        console.log("rendering case");
+        return requestHandlers.rendercase(req, res, theCase, editor, db);
+      });
+    });
   });
   app.get("/signed_in", function(req, res) {
     var uid, userdata;
@@ -269,28 +295,32 @@
     return res.render("readme", {
       title: "README",
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+      style: ''
     });
   });
   app.get("/colophon", function(req, res) {
     return res.render("colophon", {
       title: "Colophon",
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+      style: ''
     });
   });
   app.get("/disclaimer", function(req, res) {
     return res.render("disclaimer", {
       title: "Disclaimer",
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+      style: ''
     });
   });
   app.get("/about", function(req, res) {
     return res.render("about", {
       title: "About",
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+      style: ''
     });
   });
   app.get("/radios/:user", function(req, res) {
@@ -316,7 +346,8 @@
                 title: "Radios - " + req.params.user,
                 user: req.getAuthDetails().user.username,
                 signed_in: req.isAuthenticated(),
-                radios: sendradios
+                radios: sendradios,
+                style: ''
               });
             }
           });
@@ -358,18 +389,19 @@
   });
   app.get("/img/:img", function(req, res) {
     var image;
-    if (req.isAuthenticated()) {
-      image = __dirname + "/img/" + req.params.img;
-      return fs.readFile(image, "binary", function(error, file) {
-        if (error) {
-          return res.send("huh?", 404);
-        }
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "image/jpeg");
-        res.write(file, "binary");
-        return res.end();
-      });
+    if (!req.isAuthenticated()) {
+      return res.send("FORBIDDEN", 403);
     }
+    image = __dirname + "/img/" + req.params.img;
+    return fs.readFile(image, "binary", function(error, file) {
+      if (error) {
+        return res.send("huh?", 404);
+      }
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "image/jpeg");
+      res.write(file, "binary");
+      return res.end();
+    });
   });
   app.post("/case/:id/:page/feedback", function(req, res) {
     var fb, storefeedback;
@@ -390,12 +422,31 @@
     return res.send("OK", 200);
   });
   app.post("/image/:id/:page", function(req, res) {
+    var d, i;
     console.log("POST /image/ called");
+    d = new Date().getTime().toString();
     if (!req.isAuthenticated()) {
-      return res.send("not logged in", 200);
-    } else {
-      return requestHandlers.postImage2(req, res, db);
+      return res.send("FORBIDDEN", 403);
     }
+    console.dir(req.body);
+    i = 0;
+    req.body.userfile.forEach(function(file, fid) {
+      var filename;
+      if (file.type = "image/jpeg") {
+        filename = "/img/" + d + "." + i + ".jpg";
+        console.log(file.name);
+        fs.rename(file.path, __dirname + filename);
+        db.rpush("radio:" + d, filename);
+        console.log(filename, i);
+        return i++;
+      }
+    });
+    db.sadd("image:" + d, req.params.id);
+    db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", d);
+    db.rpush("user:" + req.getAuthDetails().user.username + ":radios", d);
+    db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "double click to add caption");
+    res.send(d, 200);
+    return console.log("-> upload done");
   });
   port = process.env.PORT || 3000;
   app.listen(port, function() {

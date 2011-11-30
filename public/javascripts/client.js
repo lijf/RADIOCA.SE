@@ -1,7 +1,26 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
+  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, newcase, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
   change_url = function(url) {
     return document.location = url;
+  };
+  newcase = function(type) {
+    var json;
+    json = {};
+    json.pagetype = type;
+    json.title = "untitled";
+    return $.ajax({
+      url: "/newcase",
+      type: "POST",
+      data: json,
+      statusCode: {
+        403: function() {
+          return alert("Forbidden - are you logged in?");
+        },
+        200: function(url) {
+          return document.location = url;
+        }
+      }
+    });
   };
   editfunctions = function() {
     $('#locked').toggle();
@@ -196,6 +215,29 @@
           }
         }
       });
+    }).on("click", "#newcase", function() {
+      var json;
+      json = {};
+      json.title = "Untitled";
+      return $.ajax({
+        url: "/newcase",
+        type: "POST",
+        data: json,
+        statusCode: {
+          403: function() {
+            return alert("Forbidden - are you logged in?");
+          },
+          200: function(url) {
+            return document.location = url;
+          }
+        }
+      });
+    }).on("click", "#casestandardpage", function() {
+      return newcase("standarpage");
+    }).on("click", "#casetextpage", function() {
+      return newcase("textpage");
+    }).on("click", "#caseimagepage", function() {
+      return newcase("imagepage");
     }).on("click", "#createcase", function() {
       var json;
       json = {};
@@ -295,8 +337,8 @@
       $("#uploadform").submit();
       $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
-      $(".radio:last").append($("<a class=\"deleteradio abutton\">&#x166d;<a>"));
-      return $(".caption:last").append($("<a class=\"abutton session textedit\">Edit</a>"));
+      $(".radio:last", top.document).append($("<a class=\"deleteradio abutton\" style=\"display:inline\">&#x166d;</a>"));
+      return $(".caption:last", top.document).append($("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>"));
     }).on("click", ".deleteradio", function() {
       $(this).parent().addClass("selected");
       return $("#deleteradio_dialog").show();
@@ -331,7 +373,7 @@
     $("#postframe").one("load", function() {
       var radioID;
       radioID = $("iframe")[0].contentDocument.body.innerHTML;
-      $(".radio:last").attr("ID", radioID);
+      $(".radio:last", top.document).attr("ID", radioID);
       return $.ajax({
         type: "GET",
         url: "/radio/" + radioID,

@@ -1,7 +1,9 @@
 (function() {
   var formidable, newpage, postImage2, render, rendercase, url;
+  formidable = require("formidable");
+  url = require("url");
   render = function(req, res, theCase, editor) {
-    return res.render("case", {
+    return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
       radios: theCase.radios || "",
       texts: [theCase.texts] || "",
@@ -16,7 +18,8 @@
       page: req.params.page,
       editor: editor,
       private: theCase.private || 0,
-      feedback: theCase.feedback || ''
+      feedback: theCase.feedback || '',
+      style: theCase.style
     });
   };
   rendercase = function(req, res, theCase, editor, db) {
@@ -58,6 +61,7 @@
     var d, fields, files, form, i;
     d = new Date().getTime().toString();
     i = 0;
+    console.log("postimage 2");
     form = new formidable.IncomingForm();
     files = [];
     fields = [];
@@ -65,6 +69,7 @@
       return fields.push([field, value]);
     }).on("fileBegin", function(field, file) {
       if (file.type = "image/jpeg") {
+        console.log("image");
         file.path = __dirname + "/img/" + d + "." + i + ".jpg";
         db.rpush("radio:" + d, "/img/" + d + "." + i + ".jpg");
         i++;
@@ -78,7 +83,11 @@
       res.send(d, 200);
       return console.log("-> upload done");
     });
-    return form.parse(req, function(err, fields, files) {});
+    return form.parse(req, function(err, fields, files) {
+      if (err) {
+        return console.log(err);
+      }
+    });
   };
   newpage = function(req, res, cid, page, db, pagedata) {
     var trypage;
@@ -93,8 +102,6 @@
       }
     });
   };
-  formidable = require("formidable");
-  url = require("url");
   exports.rendercase = rendercase;
   exports.newpage = newpage;
   exports.postImage2 = postImage2;

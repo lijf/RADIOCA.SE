@@ -1,6 +1,20 @@
 change_url = (url) ->
   document.location = url
 
+newcase = (type) ->
+  json = {}
+  json.pagetype = type
+  json.title = "untitled"
+  $.ajax
+    url: "/newcase"
+    type: "POST"
+    data: json
+    statusCode:
+      403: ->
+        alert "Forbidden - are you logged in?"
+      200: (url) ->
+        document.location = url
+
 editfunctions = ->
   $('#locked').toggle()
   $('#open').toggle()
@@ -170,6 +184,28 @@ $ ->
         403: ->
           alert "Forbidden, no new page created"
 
+  ).on("click", "#newcase", ->
+    json = {}
+    json.title = "Untitled"
+    $.ajax
+      url: "/newcase"
+      type: "POST"
+      data: json
+      statusCode:
+        403: ->
+          alert "Forbidden - are you logged in?"
+        200: (url) ->
+          document.location = url
+
+  ).on("click", "#casestandardpage", ->
+    newcase("standarpage")
+
+  ).on("click", "#casetextpage", ->
+    newcase("textpage")
+
+  ).on("click", "#caseimagepage", ->
+    newcase("imagepage")
+    
   ).on("click", "#createcase", ->
     json = {}
     json.title = $("#title").val()
@@ -267,8 +303,8 @@ $ ->
     $("#uploadform").submit()
     $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore "#addstack"
     rendermd()
-    $(".radio:last").append $("<a class=\"deleteradio abutton\">&#x166d;<a>")
-    $(".caption:last").append $("<a class=\"abutton session textedit\">Edit</a>")
+    $(".radio:last", top.document).append $("<a class=\"deleteradio abutton\" style=\"display:inline\">&#x166d;</a>")
+    $(".caption:last", top.document).append $("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>")
 
   ).on("click", ".deleteradio", ->
     $(this).parent().addClass "selected"
@@ -299,7 +335,7 @@ $ ->
 
   $("#postframe").one "load", ->
     radioID = $("iframe")[0].contentDocument.body.innerHTML
-    $(".radio:last").attr "ID", radioID
+    $(".radio:last", top.document).attr "ID", radioID
     $.ajax
       type: "GET"
       url: "/radio/" + radioID
