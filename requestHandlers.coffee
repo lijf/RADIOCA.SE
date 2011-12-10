@@ -50,7 +50,6 @@ postImage = (req, res, db) ->
     percent = (bytexReceived / bytesExpected * 100) or 0
     console.log "Uploading: %" + percent + "\r"
 
-
 removeRadio = (cid, page, radio) ->
   db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
   db.lrem "case:" + cid + ":page:" + page + ":radios", 0, radio
@@ -87,8 +86,9 @@ postImage2 = (req, res, db) ->
     if err
       console.log err
 
-deletePage (cid, page, db) ->
+deletePage (cid, page) ->
   db.lrange "case:" + cid + ":page:" + page + ":radios", 0, -1, (err, radioIDs) ->
+    removeRadio cid, page, radio for radio in radioIDs
   db.hgetall "case:" + cid + ":page:" + page, (err, theCase) ->
     db.set "case:" + cid + ":firstpage", theCase.nextpage  if theCase.prevpage is "0"
     db.hset "case:" + cid + ":page:" + theCase.prevpage, "nextpage", theCase.nextpage
@@ -128,7 +128,6 @@ postNewpage = (req, res) ->
       db.hset "case:" + cid + ":page:" + prevpage, "nextpage", page
       db.hset "case:" + cid + ":page:" + nextpage, "prevpage", page
       res.send "/case/" + cid + "/" + page, 200
-
 
 newpage = (req, res, cid, page, db, pagedata) ->
   trypage = "case:" + cid + ":page:" + page
