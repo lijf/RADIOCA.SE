@@ -1,5 +1,7 @@
 iframe.hidden(name="postframe", id="postframe", src="about:none")
 #pageinfo
+  #meta_cid.hidden #{cid}
+  #meta_page.hidden #{page}
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
@@ -72,49 +74,10 @@ a.abutton(id='feedbackbutton', title='Show comments')
   button(id='feedback_confirm', type='button')
     | Send
 #info(style='display:none')
-#savepage_dialog.dialog_box(style='display:none')
-  button(id='savepage_confirm', type='button')
-    | Save page
-  button(id='savepage_cancel', type='button')
-    | Cancel
-#newpage_dialog.dialog_box(style='display:none')
-  button(id='newpage_confirm', type='button')
-    | New page
-  button(id='newpage_cancel', type='button')
-    | Cancel
-#deletepage_dialog.dialog_box(style='display:none')
-  button(id='deletepage_confirm', type='button')
-    | Delete Page
-  button(id='deletepage_cancel', type='button')
-    | Cancel
-#deleteradio_dialog.dialog_box(style='display:none')
-  | Do you want to delete the selected stack/radio from this page?
-  br
-  br
-  button(type='button', id='deleteradio_confirm')
-    | Delete
-  button(type='button', id='deleteradio_cancel')
-    | Cancel
-#addstack_dialog.dialog_box(style='display:none')
-  | Please choose image(s) to upload.
-  br
-  | If multiple images are uploaded together,
-  br
-  | they will be combined to a stack.
-  br
-  br
-  form(id='uploadform', action='/image/#{cid}/#{page}')
-    .fileinputs
-      input.file(type='file', name='userfile', id='userfile', multiple='multiple')
-      .fakefile
-        input
-        button
-          | Browse
-    input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
-    button(id='addstack_cancel')
-      | cancel
 script(type='text/javascript')
   $(function(){
+    var cid = '#{cid}';
+    var page = '#{page}';
     if(#{editor}=='1') {
       $("#lock").show();
       };

@@ -1,7 +1,8 @@
 (function() {
-  var formidable, newpage, postImage2, render, rendercase, url;
+  var form, formidable, newpage, postImage, postImage2, render, rendercase, url;
   formidable = require("formidable");
   url = require("url");
+  form = require("connect-form");
   render = function(req, res, theCase, editor) {
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
@@ -57,11 +58,17 @@
       });
     });
   };
+  postImage = function(req, res, db) {
+    return req.form.on("progress", function(bytesReceived, bytesExpected) {
+      var percent;
+      percent = (bytexReceived / bytesExpected * 100) || 0;
+      return console.log("Uploading: %" + percent + "\r");
+    });
+  };
   postImage2 = function(req, res, db) {
-    var d, fields, files, form, i;
+    var d, fields, files, i;
     d = new Date().getTime().toString();
     i = 0;
-    console.log("postimage 2");
     form = new formidable.IncomingForm();
     files = [];
     fields = [];
@@ -69,7 +76,6 @@
       return fields.push([field, value]);
     }).on("fileBegin", function(field, file) {
       if (file.type = "image/jpeg") {
-        console.log("image");
         file.path = __dirname + "/img/" + d + "." + i + ".jpg";
         db.rpush("radio:" + d, "/img/" + d + "." + i + ".jpg");
         i++;
@@ -77,6 +83,7 @@
       return files.push([field, file]);
     }).on("end", function() {
       db.sadd("image:" + d, req.params.id);
+      db.sadd("radio:" + d + ":users", req.getAuthDetails().user_id);
       db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", d);
       db.rpush("user:" + req.getAuthDetails().user.username + ":radios", d);
       db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "double click to add caption");
@@ -105,4 +112,5 @@
   exports.rendercase = rendercase;
   exports.newpage = newpage;
   exports.postImage2 = postImage2;
+  exports.postImage = postImage;
 }).call(this);

@@ -1,7 +1,32 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, newcase, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
+  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
   change_url = function(url) {
     return document.location = url;
+  };
+  newpage = function(type) {
+    var json;
+    json = {};
+    json.title = getTitle();
+    json.private = $("#private").is(":checked");
+    json.created = $("#created").val();
+    json.pagetype = type;
+    return $.ajax({
+      url: window.location.pathname + "/newpage",
+      type: "POST",
+      data: json,
+      statusCode: {
+        404: function() {
+          return alert("Page not found");
+        },
+        200: function(url) {
+          $("#save").trigger("click");
+          return document.location.href = url;
+        },
+        403: function() {
+          return alert("Forbidden, no new page created");
+        }
+      }
+    });
   };
   newcase = function(type) {
     var json;
@@ -197,24 +222,12 @@
       return $("#newpage_dialog").show();
     }).on("click", "#newpage_cancel", function() {
       return $("#newpage_dialog").hide();
-    }).on("click", "#newpage_confirm", function() {
-      return $.ajax({
-        url: window.location.pathname + "/newpage",
-        type: "POST",
-        data: pageMeta(),
-        statusCode: {
-          404: function() {
-            return alert("Page not found");
-          },
-          200: function(url) {
-            $("#save").trigger("click");
-            return document.location.href = url;
-          },
-          403: function() {
-            return alert("Forbidden, no new page created");
-          }
-        }
-      });
+    }).on("click", "#newpage_standard", function() {
+      return newpage("standardpage");
+    }).on("click", "#newpage_image", function() {
+      return newpage("imagepage");
+    }).on("click", "#newpage_text", function() {
+      return newpage("textpage");
     }).on("click", "#newcase", function() {
       var json;
       json = {};
@@ -327,7 +340,7 @@
       $("#addstack_dialog").hide();
       userFile = $("#userfile").val();
       $("#uploadform").attr({
-        action: $("#uploadform").attr("action"),
+        action: "/image/" + $("#meta_cid").html() + "/" + $("#meta_page").html(),
         method: "POST",
         userfile: userFile,
         enctype: "multipart/form-data",
@@ -345,6 +358,35 @@
     }).on("click", "#deleteradio_cancel", function() {
       $(".selected").removeClass("selected");
       return $("#deleteradio_dialog").hide();
+    }).on("click", ".removeradio", function() {
+      $(this).parent().addClass("selected");
+      return $("#removeradio_dialog").show();
+    }).on("click", "#removeradio_cancel", function() {
+      $(".selected").removeClass("selected");
+      return $("#removeradio_dialog").hide();
+    }).on("click", "#removeradio_confirm", function() {
+      var targeturl;
+      targeturl = "/image/" + $(".selected").attr("ID");
+      return $.ajax({
+        url: targeturl,
+        type: "DELETE",
+        statusCode: {
+          200: function() {
+            $(".selected").remove();
+            return $("#removeradio_dialog").hide();
+          },
+          404: function() {
+            alert("NOT ALLOWED");
+            $(".selected").removeClass("selected");
+            return $("#deleteradio_dialog").hide();
+          },
+          403: function() {
+            alert("FORBIDDEN");
+            $(".selected").removeClass("selected");
+            return $("#removeradio_dialog").hide();
+          }
+        }
+      });
     }).on("click", "#deleteradio_confirm", function() {
       var pathname, targeturl;
       pathname = window.location.pathname.split("/");

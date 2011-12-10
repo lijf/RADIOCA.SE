@@ -1,6 +1,25 @@
 change_url = (url) ->
   document.location = url
 
+newpage  = (type) ->
+  json = {}
+  json.title = getTitle()
+  json.private = $("#private").is(":checked")
+  json.created = $("#created").val()
+  json.pagetype = type
+  $.ajax
+    url: window.location.pathname + "/newpage"
+    type: "POST"
+    data: json
+    statusCode:
+      404: ->
+        alert "Page not found"
+      200: (url) ->
+        $("#save").trigger "click"
+        document.location.href = url
+      403: ->
+        alert "Forbidden, no new page created"
+
 newcase = (type) ->
   json = {}
   json.pagetype = type
@@ -170,19 +189,14 @@ $ ->
   ).on("click", "#newpage_cancel", ->
     $("#newpage_dialog").hide()
 
-  ).on("click", "#newpage_confirm", ->
-    $.ajax
-      url: window.location.pathname + "/newpage"
-      type: "POST"
-      data: pageMeta()
-      statusCode:
-        404: ->
-          alert "Page not found"
-        200: (url) ->
-          $("#save").trigger "click"
-          document.location.href = url
-        403: ->
-          alert "Forbidden, no new page created"
+  ).on("click", "#newpage_standard", ->
+    newpage("standardpage")
+
+  ).on("click", "#newpage_image", ->
+    newpage("imagepage")
+
+  ).on("click", "#newpage_text", ->
+    newpage("textpage")
 
   ).on("click", "#newcase", ->
     json = {}
@@ -293,7 +307,7 @@ $ ->
     $("#addstack_dialog").hide()
     userFile = $("#userfile").val()
     $("#uploadform").attr
-      action: $("#uploadform").attr("action")
+      action: "/image/" + $("#meta_cid").html() + "/" + $("#meta_page").html()
       method: "POST"
       userfile: userFile
       enctype: "multipart/form-data"
@@ -313,6 +327,32 @@ $ ->
   ).on("click", "#deleteradio_cancel", ->
     $(".selected").removeClass "selected"
     $("#deleteradio_dialog").hide()
+
+  ).on("click", ".removeradio", ->
+    $(this).parent().addClass "selected"
+    $("#removeradio_dialog").show()
+
+  ).on("click", "#removeradio_cancel", ->
+    $(".selected").removeClass "selected"
+    $("#removeradio_dialog").hide()
+
+  ).on("click", "#removeradio_confirm", ->
+    targeturl = "/image/" + $(".selected").attr("ID")
+    $.ajax
+      url: targeturl
+      type: "DELETE"
+      statusCode:
+        200: ->
+          $(".selected").remove()
+          $("#removeradio_dialog").hide()
+        404: ->
+          alert "NOT ALLOWED"
+          $(".selected").removeClass "selected"
+          $("#deleteradio_dialog").hide()
+        403: ->
+          alert "FORBIDDEN"
+          $(".selected").removeClass "selected"
+          $("#removeradio_dialog").hide()
 
   ).on "click", "#deleteradio_confirm", ->
     pathname = window.location.pathname.split("/")

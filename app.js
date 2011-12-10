@@ -44,6 +44,7 @@
     app.use(express.favicon(__dirname + "/public/favicon.ico"));
     return app.use(express.static(__dirname + "/public"));
   });
+  delete express.bodyParser.parse['multipart/form-data'];
   app.configure("development", function() {
     return app.use(express.errorHandler({
       dumpExceptions: true,
@@ -176,9 +177,6 @@
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(err, theCase) {
         if (err || !theCase.cid) {
-          return res.redirect("back");
-        }
-        if (!(theCase.listed === "true" || (theCase.listed === "false" && editor))) {
           return res.redirect("back");
         }
         console.log("rendering case");
@@ -332,7 +330,6 @@
       sendradios = [];
       return db.lrange("user:" + req.params.user + ":radios", 0, -1, function(err, radios) {
         return radios.forEach(function(radio, id) {
-          console.log(radio);
           sendradios[id] = {};
           sendradios[id].ID = radio;
           return db.lrange("radio:" + radio, 0, -1, function(err, images) {
@@ -341,7 +338,6 @@
               return sendradios[id].images[imgID] = image;
             });
             if (!radios[id + 1]) {
-              console.dir(sendradios);
               return res.render("userradios", {
                 title: "Radios - " + req.params.user,
                 user: req.getAuthDetails().user.username,
@@ -422,6 +418,35 @@
     return res.send("OK", 200);
   });
   app.post("/image/:id/:page", function(req, res) {
+    console.log("POST /image/ called");
+    if (!req.isAuthenticated()) {
+      return res.send("FORBIDDEN", 403);
+    }
+    return requestHandlers.postImage2(req, res, db);
+  });
+  app["delete"]("/image/:id", function(req, res) {
+    console.log("DELETE /image/" + req.params.id + " called");
+    if (!req.isAuthenticated()) {
+      return res.send("FORBIDDEN", 403);
+    }
+    return db.sismember("radio:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
+      if (owner) {
+        return db.smembers("image:" + req.params.id, function(err, pages) {
+          console.log(pages);
+          if (pages.length !== 0) {
+            return res.send("radio still connected to page", 403);
+          }
+          db.del("radio:" + req.params.id);
+          db.del("image:" + req.params.id);
+          db.del("image:" + req.params.id + ":users");
+          db.lrem("user:" + req.getAuthDetails().user.username + ":radios", 0, req.params.id);
+          db.sadd("deleted_radios", req.params.id);
+          return res.send("OK, radio removed", 200);
+        });
+      }
+    });
+  });
+  app.post("/image/:id/:page/old", function(req, res) {
     var d, i;
     console.log("POST /image/ called");
     d = new Date().getTime().toString();
