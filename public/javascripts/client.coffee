@@ -134,7 +134,7 @@ savepage = ->
       200: (msg) ->
         document.title = "RADIOCA.SE - " + getTitle()
         $('#savepage_dialog').hide()
-      403: ->
+      403: (data)->
         alert "Cannot save - Maybe your session has timed out?"
 
 $ ->
@@ -212,7 +212,7 @@ $ ->
           document.location = url
 
   ).on("click", "#casestandardpage", ->
-    newcase("standarpage")
+    newcase("standardpage")
 
   ).on("click", "#casetextpage", ->
     newcase("textpage")
@@ -236,7 +236,7 @@ $ ->
           document.location = url
 
   ).on("click", "#savepage", ->
-    $("#savepage_dialog").show()
+    $("#savepage_dialog").toggle()
 
   ).on("click", "#savepage_confirm", ->
     savepage()
@@ -283,7 +283,7 @@ $ ->
     $("#markdown-help").hide()
 
   ).on("click", "#deletepage", ->
-    $("#deletepage_dialog").show()
+    $("#deletepage_dialog").toggle()
 
   ).on("click", "#deletepage_cancel", ->
     $("#deletepage_dialog").hide()
@@ -336,7 +336,7 @@ $ ->
     $(".selected").removeClass "selected"
     $("#removeradio_dialog").hide()
 
-  ).on("click", "#removeradio_confirm", ->
+  ).on("click", "#deleteradio_confirm", ->
     targeturl = "/image/" + $(".selected").attr("ID")
     $.ajax
       url: targeturl
@@ -344,7 +344,7 @@ $ ->
       statusCode:
         200: ->
           $(".selected").remove()
-          $("#removeradio_dialog").hide()
+          $("#deleteradio_dialog").hide()
         404: ->
           alert "NOT ALLOWED"
           $(".selected").removeClass "selected"
@@ -352,9 +352,9 @@ $ ->
         403: ->
           alert "FORBIDDEN"
           $(".selected").removeClass "selected"
-          $("#removeradio_dialog").hide()
+          $("#deleteradio_dialog").hide()
 
-  ).on "click", "#deleteradio_confirm", ->
+  ).on("click", "#removeradio_confirm", ->
     pathname = window.location.pathname.split("/")
     targeturl = "/case/" + pathname[2] + "/" + pathname[3] + "/" + $(".selected").attr("ID")
     $.ajax
@@ -363,17 +363,18 @@ $ ->
       statusCode:
         200: ->
           $(".selected").remove()
-          $("#deleteradio_dialog").hide()
+          $("#removeradio_dialog").hide()
         404: ->
           alert "NOT FOUND"
           $(".selected").removeClass "selected"
-          $("#deleteradio_dialog").hide()
+          $("#removeradio_dialog").hide()
         403: ->
           alert "FORBIDDEN"
           $(".selected").removeClass "selected"
-          $("#deleteradio_dialog").hide()
+          $("#removeradio_dialog").hide()
 
-  $("#postframe").one "load", ->
+
+  ).on "load", "#postframe", ->
     radioID = $("iframe")[0].contentDocument.body.innerHTML
     $(".radio:last", top.document).attr "ID", radioID
     $.ajax

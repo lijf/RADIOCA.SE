@@ -201,6 +201,8 @@ app.delete "/case/:id/:page", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
       requestHandlers.deletePage req.params.id, req.params.page
+      res.send "OK", 200
+
 
 app.delete "/case/:id/:page_old", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->

@@ -86,17 +86,17 @@ postImage2 = (req, res, db) ->
     if err
       console.log err
 
-deletePage (cid, page) ->
+deletePage = (cid, page) ->
   db.lrange "case:" + cid + ":page:" + page + ":radios", 0, -1, (err, radioIDs) ->
-    removeRadio cid, page, radio for radio in radioIDs
+    removeRadio cid, page, radioID for radioID in radioIDs
   db.hgetall "case:" + cid + ":page:" + page, (err, theCase) ->
     db.set "case:" + cid + ":firstpage", theCase.nextpage  if theCase.prevpage is "0"
     db.hset "case:" + cid + ":page:" + theCase.prevpage, "nextpage", theCase.nextpage
     db.hset "case:" + cid + ":page:" + theCase.nextpage, "prevpage", theCase.prevpage
     db.del "case:" + cid + ":page:" + page
-  #res.send "OK", 200
+    200
 
-putPage (req, res) ->
+putPage = (req, res) ->
   data = req.body
   console.dir data
   data.cid = req.params.id

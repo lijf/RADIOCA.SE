@@ -166,7 +166,7 @@
           document.title = "RADIOCA.SE - " + getTitle();
           return $('#savepage_dialog').hide();
         },
-        403: function() {
+        403: function(data) {
           return alert("Cannot save - Maybe your session has timed out?");
         }
       }
@@ -246,7 +246,7 @@
         }
       });
     }).on("click", "#casestandardpage", function() {
-      return newcase("standarpage");
+      return newcase("standardpage");
     }).on("click", "#casetextpage", function() {
       return newcase("textpage");
     }).on("click", "#caseimagepage", function() {
@@ -271,7 +271,7 @@
         }
       });
     }).on("click", "#savepage", function() {
-      return $("#savepage_dialog").show();
+      return $("#savepage_dialog").toggle();
     }).on("click", "#savepage_confirm", function() {
       return savepage();
     }).on("click", "#savepage_cancel", function() {
@@ -317,7 +317,7 @@
     }).on("click", "#help_cancel", function() {
       return $("#markdown-help").hide();
     }).on("click", "#deletepage", function() {
-      return $("#deletepage_dialog").show();
+      return $("#deletepage_dialog").toggle();
     }).on("click", "#deletepage_cancel", function() {
       return $("#deletepage_dialog").hide();
     }).on("click", "#deletepage_confirm", function() {
@@ -364,7 +364,7 @@
     }).on("click", "#removeradio_cancel", function() {
       $(".selected").removeClass("selected");
       return $("#removeradio_dialog").hide();
-    }).on("click", "#removeradio_confirm", function() {
+    }).on("click", "#deleteradio_confirm", function() {
       var targeturl;
       targeturl = "/image/" + $(".selected").attr("ID");
       return $.ajax({
@@ -373,7 +373,7 @@
         statusCode: {
           200: function() {
             $(".selected").remove();
-            return $("#removeradio_dialog").hide();
+            return $("#deleteradio_dialog").hide();
           },
           404: function() {
             alert("NOT ALLOWED");
@@ -383,11 +383,11 @@
           403: function() {
             alert("FORBIDDEN");
             $(".selected").removeClass("selected");
-            return $("#removeradio_dialog").hide();
+            return $("#deleteradio_dialog").hide();
           }
         }
       });
-    }).on("click", "#deleteradio_confirm", function() {
+    }).on("click", "#removeradio_confirm", function() {
       var pathname, targeturl;
       pathname = window.location.pathname.split("/");
       targeturl = "/case/" + pathname[2] + "/" + pathname[3] + "/" + $(".selected").attr("ID");
@@ -397,22 +397,21 @@
         statusCode: {
           200: function() {
             $(".selected").remove();
-            return $("#deleteradio_dialog").hide();
+            return $("#removeradio_dialog").hide();
           },
           404: function() {
             alert("NOT FOUND");
             $(".selected").removeClass("selected");
-            return $("#deleteradio_dialog").hide();
+            return $("#removeradio_dialog").hide();
           },
           403: function() {
             alert("FORBIDDEN");
             $(".selected").removeClass("selected");
-            return $("#deleteradio_dialog").hide();
+            return $("#removeradio_dialog").hide();
           }
         }
       });
-    });
-    $("#postframe").one("load", function() {
+    }).on("load", "#postframe", function() {
       var radioID;
       radioID = $("iframe")[0].contentDocument.body.innerHTML;
       $(".radio:last", top.document).attr("ID", radioID);
