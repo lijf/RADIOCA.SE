@@ -1,7 +1,51 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
+  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
   change_url = function(url) {
     return document.location = url;
+  };
+  newpage = function(type) {
+    var json;
+    json = {};
+    json.title = getTitle();
+    json.private = $("#private").is(":checked");
+    json.created = $("#created").val();
+    json.pagetype = type;
+    return $.ajax({
+      url: window.location.pathname + "/newpage",
+      type: "POST",
+      data: json,
+      statusCode: {
+        404: function() {
+          return alert("Page not found");
+        },
+        200: function(url) {
+          $("#save").trigger("click");
+          return document.location.href = url;
+        },
+        403: function() {
+          return alert("Forbidden, no new page created");
+        }
+      }
+    });
+  };
+  newcase = function(type) {
+    var json;
+    json = {};
+    json.pagetype = type;
+    json.title = "untitled";
+    return $.ajax({
+      url: "/newcase",
+      type: "POST",
+      data: json,
+      statusCode: {
+        403: function() {
+          return alert("Forbidden - are you logged in?");
+        },
+        200: function(url) {
+          return document.location = url;
+        }
+      }
+    });
   };
   editfunctions = function() {
     $('#locked').toggle();
@@ -122,7 +166,7 @@
           document.title = "RADIOCA.SE - " + getTitle();
           return $('#savepage_dialog').hide();
         },
-        403: function() {
+        403: function(data) {
           return alert("Cannot save - Maybe your session has timed out?");
         }
       }
@@ -178,24 +222,35 @@
       return $("#newpage_dialog").show();
     }).on("click", "#newpage_cancel", function() {
       return $("#newpage_dialog").hide();
-    }).on("click", "#newpage_confirm", function() {
+    }).on("click", "#newpage_standard", function() {
+      return newpage("standardpage");
+    }).on("click", "#newpage_image", function() {
+      return newpage("imagepage");
+    }).on("click", "#newpage_text", function() {
+      return newpage("textpage");
+    }).on("click", "#newcase", function() {
+      var json;
+      json = {};
+      json.title = "Untitled";
       return $.ajax({
-        url: window.location.pathname + "/newpage",
+        url: "/newcase",
         type: "POST",
-        data: pageMeta(),
+        data: json,
         statusCode: {
-          404: function() {
-            return alert("Page not found");
+          403: function() {
+            return alert("Forbidden - are you logged in?");
           },
           200: function(url) {
-            $("#save").trigger("click");
-            return document.location.href = url;
-          },
-          403: function() {
-            return alert("Forbidden, no new page created");
+            return document.location = url;
           }
         }
       });
+    }).on("click", "#casestandardpage", function() {
+      return newcase("standardpage");
+    }).on("click", "#casetextpage", function() {
+      return newcase("textpage");
+    }).on("click", "#caseimagepage", function() {
+      return newcase("imagepage");
     }).on("click", "#createcase", function() {
       var json;
       json = {};
@@ -216,7 +271,7 @@
         }
       });
     }).on("click", "#savepage", function() {
-      return $("#savepage_dialog").show();
+      return $("#savepage_dialog").toggle();
     }).on("click", "#savepage_confirm", function() {
       return savepage();
     }).on("click", "#savepage_cancel", function() {
@@ -262,7 +317,7 @@
     }).on("click", "#help_cancel", function() {
       return $("#markdown-help").hide();
     }).on("click", "#deletepage", function() {
-      return $("#deletepage_dialog").show();
+      return $("#deletepage_dialog").toggle();
     }).on("click", "#deletepage_cancel", function() {
       return $("#deletepage_dialog").hide();
     }).on("click", "#deletepage_confirm", function() {
@@ -285,7 +340,7 @@
       $("#addstack_dialog").hide();
       userFile = $("#userfile").val();
       $("#uploadform").attr({
-        action: $("#uploadform").attr("action"),
+        action: "/image/" + $("#meta_cid").html() + "/" + $("#meta_page").html(),
         method: "POST",
         userfile: userFile,
         enctype: "multipart/form-data",
@@ -295,18 +350,23 @@
       $("#uploadform").submit();
       $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
-      $(".radio:last").append($("<a class=\"deleteradio abutton\">&#x166d;<a>"));
-      return $(".caption:last").append($("<a class=\"abutton session textedit\">Edit</a>"));
+      $(".radio:last", top.document).append($("<a class=\"deleteradio abutton\" style=\"display:inline\">&#x166d;</a>"));
+      return $(".caption:last", top.document).append($("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>"));
     }).on("click", ".deleteradio", function() {
       $(this).parent().addClass("selected");
       return $("#deleteradio_dialog").show();
     }).on("click", "#deleteradio_cancel", function() {
       $(".selected").removeClass("selected");
       return $("#deleteradio_dialog").hide();
+    }).on("click", ".removeradio", function() {
+      $(this).parent().addClass("selected");
+      return $("#removeradio_dialog").show();
+    }).on("click", "#removeradio_cancel", function() {
+      $(".selected").removeClass("selected");
+      return $("#removeradio_dialog").hide();
     }).on("click", "#deleteradio_confirm", function() {
-      var pathname, targeturl;
-      pathname = window.location.pathname.split("/");
-      targeturl = "/case/" + pathname[2] + "/" + pathname[3] + "/" + $(".selected").attr("ID");
+      var targeturl;
+      targeturl = "/image/" + $(".selected").attr("ID");
       return $.ajax({
         url: targeturl,
         type: "DELETE",
@@ -316,7 +376,7 @@
             return $("#deleteradio_dialog").hide();
           },
           404: function() {
-            alert("NOT FOUND");
+            alert("NOT ALLOWED");
             $(".selected").removeClass("selected");
             return $("#deleteradio_dialog").hide();
           },
@@ -327,11 +387,34 @@
           }
         }
       });
-    });
-    $("#postframe").one("load", function() {
+    }).on("click", "#removeradio_confirm", function() {
+      var pathname, targeturl;
+      pathname = window.location.pathname.split("/");
+      targeturl = "/case/" + pathname[2] + "/" + pathname[3] + "/" + $(".selected").attr("ID");
+      return $.ajax({
+        url: targeturl,
+        type: "DELETE",
+        statusCode: {
+          200: function() {
+            $(".selected").remove();
+            return $("#removeradio_dialog").hide();
+          },
+          404: function() {
+            alert("NOT FOUND");
+            $(".selected").removeClass("selected");
+            return $("#removeradio_dialog").hide();
+          },
+          403: function() {
+            alert("FORBIDDEN");
+            $(".selected").removeClass("selected");
+            return $("#removeradio_dialog").hide();
+          }
+        }
+      });
+    }).on("load", "#postframe", function() {
       var radioID;
       radioID = $("iframe")[0].contentDocument.body.innerHTML;
-      $(".radio:last").attr("ID", radioID);
+      $(".radio:last", top.document).attr("ID", radioID);
       return $.ajax({
         type: "GET",
         url: "/radio/" + radioID,

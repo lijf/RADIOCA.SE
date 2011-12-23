@@ -1,0 +1,65 @@
+iframe.hidden(name="postframe", id="postframe", src="about:none")
+#pageinfo
+  #meta_cid.hidden #{cid}
+  #meta_page.hidden #{page}
+  | by:
+  a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
+    @#{creator}
+  | &#x2002;
+  span#lock
+    a.abutton(id='lock', title='Edit Page')
+      span#locked
+        | &#128274; &#x2002;
+      span#open
+        | &#128275; &#x2002;
+  #created(style='display:none')
+    | #{created}
+#title
+  .txt
+    textarea.mdtxt(style='display:none')
+      ##{title}
+    .md
+    a.abutton.textedit.session Edit
+#radios
+  - each r in radios
+    .radio(id='#{r.ID}')
+      .stack
+        - each i in r.images
+          img.stack_image(src='#{i}')
+      .caption
+        textarea.mdtxt(style='display:none')
+          #{r.caption}
+        .md
+        a.abutton.textedit.session Edit
+      a.deleteradio.abutton(style='display:none)
+        | &#x166d;
+  a.abutton(id='addstack', style='display:none')
+    | &#x2295;
+a(id='prevpage', href='/case/#{cid}/#{prevpage}', style='float: left')
+  | ◀
+a(id='nextpage', href='/case/#{cid}/#{nextpage}', style='float: right')
+  | ▶
+  #markdown-help(style='display:none')
+    a.session(id='help_cancel')
+      | X
+    textarea.mdtxt(style='display:none')
+      #{mdhelp}
+    .md
+a.abutton(id='feedbackbutton', title='Show comments')
+  &#x1f4ac;
+#feedbackarea(style='display:none')
+  #feedbacktext
+  textarea#feedbackbox
+  br
+  button(id='feedback_confirm', type='button')
+    | Send
+#info(style='display:none')
+script(type='text/javascript')
+  $(function(){
+    var cid = '#{cid}';
+    var page = '#{page}';
+    if(#{editor}=='1') {
+      $("#lock").show();
+      };
+    if(#{private}=='1'){$('#private').attr('checked', true);}
+  });

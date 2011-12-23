@@ -30,7 +30,8 @@ app.configure ->
   app.use app.router
   app.use express.favicon(__dirname + "/public/favicon.ico")
   app.use express.static(__dirname + "/public")
-  app.use express.bodyParser()
+
+delete express.bodyParser.parse['multipart/form-data']
 
 app.configure "development", ->
   app.use express.errorHandler(
@@ -53,73 +54,88 @@ app.get "/", (req, res) ->
     title: "Home"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+    style: ''
 
 app.get "/newcase", (req, res) ->
-  unless req.isAuthenticated()
-    res.redirect "/"
-  else
-    res.render "newcase",
-      title: "Create new case"
-      signed_in: req.isAuthenticated()
-      user: req.getAuthDetails().user.username
+  return res.redirect "/" unless req.isAuthenticated()
+  res.render "newcase",
+    title: "Create new case"
+    signed_in: req.isAuthenticated()
+    user: req.getAuthDetails().user.username
+    style: ''
 
 app.post "/newcase", (req, res) ->
-  unless req.isAuthenticated()
-    res.redirect "back"
-  else
-    data = req.body
-    data.creator = req.getAuthDetails().user.username
-    console.log data
-    data.texts = [ "Double click to add text" ]
-    data.created = new Date().getTime()
-    data.lastEdit = data.created
-    data.nextpage = "0"
-    data.prevpage = "0"
-    db.incr "numberOfCases", (err, cid) ->
-      data.cid = cid
-      db.incr "case:" + cid + ":pages"
-      db.zadd "casesLastEdit", data.lastEdit, cid
-      db.zadd "listed", data.created, cid  if data.listed is "true"
-      db.zadd "cases:" + data.creator, data.created, cid
-      db.set "case:" + cid + ":firstpage", "1"
-      db.hmset "case:" + cid + ":page:1", data, (err, data) ->
-        db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
-          console.log "created case: " + cid
-          res.send "/case/" + cid + "/1", 200
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  data = req.body
+  data.creator = req.getAuthDetails().user.username
+  data.texts = [""]
+  data.created = new Date().getTime()
+  data.lastEdit = data.created
+  data.listed = "true"
+  data.nextpage = "0"
+  data.prevpage = "0"
+  db.incr "numberOfCases", (err, cid) ->
+    data.cid = cid
+    db.incr "case:" + cid + ":pages"
+    db.zadd "casesLastEdit", data.lastEdit, cid
+    db.zadd "listed", data.created, cid  if data.listed is "true"
+    db.zadd "cases:" + data.creator, data.created, cid
+    db.set "case:" + cid + ":firstpage", "1"
+    db.hmset "case:" + cid + ":page:1", data, (err, data) ->
+      db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
+        console.log "created case: " + cid
+        res.send "/case/" + cid + "/1", 200
+
+app.post "/newcase_old", (req, res) ->
+  return res.redirect "back" unless req.isAuthenticated()
+  data = req.body
+  data.creator = req.getAuthDetails().user.username
+  console.log data
+  data.texts = [ "Double click to add text" ]
+  data.created = new Date().getTime()
+  data.lastEdit = data.created
+  data.nextpage = "0"
+  data.prevpage = "0"
+  db.incr "numberOfCases", (err, cid) ->
+    data.cid = cid
+    db.incr "case:" + cid + ":pages"
+    db.zadd "casesLastEdit", data.lastEdit, cid
+    db.zadd "listed", data.created, cid  if data.listed is "true"
+    db.zadd "cases:" + data.creator, data.created, cid
+    db.set "case:" + cid + ":firstpage", "1"
+    db.hmset "case:" + cid + ":page:1", data, (err, data) ->
+      db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
+        console.log "created case: " + cid
+        res.send "/case/" + cid + "/1", 200
 
 app.get "/cases/:start/:finish", (req, res) ->
-  unless req.isAuthenticated()
-    res.redirect "back"
-  else
-    start = parseInt(req.params.start, 10)
-    end = parseInt(req.params.finish, 10)
-    db.zrange "listed", start, end, (err, cases) ->
-      res.send "404", 404  if err or not cases[0]
-      sendcases = []
-      cases.forEach (theCase, iteration) ->
-        db.hgetall "case:" + theCase + ":page:1", (err, sendcase) ->
-          sendcases[iteration] = sendcase
-          unless cases[iteration + 1]
-            console.log "rendering cases"
-            res.render "cases",
-              title: "Cases"
-              signed_in: req.isAuthenticated()
-              user: req.getAuthDetails().user.username
-              cases: sendcases
+  return res.redirect "back" unless req.isAuthenticated()
+  start = parseInt(req.params.start, 10)
+  end = parseInt(req.params.finish, 10)
+  db.zrange "listed", start, end, (err, cases) ->
+    res.send "404", 404  if err or not cases[0]
+    sendcases = []
+    cases.forEach (theCase, iteration) ->
+      db.hgetall "case:" + theCase + ":page:1", (err, sendcase) ->
+        sendcases[iteration] = sendcase
+        unless cases[iteration + 1]
+          console.log "rendering cases"
+          res.render "cases",
+            title: "Cases"
+            signed_in: req.isAuthenticated()
+            user: req.getAuthDetails().user.username
+            cases: sendcases
+            style: ''
 
 app.get "/case/:id/:page", (req, res) ->
-  unless req.isAuthenticated()
-    res.redirect "back"
-  else
-    db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-      console.log editor
-      db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (err, theCase) ->
-        return res.redirect("back")  if err or not theCase.cid
-        if theCase.listed is "true" or (theCase.listed is "false" and editor)
-          console.log "rendering case"
-          requestHandlers.rendercase req, res, theCase, editor, db
-        else
-          res.redirect "back"
+  return res.redirect "back" unless req.isAuthenticated()
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+    db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (err, theCase) ->
+      #console.dir theCase
+      return res.redirect "back"  if err or not theCase.cid
+      #return res.redirect "back" unless theCase.listed is "true" or (theCase.listed is "false" and editor)
+      console.log "rendering case"
+      requestHandlers.rendercase req, res, theCase, editor, db
 
 app.get "/signed_in", (req, res) ->
   uid = req.getAuthDetails().user.user_id
@@ -141,7 +157,14 @@ app.get "/signed_in", (req, res) ->
           req.logout()
           res.send "not allowed", 403
 
+
 app.post "/case/:id/:page/newpage", (req, res) ->
+  console.log "newpage triggered"
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+    if editor
+      requestHandlers.postNewpage req, res
+
+app.post "/case/:id/:page/newpage/old", (req, res) ->
   console.log "newpage triggered"
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
@@ -163,12 +186,25 @@ app.post "/case/:id/:page/newpage", (req, res) ->
 app.delete "/case/:id/:page/:radio", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
+      requestHandlers.removeRadio req.params.id, req.params.page, req.params.radio
+
+app.delete "/case/:id/:page/:radio/old", (req, res) ->
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+    if editor
       db.del "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption"
       db.lrem "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, req.params.radio
       db.srem "image:" + req.params.radio, req.params.id
       res.send "OK", 200
 
 app.delete "/case/:id/:page", (req, res) ->
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+    if editor
+      requestHandlers.deletePage req.params.id, req.params.page
+      res.send "OK", 200
+
+
+app.delete "/case/:id/:page_old", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
       db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (err, theCase) ->
@@ -183,6 +219,12 @@ app.get "/sign_out", (req, res) ->
   res.send "<button id=\"twitbutt\">Sign in with twitter</button>"
 
 app.put "/case/:id/:page", (req, res) ->
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+    if editor
+      requestHandlers.putPage req, res
+
+app.put "/case/:id/:page/old", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
@@ -207,24 +249,28 @@ app.get "/readme", (req, res) ->
     title: "README"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+    style: ''
 
 app.get "/colophon", (req, res) ->
   res.render "colophon",
     title: "Colophon"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+    style: ''
 
 app.get "/disclaimer", (req, res) ->
   res.render "disclaimer",
     title: "Disclaimer"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+    style: ''
 
 app.get "/about", (req, res) ->
   res.render "about",
     title: "About"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+    style: ''
 
 app.get "/radios/:user", (req, res) ->
   return res.redirect("/")  unless req.isAuthenticated()
@@ -232,7 +278,7 @@ app.get "/radios/:user", (req, res) ->
     sendradios = []
     db.lrange "user:" + req.params.user + ":radios", 0, -1, (err, radios) ->
       radios.forEach (radio, id) ->
-        console.log radio
+        #console.log radio
         sendradios[id] = {}
         sendradios[id].ID = radio
         db.lrange "radio:" + radio, 0, -1, (err, images) ->
@@ -241,12 +287,13 @@ app.get "/radios/:user", (req, res) ->
             sendradios[id].images[imgID] = image
 
           unless radios[id + 1]
-            console.dir sendradios
+            #console.dir sendradios
             res.render "userradios",
               title: "Radios - " + req.params.user
               user: req.getAuthDetails().user.username
               signed_in: req.isAuthenticated()
               radios: sendradios
+              style: ''
 
 app.get "/radio/:id", (req, res) ->
   return res.redirect("/")  unless req.isAuthenticated()
@@ -270,14 +317,14 @@ app.get "/case/:id/:page/feedback", (req, res) ->
     object: pagefeedback
 
 app.get "/img/:img", (req, res) ->
-  if req.isAuthenticated()
-    image = __dirname + "/img/" + req.params.img
-    fs.readFile image, "binary", (error, file) ->
-      return res.send("huh?", 404)  if error
-      res.statusCode = 200
-      res.setHeader "Content-Type", "image/jpeg"
-      res.write file, "binary"
-      res.end()
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  image = __dirname + "/img/" + req.params.img
+  fs.readFile image, "binary", (error, file) ->
+    return res.send("huh?", 404)  if error
+    res.statusCode = 200
+    res.setHeader "Content-Type", "image/jpeg"
+    res.write file, "binary"
+    res.end()
 
 app.post "/case/:id/:page/feedback", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
@@ -294,10 +341,53 @@ app.post "/case/:id/:page/feedback", (req, res) ->
 
 app.post "/image/:id/:page", (req, res) ->
   console.log "POST /image/ called"
-  unless req.isAuthenticated()
-    res.send "not logged in", 200
-  else
-    requestHandlers.postImage2 req, res, db
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  requestHandlers.postImage2 req, res, db
+
+app.delete "/case/:id", (req, res) ->
+  console.log "DELETE /case/" + req.params.id + " called"
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  db.sismember "radio:" + req.params.id ":users", req.getAuthDetails().user.user_id, (err, owner) ->
+    if owner
+      db.get "case:" + req.params.id + ":pages", (err, pages) ->
+        requestHandlers.deletePage "case:" + req.params.id + ":page:" + page for page in [0..pages]
+
+app.delete "/image/:id", (req, res) ->
+  console.log "DELETE /image/" + req.params.id + " called"
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  db.sismember "radio:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
+    if owner
+      db.smembers "image:" + req.params.id, (err, pages) ->
+        console.log pages
+        return res.send "radio still connected to page", 403 unless pages.length == 0
+        db.del "radio:" + req.params.id
+        db.del "image:" + req.params.id
+        db.del "image:" + req.params.id + ":users"
+        db.lrem "user:" + req.getAuthDetails().user.username + ":radios", 0, req.params.id
+        db.sadd "deleted_radios", req.params.id
+        res.send "OK, radio removed", 200
+
+app.post "/image/:id/:page/old", (req, res) ->
+  console.log "POST /image/ called"
+  d = new Date().getTime().toString()
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  console.dir req.body
+  i = 0
+  req.body.userfile.forEach (file, fid) ->
+    if file.type = "image/jpeg"
+      filename = "/img/" + d + "." + i + ".jpg"
+      console.log file.name
+      fs.rename file.path, __dirname + filename
+      db.rpush "radio:" + d, filename
+      console.log filename, i
+      i++
+  db.sadd "image:" + d, req.params.id
+  db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
+  db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
+  db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "double click to add caption"
+  res.send d, 200
+  console.log "-> upload done"
+  # requestHandlers.postImage2 req, res, db
 
 port = process.env.PORT or 3000
 app.listen port, ->

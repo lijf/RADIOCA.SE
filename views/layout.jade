@@ -7,8 +7,9 @@ html
     link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
     link(rel='stylesheet', href='/stylesheets/reset.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-
+    link(rel='stylesheet', href='/stylesheets/#{style}')
     script(src = '/javascripts/jquery-1.7.min.js')
+    script(src = '/javascripts/jquery-ui-1.8.16.custom.min.js')
     script(src = '/auth/client')
     script(src = 'http://platform.twitter.com/widgets.js')
     script(src = '/javascripts/jquery.mousewheel.min.js')
@@ -30,7 +31,70 @@ html
         a my messages
         br
         a(id='sign_out') sign out
+      span#controls
+        a.abutton(id='help', title='Help')
+          |  &#x2002; ? &#x2002;
+        a.abutton(id='savepage', title='Save page')
+          | &#x2002; &#x29be; &#x2002;
+        span#savepage_dialog(style='display:none')
+          button(id='savepage_confirm', type='button')
+            | Save page
+        a.abutton(id='deletepage', title='Delete page')
+          |  &#x2002; &#x166d; &#x2002;
+        span#deletepage_dialog(style='display:none')
+          button(id='deletepage_confirm', type='button')
+            | Delete Page
+        a.abutton(id='newpage', title='New page')
+          |  &#x2002; ＋ &#x2002;
+        a.abutton(id='private_page', title='Private Page')
+          | &#x2002; &#128272;
+        input(type='checkbox', id='private', value='1', name='private')
       != body // this renders the body of an individual view
+    #centerindiv
+      #centereddiv
+        #newpage_dialog.dialog_box(style='display:none')
+          h2.damion(style='text-align:left') Create new page
+          h4 - Choose page layout.
+          #pagetypes
+            img.pageimage#newpage_standard(src='/images/standardpage.svg', alt='Standard')
+            img.pageimage#newpage_text(src='/images/textpage.svg', alt='Textpage')
+            img.pageimage#newpage_image(src='/images/imagepage.svg', alt='Imagepage')
+          button#newpage_cancel
+            | Cancel
+        #addstack_dialog.dialog_box(style='display:none')
+          | Please choose image(s) to upload.
+          br
+          | If multiple images are uploaded together,
+          br
+          | they will be combined to a stack.
+          br
+          br
+          form#uploadform
+            .fileinputs
+              input.file(type='file', name='userfile', id='userfile', multiple='multiple')
+              .fakefile
+                input
+                button
+                  | Browse
+            input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
+            button(id='addstack_cancel')
+              | cancel
+        #removeradio_dialog.dialog_box(style='display:none')
+          | Do you want to remove the selected stack/radio from this page?
+          br
+          br
+          button(type='button', id='deleteradio_confirm')
+            | Delete
+          button(type='button', id='deleteradio_cancel')
+            | Cancel
+        #deleteradio_dialog.dialog_box(style='display:none')
+          | Do you want to delete the selected stack/radio from your collection?
+          br
+          br
+          button#removeradio_confirm(type='button')
+            | Remove
+          button#removeradio_cancel(type='button')
+            | Cancel
     #footer
       a(href='/')
         | Home

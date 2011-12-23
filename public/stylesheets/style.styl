@@ -1,9 +1,27 @@
+button
+    height 21px
+    vertical-align top
 a
     -webkit-user-select none
     -khtml-user-select none
     -moz-user-select none
     -o-user-select none
     user-select none
+#textpage
+    width 100%
+.userradio
+    float left
+    width 49%
+    position relative
+.removeradio
+    cursor pointer
+    position absolute
+    top 5px
+    right 5px
+.pageimage
+    width 30%
+    margin 1%
+    cursor pointer
 #cheatsheet
     td,th
         padding 5px
@@ -53,14 +71,14 @@ span#controls
     cursor pointer
     font-size 1.2em
 #centerindiv
-    float right
-    position relative
-    left -50%
-    text-align left
+    position fixed
+    margin-right -50%
+    Text-align left
     line-height 150%
+    width 100%
 #centereddiv
     position relative
-    left 50%
+    left 25%
 #container
     margin 0 auto
     width 90%
@@ -93,9 +111,7 @@ span#controls
 #sl
     position fixed
 .dialog_box
-    position fixed
-    left 30%
-    top 30%
+    width 50%
     background #222
     padding 8px
     border 2px
@@ -120,9 +136,6 @@ span#controls
 .selected
     border-color #f00
     border solid
-.userradio
-    width 50%
-    float left
 .radio
     position relative
 .stack
@@ -178,6 +191,10 @@ span#controls
         width 100%
     #sl
         display none
+    #centereddiv
+        left 0
+    .dialog_box
+        width 100%
     #container
         width 100%
     #session

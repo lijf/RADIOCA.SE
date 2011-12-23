@@ -1,6 +1,39 @@
 change_url = (url) ->
   document.location = url
 
+newpage  = (type) ->
+  json = {}
+  json.title = getTitle()
+  json.private = $("#private").is(":checked")
+  json.created = $("#created").val()
+  json.pagetype = type
+  $.ajax
+    url: window.location.pathname + "/newpage"
+    type: "POST"
+    data: json
+    statusCode:
+      404: ->
+        alert "Page not found"
+      200: (url) ->
+        $("#save").trigger "click"
+        document.location.href = url
+      403: ->
+        alert "Forbidden, no new page created"
+
+newcase = (type) ->
+  json = {}
+  json.pagetype = type
+  json.title = "untitled"
+  $.ajax
+    url: "/newcase"
+    type: "POST"
+    data: json
+    statusCode:
+      403: ->
+        alert "Forbidden - are you logged in?"
+      200: (url) ->
+        document.location = url
+
 editfunctions = ->
   $('#locked').toggle()
   $('#open').toggle()
@@ -101,7 +134,7 @@ savepage = ->
       200: (msg) ->
         document.title = "RADIOCA.SE - " + getTitle()
         $('#savepage_dialog').hide()
-      403: ->
+      403: (data)->
         alert "Cannot save - Maybe your session has timed out?"
 
 $ ->
@@ -156,20 +189,37 @@ $ ->
   ).on("click", "#newpage_cancel", ->
     $("#newpage_dialog").hide()
 
-  ).on("click", "#newpage_confirm", ->
-    $.ajax
-      url: window.location.pathname + "/newpage"
-      type: "POST"
-      data: pageMeta()
-      statusCode:
-        404: ->
-          alert "Page not found"
-        200: (url) ->
-          $("#save").trigger "click"
-          document.location.href = url
-        403: ->
-          alert "Forbidden, no new page created"
+  ).on("click", "#newpage_standard", ->
+    newpage("standardpage")
 
+  ).on("click", "#newpage_image", ->
+    newpage("imagepage")
+
+  ).on("click", "#newpage_text", ->
+    newpage("textpage")
+
+  ).on("click", "#newcase", ->
+    json = {}
+    json.title = "Untitled"
+    $.ajax
+      url: "/newcase"
+      type: "POST"
+      data: json
+      statusCode:
+        403: ->
+          alert "Forbidden - are you logged in?"
+        200: (url) ->
+          document.location = url
+
+  ).on("click", "#casestandardpage", ->
+    newcase("standardpage")
+
+  ).on("click", "#casetextpage", ->
+    newcase("textpage")
+
+  ).on("click", "#caseimagepage", ->
+    newcase("imagepage")
+    
   ).on("click", "#createcase", ->
     json = {}
     json.title = $("#title").val()
@@ -186,7 +236,7 @@ $ ->
           document.location = url
 
   ).on("click", "#savepage", ->
-    $("#savepage_dialog").show()
+    $("#savepage_dialog").toggle()
 
   ).on("click", "#savepage_confirm", ->
     savepage()
@@ -233,7 +283,7 @@ $ ->
     $("#markdown-help").hide()
 
   ).on("click", "#deletepage", ->
-    $("#deletepage_dialog").show()
+    $("#deletepage_dialog").toggle()
 
   ).on("click", "#deletepage_cancel", ->
     $("#deletepage_dialog").hide()
@@ -257,7 +307,7 @@ $ ->
     $("#addstack_dialog").hide()
     userFile = $("#userfile").val()
     $("#uploadform").attr
-      action: $("#uploadform").attr("action")
+      action: "/image/" + $("#meta_cid").html() + "/" + $("#meta_page").html()
       method: "POST"
       userfile: userFile
       enctype: "multipart/form-data"
@@ -267,8 +317,8 @@ $ ->
     $("#uploadform").submit()
     $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore "#addstack"
     rendermd()
-    $(".radio:last").append $("<a class=\"deleteradio abutton\">&#x166d;<a>")
-    $(".caption:last").append $("<a class=\"abutton session textedit\">Edit</a>")
+    $(".radio:last", top.document).append $("<a class=\"deleteradio abutton\" style=\"display:inline\">&#x166d;</a>")
+    $(".caption:last", top.document).append $("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>")
 
   ).on("click", ".deleteradio", ->
     $(this).parent().addClass "selected"
@@ -278,9 +328,16 @@ $ ->
     $(".selected").removeClass "selected"
     $("#deleteradio_dialog").hide()
 
-  ).on "click", "#deleteradio_confirm", ->
-    pathname = window.location.pathname.split("/")
-    targeturl = "/case/" + pathname[2] + "/" + pathname[3] + "/" + $(".selected").attr("ID")
+  ).on("click", ".removeradio", ->
+    $(this).parent().addClass "selected"
+    $("#removeradio_dialog").show()
+
+  ).on("click", "#removeradio_cancel", ->
+    $(".selected").removeClass "selected"
+    $("#removeradio_dialog").hide()
+
+  ).on("click", "#deleteradio_confirm", ->
+    targeturl = "/image/" + $(".selected").attr("ID")
     $.ajax
       url: targeturl
       type: "DELETE"
@@ -289,7 +346,7 @@ $ ->
           $(".selected").remove()
           $("#deleteradio_dialog").hide()
         404: ->
-          alert "NOT FOUND"
+          alert "NOT ALLOWED"
           $(".selected").removeClass "selected"
           $("#deleteradio_dialog").hide()
         403: ->
@@ -297,9 +354,29 @@ $ ->
           $(".selected").removeClass "selected"
           $("#deleteradio_dialog").hide()
 
-  $("#postframe").one "load", ->
+  ).on("click", "#removeradio_confirm", ->
+    pathname = window.location.pathname.split("/")
+    targeturl = "/case/" + pathname[2] + "/" + pathname[3] + "/" + $(".selected").attr("ID")
+    $.ajax
+      url: targeturl
+      type: "DELETE"
+      statusCode:
+        200: ->
+          $(".selected").remove()
+          $("#removeradio_dialog").hide()
+        404: ->
+          alert "NOT FOUND"
+          $(".selected").removeClass "selected"
+          $("#removeradio_dialog").hide()
+        403: ->
+          alert "FORBIDDEN"
+          $(".selected").removeClass "selected"
+          $("#removeradio_dialog").hide()
+
+
+  ).on "load", "#postframe", ->
     radioID = $("iframe")[0].contentDocument.body.innerHTML
-    $(".radio:last").attr "ID", radioID
+    $(".radio:last", top.document).attr "ID", radioID
     $.ajax
       type: "GET"
       url: "/radio/" + radioID
