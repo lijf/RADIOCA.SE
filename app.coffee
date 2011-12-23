@@ -186,7 +186,7 @@ app.post "/case/:id/:page/newpage/old", (req, res) ->
 app.delete "/case/:id/:page/:radio", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
-    requestHandlers.removeRadio req.params.id, req.params.page, req.params.radio
+      requestHandlers.removeRadio req.params.id, req.params.page, req.params.radio
 
 app.delete "/case/:id/:page/:radio/old", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
@@ -350,7 +350,7 @@ app.delete "/case/:id", (req, res) ->
   db.sismember "radio:" + req.params.id ":users", req.getAuthDetails().user.user_id, (err, owner) ->
     if owner
       db.get "case:" + req.params.id + ":pages", (err, pages) ->
-        requestHandlers.deletePage "case:" req.params.id + ":page:" + page for page in [0..pages]
+        requestHandlers.deletePage "case:" + req.params.id + ":page:" + page for page in [0..pages]
 
 app.delete "/image/:id", (req, res) ->
   console.log "DELETE /image/" + req.params.id + " called"
