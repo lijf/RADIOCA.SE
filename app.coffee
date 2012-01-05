@@ -116,16 +116,17 @@ app.get "/cases/:start/:finish", (req, res) ->
     res.send "404", 404  if err or not cases[0]
     sendcases = []
     cases.forEach (theCase, iteration) ->
-      db.hgetall "case:" + theCase + ":page:1", (err, sendcase) ->
-        sendcases[iteration] = sendcase
-        unless cases[iteration + 1]
-          console.log "rendering cases"
-          res.render "cases",
-            title: "Cases"
-            signed_in: req.isAuthenticated()
-            user: req.getAuthDetails().user.username
-            cases: sendcases
-            style: ''
+      db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
+        db.hgetall "case:" + theCase + ":page:" + firstpage, (err, sendcase) ->
+          sendcases[iteration] = sendcase
+          unless cases[iteration + 1]
+            console.log "rendering cases"
+            res.render "cases",
+              title: "Cases"
+              signed_in: req.isAuthenticated()
+              user: req.getAuthDetails().user.username
+              cases: sendcases
+              style: ''
 
 app.get "/case/:id/:page", (req, res) ->
   return res.redirect "back" unless req.isAuthenticated()

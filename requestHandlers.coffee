@@ -108,8 +108,9 @@ putPage = (req, res) ->
   else
     db.zrem "cases", data.cid
   db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
-  data.radios.forEach (r, rID) ->
-    db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
+  if data.radios
+    data.radios.forEach (r, rID) ->
+      db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
   console.log "saved page"
   res.send "OK", 200
 

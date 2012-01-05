@@ -137,9 +137,11 @@
       db.zrem("cases", data.cid);
     }
     db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);
-    data.radios.forEach(function(r, rID) {
-      return db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
-    });
+    if (data.radios) {
+      data.radios.forEach(function(r, rID) {
+        return db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
+      });
+    }
     console.log("saved page");
     return res.send("OK", 200);
   };

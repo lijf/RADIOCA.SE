@@ -154,18 +154,20 @@
       }
       sendcases = [];
       return cases.forEach(function(theCase, iteration) {
-        return db.hgetall("case:" + theCase + ":page:1", function(err, sendcase) {
-          sendcases[iteration] = sendcase;
-          if (!cases[iteration + 1]) {
-            console.log("rendering cases");
-            return res.render("cases", {
-              title: "Cases",
-              signed_in: req.isAuthenticated(),
-              user: req.getAuthDetails().user.username,
-              cases: sendcases,
-              style: ''
-            });
-          }
+        return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
+          return db.hgetall("case:" + theCase + ":page:" + firstpage, function(err, sendcase) {
+            sendcases[iteration] = sendcase;
+            if (!cases[iteration + 1]) {
+              console.log("rendering cases");
+              return res.render("cases", {
+                title: "Cases",
+                signed_in: req.isAuthenticated(),
+                user: req.getAuthDetails().user.username,
+                cases: sendcases,
+                style: ''
+              });
+            }
+          });
         });
       });
     });
