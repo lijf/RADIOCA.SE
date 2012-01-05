@@ -37,7 +37,7 @@ newcase = (type) ->
 editfunctions = ->
   $('#locked').toggle()
   $('#open').toggle()
-  $('.deleteradio').toggle()
+  $('.removeradio').toggle()
   $("#controls").toggle()
   $(".textedit").toggle()
   $("#addstack").toggle()
@@ -148,7 +148,7 @@ $ ->
     $(this).siblings(".mdtxt").toggle().focus().autogrow()
     $(this).siblings(".md").toggle()
     rendermd()
-    (if $(this).html() is "Edit" then $(this).html("Done") else $(this).html("Edit"))
+    (if $(this).html() is "改" then $(this).html("关") else $(this).html("改"))
 
   ).on("blur", ".mdtxt", ->
     event.preventDefault()
@@ -317,7 +317,7 @@ $ ->
     $("#uploadform").submit()
     $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore "#addstack"
     rendermd()
-    $(".radio:last", top.document).append $("<a class=\"deleteradio abutton\" style=\"display:inline\">&#x166d;</a>")
+    $(".radio:last", top.document).append $("<a class=\"removeradio abutton\" style=\"display:inline\">&#x166d;</a>")
     $(".caption:last", top.document).append $("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>")
 
   ).on("click", ".deleteradio", ->
@@ -329,7 +329,7 @@ $ ->
     $("#deleteradio_dialog").hide()
 
   ).on("click", ".removeradio", ->
-    $(this).parent().addClass "selected"
+    $(this).parent().parent().addClass "selected"
     $("#removeradio_dialog").show()
 
   ).on("click", "#removeradio_cancel", ->
@@ -375,7 +375,7 @@ $ ->
 
 
   ).on "load", "#postframe", ->
-    radioID = $("iframe")[0].contentDocument.body.innerHTML
+    radioID = $("iframe")[1].contentDocument.body.innerHTML
     $(".radio:last", top.document).attr "ID", radioID
     $.ajax
       type: "GET"

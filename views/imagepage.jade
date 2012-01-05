@@ -19,7 +19,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       ##{title}
     .md
-    a.abutton.textedit.session Edit
+    a.abutton.textedit.session &#x6539;
 #radios
   - each r in radios
     .radio(id='#{r.ID}')
@@ -29,9 +29,9 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
+        a.abutton.textedit.session &#x6539;
         .md
-        a.abutton.textedit.session Edit
-      a.deleteradio.abutton(style='display:none)
+      a.removeradio.abutton(style='display:none')
         | &#x166d;
   a.abutton(id='addstack', style='display:none')
     | &#x2295;

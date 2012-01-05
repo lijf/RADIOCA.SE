@@ -7,7 +7,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     @#{creator}
   | &#x2002;
   span#lock
-    a.abutton(id='lock', title='Edit Page')
+    a.abutton#lock(title='Edit Page')
       span#locked
         | &#128274; &#x2002;
       span#open
@@ -19,18 +19,18 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       ##{title}
     .md
-    a.abutton.textedit.session Edit
+    a.abutton.textedit.session &#x6539;
 #texts
   .txt
     textarea.mdtxt(style='display:none')
       #{texts}
     .md
-    a.abutton.textedit.session Edit
+    a.abutton.textedit.session &#x6539;
   br
   br
-  a(id='prevpage', href='/case/#{cid}/#{prevpage}', style='float: left')
+  a#prevpage(href='/case/#{cid}/#{prevpage}', style='float: left')
     | ◀
-  a(id='nextpage', href='/case/#{cid}/#{nextpage}', style='float: right')
+  a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right')
     | ▶
 #radios
   - each r in radios
@@ -38,14 +38,15 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       .stack
         - each i in r.images
           img.stack_image(src='#{i}')
+        a.removeradio.abutton(style='display:none')
+          | &#x166d;
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-        a.abutton.textedit.session Edit
-      a.deleteradio.abutton(style='display:none)
-        | &#x166d;
-  a.abutton(id='addstack', style='display:none')
+        a.abutton.textedit.session &#x6539;
+        br
+  a.abutton#addstack(style='display:none')
     | &#x2295;
   #markdown-help(style='display:none')
     a.session(id='help_cancel')
@@ -53,13 +54,13 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       #{mdhelp}
     .md
-a.abutton(id='feedbackbutton', title='Show comments')
+a.abutton#feedbackbutton(title='Show comments')
   &#x1f4ac;
 #feedbackarea(style='display:none')
   #feedbacktext
   textarea#feedbackbox
   br
-  button(id='feedback_confirm', type='button')
+  button#feedback_confirm(type='button')
     | Send
 #info(style='display:none')
 script(type='text/javascript')

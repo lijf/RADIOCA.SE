@@ -50,7 +50,7 @@
   editfunctions = function() {
     $('#locked').toggle();
     $('#open').toggle();
-    $('.deleteradio').toggle();
+    $('.removeradio').toggle();
     $("#controls").toggle();
     $(".textedit").toggle();
     return $("#addstack").toggle();
@@ -180,10 +180,10 @@
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
       rendermd();
-      if ($(this).html() === "Edit") {
-        return $(this).html("Done");
+      if ($(this).html() === "改") {
+        return $(this).html("关");
       } else {
-        return $(this).html("Edit");
+        return $(this).html("改");
       }
     }).on("blur", ".mdtxt", function() {
       return event.preventDefault();
@@ -350,7 +350,7 @@
       $("#uploadform").submit();
       $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
-      $(".radio:last", top.document).append($("<a class=\"deleteradio abutton\" style=\"display:inline\">&#x166d;</a>"));
+      $(".radio:last", top.document).append($("<a class=\"removeradio abutton\" style=\"display:inline\">&#x166d;</a>"));
       return $(".caption:last", top.document).append($("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>"));
     }).on("click", ".deleteradio", function() {
       $(this).parent().addClass("selected");
@@ -359,7 +359,7 @@
       $(".selected").removeClass("selected");
       return $("#deleteradio_dialog").hide();
     }).on("click", ".removeradio", function() {
-      $(this).parent().addClass("selected");
+      $(this).parent().parent().addClass("selected");
       return $("#removeradio_dialog").show();
     }).on("click", "#removeradio_cancel", function() {
       $(".selected").removeClass("selected");
@@ -413,7 +413,7 @@
       });
     }).on("load", "#postframe", function() {
       var radioID;
-      radioID = $("iframe")[0].contentDocument.body.innerHTML;
+      radioID = $("iframe")[1].contentDocument.body.innerHTML;
       $(".radio:last", top.document).attr("ID", radioID);
       return $.ajax({
         type: "GET",

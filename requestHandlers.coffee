@@ -50,11 +50,11 @@ postImage = (req, res, db) ->
     percent = (bytexReceived / bytesExpected * 100) or 0
     console.log "Uploading: %" + percent + "\r"
 
-removeRadio = (cid, page, radio) ->
+removeRadio = (req, res, cid, page, radio) ->
   db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
   db.lrem "case:" + cid + ":page:" + page + ":radios", 0, radio
   db.srem "image:" + radio, cid
-  #res.send "OK", 200
+  res.send "OK", 200
 
 postImage2 = (req, res, db) ->
   d = new Date().getTime().toString()
@@ -143,6 +143,7 @@ newpage = (req, res, cid, page, db, pagedata) ->
 exports.postNewpage = postNewpage
 exports.putPage = putPage
 exports.deletePage = deletePage
+exports.removeRadio = removeRadio
 exports.rendercase = rendercase
 exports.newpage = newpage
 exports.postImage2 = postImage2
