@@ -158,7 +158,21 @@ $ ->
     if !delta
       delta = e.originalEvent.wheelDelta
     if delta > 0 and $(this).next().length > 0
-      $(this).prev().css "display","none"
+      $(this).prev().hide()
+      $(this).hide()
+      $(this).next().show()
+    else if delta < 0 and $(this).prev().length > 0
+      $(this).next().hide()
+      $(this).hide()
+      $(this).prev().show()
+    e.preventDefault()
+
+  ).on("mousewheel_old", ".stack > .stack_image", (e) ->
+    delta = e.originalEvent.detail
+    if !delta
+      delta = e.originalEvent.wheelDelta
+    if delta > 0 and $(this).next().length > 0
+      $(this).prev().css "display", "none"
       $(this).css "display", "none"
       $(this).next().css "display", "inline"
     else if delta < 0 and $(this).prev().length > 0
@@ -329,7 +343,7 @@ $ ->
     $("#deleteradio_dialog").hide()
 
   ).on("click", ".removeradio", ->
-    $(this).parent().parent().addClass "selected"
+    $(this).parent().addClass "selected"
     $("#removeradio_dialog").show()
 
   ).on("click", "#removeradio_cancel", ->

@@ -194,6 +194,22 @@
         delta = e.originalEvent.wheelDelta;
       }
       if (delta > 0 && $(this).next().length > 0) {
+        $(this).prev().hide();
+        $(this).hide();
+        $(this).next().show();
+      } else if (delta < 0 && $(this).prev().length > 0) {
+        $(this).next().hide();
+        $(this).hide();
+        $(this).prev().show();
+      }
+      return e.preventDefault();
+    }).on("mousewheel_old", ".stack > .stack_image", function(e) {
+      var delta;
+      delta = e.originalEvent.detail;
+      if (!delta) {
+        delta = e.originalEvent.wheelDelta;
+      }
+      if (delta > 0 && $(this).next().length > 0) {
         $(this).prev().css("display", "none");
         $(this).css("display", "none");
         $(this).next().css("display", "inline");
@@ -359,7 +375,7 @@
       $(".selected").removeClass("selected");
       return $("#deleteradio_dialog").hide();
     }).on("click", ".removeradio", function() {
-      $(this).parent().parent().addClass("selected");
+      $(this).parent().addClass("selected");
       return $("#removeradio_dialog").show();
     }).on("click", "#removeradio_cancel", function() {
       $(".selected").removeClass("selected");
