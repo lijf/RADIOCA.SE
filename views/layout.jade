@@ -83,17 +83,17 @@ html
           | Do you want to remove the selected stack/radio from this page?
           br
           br
-          button(type='button', id='deleteradio_confirm')
-            | Delete
-          button(type='button', id='deleteradio_cancel')
+          button#removeradio_confirm(type='button')
+            | Remove radio
+          button#removeradio_cancel(type='button')
             | Cancel
         #deleteradio_dialog.dialog_box(style='display:none')
           | Do you want to delete the selected stack/radio from your collection?
           br
           br
-          button#removeradio_confirm(type='button')
-            | Remove
-          button#removeradio_cancel(type='button')
+          button#deleteradio_confirm(type='button')
+            | Delete
+          button#deleteradio_cancel(type='button')
             | Cancel
     #footer
       a(href='/')

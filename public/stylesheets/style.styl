@@ -13,6 +13,8 @@ a
     float left
     width 49%
     position relative
+.radio
+    position relative
 .removeradio
     cursor pointer
     position absolute
@@ -34,8 +36,6 @@ span#lock
 span#open
     display none
 span#controls
-    display none
-.deleteradio
     display none
 #disclaimer
     clear both
@@ -65,8 +65,10 @@ span#controls
     margin-bottom 0px
 .textedit
     float right
-    margin -20px 5px
+    margin -20px 0px 0px 0px
     display none
+.paper
+    background-image url("/images/paper/Texture0213.jpg")
 .abutton
     cursor pointer
     font-size 1.2em
@@ -136,8 +138,6 @@ span#controls
 .selected
     border-color #f00
     border solid
-.radio
-    position relative
 .stack
     position relative
     overflow hidden
@@ -153,9 +153,8 @@ span#controls
     position absolute
     top 5px
     right 10px
-.caption
-    margin 5px
 .caption>.md
+    background none
     margin-top -15px
     color #888
 .casesh1

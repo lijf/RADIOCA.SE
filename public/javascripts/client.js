@@ -50,7 +50,7 @@
   editfunctions = function() {
     $('#locked').toggle();
     $('#open').toggle();
-    $('.deleteradio').toggle();
+    $('.removeradio').toggle();
     $("#controls").toggle();
     $(".textedit").toggle();
     return $("#addstack").toggle();
@@ -180,14 +180,30 @@
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
       rendermd();
-      if ($(this).html() === "Edit") {
-        return $(this).html("Done");
+      if ($(this).html() === "改") {
+        return $(this).html("关");
       } else {
-        return $(this).html("Edit");
+        return $(this).html("改");
       }
     }).on("blur", ".mdtxt", function() {
       return event.preventDefault();
     }).on("mousewheel", ".stack > .stack_image", function(e) {
+      var delta;
+      delta = e.originalEvent.detail;
+      if (!delta) {
+        delta = e.originalEvent.wheelDelta;
+      }
+      if (delta > 0 && $(this).next().length > 0) {
+        $(this).prev().hide();
+        $(this).hide();
+        $(this).next().show();
+      } else if (delta < 0 && $(this).prev().length > 0) {
+        $(this).next().hide();
+        $(this).hide();
+        $(this).prev().show();
+      }
+      return e.preventDefault();
+    }).on("mousewheel_old", ".stack > .stack_image", function(e) {
       var delta;
       delta = e.originalEvent.detail;
       if (!delta) {
@@ -350,7 +366,7 @@
       $("#uploadform").submit();
       $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
-      $(".radio:last", top.document).append($("<a class=\"deleteradio abutton\" style=\"display:inline\">&#x166d;</a>"));
+      $(".radio:last", top.document).append($("<a class=\"removeradio abutton\" style=\"display:inline\">&#x166d;</a>"));
       return $(".caption:last", top.document).append($("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>"));
     }).on("click", ".deleteradio", function() {
       $(this).parent().addClass("selected");
@@ -413,7 +429,7 @@
       });
     }).on("load", "#postframe", function() {
       var radioID;
-      radioID = $("iframe")[0].contentDocument.body.innerHTML;
+      radioID = $("iframe")[1].contentDocument.body.innerHTML;
       $(".radio:last", top.document).attr("ID", radioID);
       return $.ajax({
         type: "GET",

@@ -67,10 +67,11 @@
       return console.log("Uploading: %" + percent + "\r");
     });
   };
-  removeRadio = function(cid, page, radio) {
+  removeRadio = function(req, res, cid, page, radio) {
     db.del("case:" + cid + ":page:" + page + ":radio:" + radio + ":caption");
     db.lrem("case:" + cid + ":page:" + page + ":radios", 0, radio);
-    return db.srem("image:" + radio, cid);
+    db.srem("image:" + radio, cid);
+    return res.send("OK", 200);
   };
   postImage2 = function(req, res, db) {
     var d, fields, files, i;
@@ -137,9 +138,11 @@
       db.zrem("cases", data.cid);
     }
     db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);
-    data.radios.forEach(function(r, rID) {
-      return db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
-    });
+    if (data.radios) {
+      data.radios.forEach(function(r, rID) {
+        return db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
+      });
+    }
     console.log("saved page");
     return res.send("OK", 200);
   };
@@ -179,6 +182,7 @@
   exports.postNewpage = postNewpage;
   exports.putPage = putPage;
   exports.deletePage = deletePage;
+  exports.removeRadio = removeRadio;
   exports.rendercase = rendercase;
   exports.newpage = newpage;
   exports.postImage2 = postImage2;

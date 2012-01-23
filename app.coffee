@@ -116,16 +116,17 @@ app.get "/cases/:start/:finish", (req, res) ->
     res.send "404", 404  if err or not cases[0]
     sendcases = []
     cases.forEach (theCase, iteration) ->
-      db.hgetall "case:" + theCase + ":page:1", (err, sendcase) ->
-        sendcases[iteration] = sendcase
-        unless cases[iteration + 1]
-          console.log "rendering cases"
-          res.render "cases",
-            title: "Cases"
-            signed_in: req.isAuthenticated()
-            user: req.getAuthDetails().user.username
-            cases: sendcases
-            style: ''
+      db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
+        db.hgetall "case:" + theCase + ":page:" + firstpage, (err, sendcase) ->
+          sendcases[iteration] = sendcase
+          unless cases[iteration + 1]
+            console.log "rendering cases"
+            res.render "cases",
+              title: "Cases"
+              signed_in: req.isAuthenticated()
+              user: req.getAuthDetails().user.username
+              cases: sendcases
+              style: ''
 
 app.get "/case/:id/:page", (req, res) ->
   return res.redirect "back" unless req.isAuthenticated()
@@ -183,12 +184,18 @@ app.post "/case/:id/:page/newpage/old", (req, res) ->
           db.hset "case:" + cid + ":page:" + nextpage, "prevpage", page
           res.send "/case/" + cid + "/" + page, 200
 
-app.delete "/case/:id/:page/:radio", (req, res) ->
-  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-    if editor
-      requestHandlers.removeRadio req.params.id, req.params.page, req.params.radio
-
 app.delete "/case/:id/:page/:radio/old", (req, res) ->
+  cid = req.params.id
+  page = req.params.page
+  radio = req.params.radio
+  db.sismember "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+    if editor
+      db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
+      db.lrem "case:" + cid + ":page:" + page + ":radios", 0, radio
+      db.srem "image:" + radio, cid
+      res.send "OK", 200
+
+app.delete "/case/:id/:page/:radio", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
       db.del "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption"
@@ -384,7 +391,7 @@ app.post "/image/:id/:page/old", (req, res) ->
   db.sadd "image:" + d, req.params.id
   db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
   db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
-  db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "double click to add caption"
+  db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "caption"
   res.send d, 200
   console.log "-> upload done"
   # requestHandlers.postImage2 req, res, db

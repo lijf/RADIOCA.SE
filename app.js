@@ -154,18 +154,20 @@
       }
       sendcases = [];
       return cases.forEach(function(theCase, iteration) {
-        return db.hgetall("case:" + theCase + ":page:1", function(err, sendcase) {
-          sendcases[iteration] = sendcase;
-          if (!cases[iteration + 1]) {
-            console.log("rendering cases");
-            return res.render("cases", {
-              title: "Cases",
-              signed_in: req.isAuthenticated(),
-              user: req.getAuthDetails().user.username,
-              cases: sendcases,
-              style: ''
-            });
-          }
+        return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
+          return db.hgetall("case:" + theCase + ":page:" + firstpage, function(err, sendcase) {
+            sendcases[iteration] = sendcase;
+            if (!cases[iteration + 1]) {
+              console.log("rendering cases");
+              return res.render("cases", {
+                title: "Cases",
+                signed_in: req.isAuthenticated(),
+                user: req.getAuthDetails().user.username,
+                cases: sendcases,
+                style: ''
+              });
+            }
+          });
         });
       });
     });
@@ -241,14 +243,21 @@
       }
     });
   });
-  app["delete"]("/case/:id/:page/:radio", function(req, res) {
-    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
+  app["delete"]("/case/:id/:page/:radio/old", function(req, res) {
+    var cid, page, radio;
+    cid = req.params.id;
+    page = req.params.page;
+    radio = req.params.radio;
+    return db.sismember("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
-        return requestHandlers.removeRadio(req.params.id, req.params.page, req.params.radio);
+        db.del("case:" + cid + ":page:" + page + ":radio:" + radio + ":caption");
+        db.lrem("case:" + cid + ":page:" + page + ":radios", 0, radio);
+        db.srem("image:" + radio, cid);
+        return res.send("OK", 200);
       }
     });
   });
-  app["delete"]("/case/:id/:page/:radio/old", function(req, res) {
+  app["delete"]("/case/:id/:page/:radio", function(req, res) {
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
         db.del("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption");
@@ -523,7 +532,7 @@
     db.sadd("image:" + d, req.params.id);
     db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", d);
     db.rpush("user:" + req.getAuthDetails().user.username + ":radios", d);
-    db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "double click to add caption");
+    db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "caption");
     res.send(d, 200);
     return console.log("-> upload done");
   });
