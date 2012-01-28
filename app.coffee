@@ -1,10 +1,12 @@
 username = (req, res) ->
   (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+
 loadUser = (req, res, next) ->
   unless req.isAuthenticated()
     res.redirect "back"
   else
     next()
+
 express = require("express")
 formidable = require("formidable")
 exec = require("child_process").exec
@@ -158,7 +160,6 @@ app.get "/signed_in", (req, res) ->
           req.logout()
           res.send "not allowed", 403
 
-
 app.post "/case/:id/:page/newpage", (req, res) ->
   console.log "newpage triggered"
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
@@ -209,7 +210,6 @@ app.delete "/case/:id/:page", (req, res) ->
     if editor
       requestHandlers.deletePage req.params.id, req.params.page
       res.send "OK", 200
-
 
 app.delete "/case/:id/:page_old", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
@@ -366,7 +366,7 @@ app.delete "/image/:id", (req, res) ->
     if owner
       db.smembers "image:" + req.params.id, (err, pages) ->
         console.log pages
-        return res.send "radio still connected to page", 403 unless pages.length == 0
+#        return res.send "radio still connected to page", 403 unless pages.length == 0
         db.del "radio:" + req.params.id
         db.del "image:" + req.params.id
         db.del "image:" + req.params.id + ":users"

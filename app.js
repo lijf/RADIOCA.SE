@@ -497,9 +497,6 @@
       if (owner) {
         return db.smembers("image:" + req.params.id, function(err, pages) {
           console.log(pages);
-          if (pages.length !== 0) {
-            return res.send("radio still connected to page", 403);
-          }
           db.del("radio:" + req.params.id);
           db.del("image:" + req.params.id);
           db.del("image:" + req.params.id + ":users");
