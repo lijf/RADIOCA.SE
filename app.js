@@ -1,5 +1,6 @@
 (function() {
   var app, db, easyoauth, exec, express, formidable, fs, loadUser, port, redis, requestHandlers, spawn, sys, url, username, util;
+
   username = function(req, res) {
     if (req.isAuthenticated()) {
       return req.getAuthDetails().user.username;
@@ -7,6 +8,7 @@
       return "0";
     }
   };
+
   loadUser = function(req, res, next) {
     if (!req.isAuthenticated()) {
       return res.redirect("back");
@@ -14,19 +16,33 @@
       return next();
     }
   };
+
   express = require("express");
+
   formidable = require("formidable");
+
   exec = require("child_process").exec;
+
   spawn = require("child_process").spawn;
+
   url = require("url");
+
   fs = require("fs");
+
   requestHandlers = require("./requestHandlers");
+
   sys = require("sys");
+
   util = require("util");
+
   redis = require("redis");
+
   db = redis.createClient();
+
   easyoauth = require("easy-oauth");
+
   app = module.exports = express.createServer();
+
   app.configure(function() {
     app.set("views", __dirname + "/views");
     app.set("view engine", "jade");
@@ -44,23 +60,29 @@
     app.use(express.favicon(__dirname + "/public/favicon.ico"));
     return app.use(express.static(__dirname + "/public"));
   });
+
   delete express.bodyParser.parse['multipart/form-data'];
+
   app.configure("development", function() {
     return app.use(express.errorHandler({
       dumpExceptions: true,
       showStack: true
     }));
   });
+
   app.configure("production", function() {
     return app.use(express.errorHandler());
   });
+
   app.error(function(err, req, res, next) {
     sys.puts("APP.ERROR:" + sys.inspect(err));
     return next(err);
   });
+
   db.on("error", function(err) {
     return console.log("Redis Error " + err);
   });
+
   app.get("/", function(req, res) {
     return res.render("index", {
       title: "Home",
@@ -69,10 +91,9 @@
       style: ''
     });
   });
+
   app.get("/newcase", function(req, res) {
-    if (!req.isAuthenticated()) {
-      return res.redirect("/");
-    }
+    if (!req.isAuthenticated()) return res.redirect("/");
     return res.render("newcase", {
       title: "Create new case",
       signed_in: req.isAuthenticated(),
@@ -80,11 +101,10 @@
       style: ''
     });
   });
+
   app.post("/newcase", function(req, res) {
     var data;
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     data = req.body;
     data.creator = req.getAuthDetails().user.username;
     data.texts = [""];
@@ -97,9 +117,7 @@
       data.cid = cid;
       db.incr("case:" + cid + ":pages");
       db.zadd("casesLastEdit", data.lastEdit, cid);
-      if (data.listed === "true") {
-        db.zadd("listed", data.created, cid);
-      }
+      if (data.listed === "true") db.zadd("listed", data.created, cid);
       db.zadd("cases:" + data.creator, data.created, cid);
       db.set("case:" + cid + ":firstpage", "1");
       return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
@@ -110,11 +128,10 @@
       });
     });
   });
+
   app.post("/newcase_old", function(req, res) {
     var data;
-    if (!req.isAuthenticated()) {
-      return res.redirect("back");
-    }
+    if (!req.isAuthenticated()) return res.redirect("back");
     data = req.body;
     data.creator = req.getAuthDetails().user.username;
     console.log(data);
@@ -127,9 +144,7 @@
       data.cid = cid;
       db.incr("case:" + cid + ":pages");
       db.zadd("casesLastEdit", data.lastEdit, cid);
-      if (data.listed === "true") {
-        db.zadd("listed", data.created, cid);
-      }
+      if (data.listed === "true") db.zadd("listed", data.created, cid);
       db.zadd("cases:" + data.creator, data.created, cid);
       db.set("case:" + cid + ":firstpage", "1");
       return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
@@ -140,18 +155,15 @@
       });
     });
   });
+
   app.get("/cases/:start/:finish", function(req, res) {
     var end, start;
-    if (!req.isAuthenticated()) {
-      return res.redirect("back");
-    }
+    if (!req.isAuthenticated()) return res.redirect("back");
     start = parseInt(req.params.start, 10);
     end = parseInt(req.params.finish, 10);
     return db.zrange("listed", start, end, function(err, cases) {
       var sendcases;
-      if (err || !cases[0]) {
-        res.send("404", 404);
-      }
+      if (err || !cases[0]) res.send("404", 404);
       sendcases = [];
       return cases.forEach(function(theCase, iteration) {
         return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
@@ -172,20 +184,18 @@
       });
     });
   });
+
   app.get("/case/:id/:page", function(req, res) {
-    if (!req.isAuthenticated()) {
-      return res.redirect("back");
-    }
+    if (!req.isAuthenticated()) return res.redirect("back");
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(err, theCase) {
-        if (err || !theCase.cid) {
-          return res.redirect("back");
-        }
+        if (err || !theCase.cid) return res.redirect("back");
         console.log("rendering case");
         return requestHandlers.rendercase(req, res, theCase, editor, db);
       });
     });
   });
+
   app.get("/signed_in", function(req, res) {
     var uid, userdata;
     uid = req.getAuthDetails().user.user_id;
@@ -210,14 +220,14 @@
       }
     });
   });
+
   app.post("/case/:id/:page/newpage", function(req, res) {
     console.log("newpage triggered");
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
-      if (editor) {
-        return requestHandlers.postNewpage(req, res);
-      }
+      if (editor) return requestHandlers.postNewpage(req, res);
     });
   });
+
   app.post("/case/:id/:page/newpage/old", function(req, res) {
     console.log("newpage triggered");
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
@@ -243,6 +253,7 @@
       }
     });
   });
+
   app["delete"]("/case/:id/:page/:radio/old", function(req, res) {
     var cid, page, radio;
     cid = req.params.id;
@@ -257,6 +268,7 @@
       }
     });
   });
+
   app["delete"]("/case/:id/:page/:radio", function(req, res) {
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
@@ -267,10 +279,9 @@
       }
     });
   });
+
   app["delete"]("/case/:id/:page", function(req, res) {
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
         requestHandlers.deletePage(req.params.id, req.params.page);
@@ -278,6 +289,7 @@
       }
     });
   });
+
   app["delete"]("/case/:id/:page_old", function(req, res) {
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
@@ -293,24 +305,21 @@
       }
     });
   });
+
   app.get("/sign_out", function(req, res) {
     req.logout();
     return res.send("<button id=\"twitbutt\">Sign in with twitter</button>");
   });
+
   app.put("/case/:id/:page", function(req, res) {
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
-      if (editor) {
-        return requestHandlers.putPage(req, res);
-      }
+      if (editor) return requestHandlers.putPage(req, res);
     });
   });
+
   app.put("/case/:id/:page/old", function(req, res) {
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       var data;
       if (editor) {
@@ -334,6 +343,7 @@
       }
     });
   });
+
   app.get("/readme", function(req, res) {
     return res.render("readme", {
       title: "README",
@@ -342,6 +352,7 @@
       style: ''
     });
   });
+
   app.get("/colophon", function(req, res) {
     return res.render("colophon", {
       title: "Colophon",
@@ -350,6 +361,7 @@
       style: ''
     });
   });
+
   app.get("/disclaimer", function(req, res) {
     return res.render("disclaimer", {
       title: "Disclaimer",
@@ -358,6 +370,7 @@
       style: ''
     });
   });
+
   app.get("/about", function(req, res) {
     return res.render("about", {
       title: "About",
@@ -366,11 +379,10 @@
       style: ''
     });
   });
+
   app.get("/radios/:user", function(req, res) {
     var sendradios;
-    if (!req.isAuthenticated()) {
-      return res.redirect("/");
-    }
+    if (!req.isAuthenticated()) return res.redirect("/");
     if (!req.getAuthDetails().user.username !== req.params.user) {
       sendradios = [];
       return db.lrange("user:" + req.params.user + ":radios", 0, -1, function(err, radios) {
@@ -396,11 +408,10 @@
       });
     }
   });
+
   app.get("/radio/:id", function(req, res) {
     var radio;
-    if (!req.isAuthenticated()) {
-      return res.redirect("/");
-    }
+    if (!req.isAuthenticated()) return res.redirect("/");
     radio = {};
     radio.ID = req.params.id;
     return db.lrange("radio:" + req.params.id, 0, -1, function(err, images) {
@@ -413,10 +424,9 @@
       });
     });
   });
+
   app.get("/case/:id/:page/feedback", function(req, res) {
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
       var pagefeedback;
       pagefeedback = [];
@@ -428,27 +438,23 @@
       });
     });
   });
+
   app.get("/img/:img", function(req, res) {
     var image;
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     image = __dirname + "/img/" + req.params.img;
     return fs.readFile(image, "binary", function(error, file) {
-      if (error) {
-        return res.send("huh?", 404);
-      }
+      if (error) return res.send("huh?", 404);
       res.statusCode = 200;
       res.setHeader("Content-Type", "image/jpeg");
       res.write(file, "binary");
       return res.end();
     });
   });
+
   app.post("/case/:id/:page/feedback", function(req, res) {
     var fb, storefeedback;
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     storefeedback = {};
     storefeedback.feedback = req.body.feedback;
     storefeedback.uid = req.getAuthDetails().user.user_id;
@@ -456,24 +462,20 @@
     storefeedback.time = new Date().toString();
     fb = JSON.stringify(storefeedback);
     db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":feedback", fb, function(err) {
-      if (err) {
-        return console.log(err);
-      }
+      if (err) return console.log(err);
     });
     return res.send("OK", 200);
   });
+
   app.post("/image/:id/:page", function(req, res) {
     console.log("POST /image/ called");
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return requestHandlers.postImage2(req, res, db);
   });
+
   app["delete"]("/case/:id", function(req, res) {
     console.log("DELETE /case/" + req.params.id + " called");
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("radio:" + req.params.id(":users", req.getAuthDetails().user.user_id, function(err, owner) {
       if (owner) {
         return db.get("case:" + req.params.id + ":pages", function(err, pages) {
@@ -487,11 +489,10 @@
       }
     }));
   });
+
   app["delete"]("/image/:id", function(req, res) {
     console.log("DELETE /image/" + req.params.id + " called");
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("radio:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
       if (owner) {
         return db.smembers("image:" + req.params.id, function(err, pages) {
@@ -509,13 +510,12 @@
       }
     });
   });
+
   app.post("/image/:id/:page/old", function(req, res) {
     var d, i;
     console.log("POST /image/ called");
     d = new Date().getTime().toString();
-    if (!req.isAuthenticated()) {
-      return res.send("FORBIDDEN", 403);
-    }
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     console.dir(req.body);
     i = 0;
     req.body.userfile.forEach(function(file, fid) {
@@ -536,8 +536,11 @@
     res.send(d, 200);
     return console.log("-> upload done");
   });
+
   port = process.env.PORT || 3000;
+
   app.listen(port, function() {
     return console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
   });
+
 }).call(this);

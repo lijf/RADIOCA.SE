@@ -1,3 +1,8 @@
+#these variables are for touchscroll,
+lastY = 0
+samp = 0
+visimg = $(".stack_image")
+
 change_url = (url) ->
   document.location = url
 
@@ -54,7 +59,6 @@ getfeedback = ->
         
 touchscroll = ->
   $(".stack > .stack_image").each ->
-    visimg = $(this)
     @ontouchstart = (e) ->
       visimg = $(this)
     @ontouchmove = (e) ->
@@ -64,14 +68,14 @@ touchscroll = ->
           samp = 0
           touch = e.touches[0]
           if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
-            visimg.prev().show()
-            visimg.hide()
             visimg.next().hide()
+            visimg.hide()
+            visimg.prev().show()
             visimg = visimg.prev()
           else if visimg.next().length > 0
-            visimg.next().show()
-            visimg.hide()
             visimg.prev().hide()
+            visimg.hide()
+            visimg.next().show()
             visimg = visimg.next()
           return lastY = parseInt(touch.pageY, 10)
         e.preventDefault()
@@ -111,9 +115,8 @@ spiderpage = ->
 
 sessionButton = (user) ->
   $("#session").html "<button id=\"sign_out\">Sign out " + user + "</button>"
+
 converter = new Showdown.converter()
-lastY = 0
-samp = 0
 
 authcallback = (data) ->
   $.ajax
@@ -143,12 +146,34 @@ $ ->
   $(".stack").children(":first-child").show()
 
   $(document
+  
+#  ).on("ontouchstart", ".stack > .stack_image", ->
+#      visimg = $(this)
+#
+#  ).on("ontouchmove", ".stack > .stack_image", (e) ->
+#      if e.targetTouches.length is 1
+#        samp++
+#        if samp is 3
+#          samp = 0
+#          touch = e.touches[0]
+#          if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
+#            visimg.prev().show()
+#            visimg.hide()
+#            visimg.next().hide()
+#            visimg = visimg.prev()
+#          else if visimg.next().length > 0
+#            visimg.next().show()
+#            visimg.hide()
+#            visimg.prev().hide()
+#            visimg = visimg.next()
+#          return lastY = parseInt(touch.pageY, 10)
+#        e.preventDefault()
 
   ).on("click", ".textedit", ->
+    (if $(this).html() is "改" then $(this).html("关") else $(this).html("改"))
     $(this).siblings(".mdtxt").toggle().focus().autogrow()
     $(this).siblings(".md").toggle()
     rendermd()
-    (if $(this).html() is "改" then $(this).html("关") else $(this).html("改"))
 
   ).on("blur", ".mdtxt", ->
     event.preventDefault()

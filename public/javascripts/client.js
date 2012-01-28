@@ -1,8 +1,16 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll;
+  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg;
+
+  lastY = 0;
+
+  samp = 0;
+
+  visimg = $(".stack_image");
+
   change_url = function(url) {
     return document.location = url;
   };
+
   newpage = function(type) {
     var json;
     json = {};
@@ -28,6 +36,7 @@
       }
     });
   };
+
   newcase = function(type) {
     var json;
     json = {};
@@ -47,6 +56,7 @@
       }
     });
   };
+
   editfunctions = function() {
     $('#locked').toggle();
     $('#open').toggle();
@@ -55,6 +65,7 @@
     $(".textedit").toggle();
     return $("#addstack").toggle();
   };
+
   getfeedback = function() {
     return $.ajax({
       type: "GET",
@@ -69,29 +80,28 @@
       }
     });
   };
+
   touchscroll = function() {
     return $(".stack > .stack_image").each(function() {
-      var visimg;
-      visimg = $(this);
       this.ontouchstart = function(e) {
         return visimg = $(this);
       };
       return this.ontouchmove = function(e) {
-        var lastY, samp, touch;
+        var touch;
         if (e.targetTouches.length === 1) {
           samp++;
           if (samp === 3) {
             samp = 0;
             touch = e.touches[0];
             if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
-              visimg.prev().show();
-              visimg.hide();
               visimg.next().hide();
+              visimg.hide();
+              visimg.prev().show();
               visimg = visimg.prev();
             } else if (visimg.next().length > 0) {
-              visimg.next().show();
-              visimg.hide();
               visimg.prev().hide();
+              visimg.hide();
+              visimg.next().show();
               visimg = visimg.next();
             }
             return lastY = parseInt(touch.pageY, 10);
@@ -101,6 +111,7 @@
       };
     });
   };
+
   rendermd = function() {
     return $(".md").html(function() {
       var markdown;
@@ -108,11 +119,13 @@
       return converter.makeHtml(markdown);
     });
   };
+
   getTitle = function() {
     var pattern;
     pattern = /[^#+].+/;
     return $("#title>.txt>.mdtxt").val().match(pattern);
   };
+
   pageMeta = function() {
     var json;
     json = {};
@@ -121,6 +134,7 @@
     json.created = $("#created").val();
     return json;
   };
+
   spiderpage = function() {
     var json;
     json = pageMeta();
@@ -136,12 +150,13 @@
     }).get();
     return json;
   };
+
   sessionButton = function(user) {
     return $("#session").html("<button id=\"sign_out\">Sign out " + user + "</button>");
   };
+
   converter = new Showdown.converter();
-  lastY = 0;
-  samp = 0;
+
   authcallback = function(data) {
     return $.ajax({
       url: "/signed_in",
@@ -156,6 +171,7 @@
       }
     });
   };
+
   savepage = function() {
     return $.ajax({
       type: "PUT",
@@ -172,27 +188,26 @@
       }
     });
   };
+
   $(function() {
     rendermd();
     touchscroll();
     $(".stack").children(":first-child").show();
     $(document).on("click", ".textedit", function() {
+      if ($(this).html() === "改") {
+        $(this).html("关");
+      } else {
+        $(this).html("改");
+      }
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
-      rendermd();
-      if ($(this).html() === "改") {
-        return $(this).html("关");
-      } else {
-        return $(this).html("改");
-      }
+      return rendermd();
     }).on("blur", ".mdtxt", function() {
       return event.preventDefault();
     }).on("mousewheel", ".stack > .stack_image", function(e) {
       var delta;
       delta = e.originalEvent.detail;
-      if (!delta) {
-        delta = e.originalEvent.wheelDelta;
-      }
+      if (!delta) delta = e.originalEvent.wheelDelta;
       if (delta > 0 && $(this).next().length > 0) {
         $(this).prev().hide();
         $(this).hide();
@@ -206,9 +221,7 @@
     }).on("mousewheel_old", ".stack > .stack_image", function(e) {
       var delta;
       delta = e.originalEvent.detail;
-      if (!delta) {
-        delta = e.originalEvent.wheelDelta;
-      }
+      if (!delta) delta = e.originalEvent.wheelDelta;
       if (delta > 0 && $(this).next().length > 0) {
         $(this).prev().css("display", "none");
         $(this).css("display", "none");
@@ -531,4 +544,5 @@
       });
     };
   });
+
 }).call(this);
