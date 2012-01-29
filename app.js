@@ -87,8 +87,7 @@
     return res.render("index", {
       title: "Home",
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
-      style: ''
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
     });
   });
 
@@ -97,8 +96,7 @@
     return res.render("newcase", {
       title: "Create new case",
       signed_in: req.isAuthenticated(),
-      user: req.getAuthDetails().user.username,
-      style: ''
+      user: req.getAuthDetails().user.username
     });
   });
 
@@ -163,7 +161,7 @@
     end = parseInt(req.params.finish, 10);
     return db.zrange("listed", start, end, function(err, cases) {
       var sendcases;
-      if (err || !cases[0]) res.send("404", 404);
+      if (err || !cases[0]) res.send(444);
       sendcases = [];
       return cases.forEach(function(theCase, iteration) {
         return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
@@ -175,8 +173,7 @@
                 title: "Cases",
                 signed_in: req.isAuthenticated(),
                 user: req.getAuthDetails().user.username,
-                cases: sendcases,
-                style: ''
+                cases: sendcases
               });
             }
           });
@@ -254,21 +251,6 @@
     });
   });
 
-  app["delete"]("/case/:id/:page/:radio/old", function(req, res) {
-    var cid, page, radio;
-    cid = req.params.id;
-    page = req.params.page;
-    radio = req.params.radio;
-    return db.sismember("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
-      if (editor) {
-        db.del("case:" + cid + ":page:" + page + ":radio:" + radio + ":caption");
-        db.lrem("case:" + cid + ":page:" + page + ":radios", 0, radio);
-        db.srem("image:" + radio, cid);
-        return res.send("OK", 200);
-      }
-    });
-  });
-
   app["delete"]("/case/:id/:page/:radio", function(req, res) {
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
@@ -290,22 +272,6 @@
     });
   });
 
-  app["delete"]("/case/:id/:page_old", function(req, res) {
-    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
-      if (editor) {
-        db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(err, theCase) {
-          if (theCase.prevpage === "0") {
-            db.set("case:" + req.params.id + ":firstpage", theCase.nextpage);
-          }
-          db.hset("case:" + req.params.id + ":page:" + theCase.prevpage, "nextpage", theCase.nextpage);
-          db.hset("case:" + req.params.id + ":page:" + theCase.nextpage, "prevpage", theCase.prevpage);
-          return db.del("case:" + req.params.id + ":page:" + req.params.page);
-        });
-        return res.send("OK", 200);
-      }
-    });
-  });
-
   app.get("/sign_out", function(req, res) {
     req.logout();
     return res.send("<button id=\"twitbutt\">Sign in with twitter</button>");
@@ -318,65 +284,11 @@
     });
   });
 
-  app.put("/case/:id/:page/old", function(req, res) {
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
-    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
-      var data;
-      if (editor) {
-        data = req.body;
-        console.dir(data);
-        data.cid = req.params.id;
-        data.lastEdit = new Date().getTime();
-        data.creator = req.getAuthDetails().user.username;
-        db.zadd("casesLastEdit", data.lastEdit, data.cid);
-        if (data.private === "false") {
-          db.zadd("cases", data.created, data.cid);
-        } else {
-          db.zrem("cases", data.cid);
-        }
-        db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);
-        data.radios.forEach(function(r, rID) {
-          return db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
-        });
-        console.log("saved page");
-        return res.send("OK", 200);
-      }
-    });
-  });
-
-  app.get("/readme", function(req, res) {
-    return res.render("readme", {
-      title: "README",
+  app.get("/:pagename", function(req, res) {
+    return res.render(req.params.pagename, {
+      title: req.params.pagename,
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
-      style: ''
-    });
-  });
-
-  app.get("/colophon", function(req, res) {
-    return res.render("colophon", {
-      title: "Colophon",
-      signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
-      style: ''
-    });
-  });
-
-  app.get("/disclaimer", function(req, res) {
-    return res.render("disclaimer", {
-      title: "Disclaimer",
-      signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
-      style: ''
-    });
-  });
-
-  app.get("/about", function(req, res) {
-    return res.render("about", {
-      title: "About",
-      signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
-      style: ''
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
     });
   });
 
@@ -399,8 +311,7 @@
                 title: "Radios - " + req.params.user,
                 user: req.getAuthDetails().user.username,
                 signed_in: req.isAuthenticated(),
-                radios: sendradios,
-                style: ''
+                radios: sendradios
               });
             }
           });
@@ -426,7 +337,7 @@
   });
 
   app.get("/case/:id/:page/feedback", function(req, res) {
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
+    if (!req.isAuthenticated()) return res.send(444);
     return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
       var pagefeedback;
       pagefeedback = [];
@@ -441,10 +352,10 @@
 
   app.get("/img/:img", function(req, res) {
     var image;
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
+    if (!req.isAuthenticated()) return res.send(444);
     image = __dirname + "/img/" + req.params.img;
-    return fs.readFile(image, "binary", function(error, file) {
-      if (error) return res.send("huh?", 404);
+    return fs.readFile(image, "binary", function(err, file) {
+      if (err) return res.send(444);
       res.statusCode = 200;
       res.setHeader("Content-Type", "image/jpeg");
       res.write(file, "binary");
@@ -454,7 +365,7 @@
 
   app.post("/case/:id/:page/feedback", function(req, res) {
     var fb, storefeedback;
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
+    if (!req.isAuthenticated()) return res.send(444);
     storefeedback = {};
     storefeedback.feedback = req.body.feedback;
     storefeedback.uid = req.getAuthDetails().user.user_id;
@@ -469,7 +380,7 @@
 
   app.post("/image/:id/:page", function(req, res) {
     console.log("POST /image/ called");
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
+    if (!req.isAuthenticated()) return res.send(444);
     return requestHandlers.postImage2(req, res, db);
   });
 
@@ -506,32 +417,6 @@
         });
       }
     });
-  });
-
-  app.post("/image/:id/:page/old", function(req, res) {
-    var d, i;
-    console.log("POST /image/ called");
-    d = new Date().getTime().toString();
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
-    console.dir(req.body);
-    i = 0;
-    req.body.userfile.forEach(function(file, fid) {
-      var filename;
-      if (file.type = "image/jpeg") {
-        filename = "/img/" + d + "." + i + ".jpg";
-        console.log(file.name);
-        fs.rename(file.path, __dirname + filename);
-        db.rpush("radio:" + d, filename);
-        console.log(filename, i);
-        return i++;
-      }
-    });
-    db.sadd("image:" + d, req.params.id);
-    db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", d);
-    db.rpush("user:" + req.getAuthDetails().user.username + ":radios", d);
-    db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "caption");
-    res.send(d, 200);
-    return console.log("-> upload done");
   });
 
   port = process.env.PORT || 3000;

@@ -56,7 +56,6 @@ app.get "/", (req, res) ->
     title: "Home"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-    style: ''
 
 app.get "/newcase", (req, res) ->
   return res.redirect "/" unless req.isAuthenticated()
@@ -64,7 +63,6 @@ app.get "/newcase", (req, res) ->
     title: "Create new case"
     signed_in: req.isAuthenticated()
     user: req.getAuthDetails().user.username
-    style: ''
 
 app.post "/newcase", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
@@ -115,7 +113,7 @@ app.get "/cases/:start/:finish", (req, res) ->
   start = parseInt(req.params.start, 10)
   end = parseInt(req.params.finish, 10)
   db.zrange "listed", start, end, (err, cases) ->
-    res.send "404", 404  if err or not cases[0]
+    res.send 444  if err or not cases[0]
     sendcases = []
     cases.forEach (theCase, iteration) ->
       db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
@@ -128,7 +126,6 @@ app.get "/cases/:start/:finish", (req, res) ->
               signed_in: req.isAuthenticated()
               user: req.getAuthDetails().user.username
               cases: sendcases
-              style: ''
 
 app.get "/case/:id/:page", (req, res) ->
   return res.redirect "back" unless req.isAuthenticated()
@@ -185,16 +182,16 @@ app.post "/case/:id/:page/newpage/old", (req, res) ->
           db.hset "case:" + cid + ":page:" + nextpage, "prevpage", page
           res.send "/case/" + cid + "/" + page, 200
 
-app.delete "/case/:id/:page/:radio/old", (req, res) ->
-  cid = req.params.id
-  page = req.params.page
-  radio = req.params.radio
-  db.sismember "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-    if editor
-      db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
-      db.lrem "case:" + cid + ":page:" + page + ":radios", 0, radio
-      db.srem "image:" + radio, cid
-      res.send "OK", 200
+#app.delete "/case/:id/:page/:radio/old", (req, res) ->
+#  cid = req.params.id
+#  page = req.params.page
+#  radio = req.params.radio
+#  db.sismember "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+#    if editor
+#      db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
+#      db.lrem "case:" + cid + ":page:" + page + ":radios", 0, radio
+#      db.srem "image:" + radio, cid
+#      res.send "OK", 200
 
 app.delete "/case/:id/:page/:radio", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
@@ -211,15 +208,15 @@ app.delete "/case/:id/:page", (req, res) ->
       requestHandlers.deletePage req.params.id, req.params.page
       res.send "OK", 200
 
-app.delete "/case/:id/:page_old", (req, res) ->
-  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-    if editor
-      db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (err, theCase) ->
-        db.set "case:" + req.params.id + ":firstpage", theCase.nextpage  if theCase.prevpage is "0"
-        db.hset "case:" + req.params.id + ":page:" + theCase.prevpage, "nextpage", theCase.nextpage
-        db.hset "case:" + req.params.id + ":page:" + theCase.nextpage, "prevpage", theCase.prevpage
-        db.del "case:" + req.params.id + ":page:" + req.params.page
-      res.send "OK", 200
+#app.delete "/case/:id/:page_old", (req, res) ->
+#  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+#    if editor
+#      db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (err, theCase) ->
+#        db.set "case:" + req.params.id + ":firstpage", theCase.nextpage  if theCase.prevpage is "0"
+#        db.hset "case:" + req.params.id + ":page:" + theCase.prevpage, "nextpage", theCase.nextpage
+#        db.hset "case:" + req.params.id + ":page:" + theCase.nextpage, "prevpage", theCase.prevpage
+#        db.del "case:" + req.params.id + ":page:" + req.params.page
+#      res.send "OK", 200
 
 app.get "/sign_out", (req, res) ->
   req.logout()
@@ -231,53 +228,31 @@ app.put "/case/:id/:page", (req, res) ->
     if editor
       requestHandlers.putPage req, res
 
-app.put "/case/:id/:page/old", (req, res) ->
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
-  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-    if editor
-      data = req.body
-      console.dir data
-      data.cid = req.params.id
-      data.lastEdit = new Date().getTime()
-      data.creator = req.getAuthDetails().user.username
-      db.zadd "casesLastEdit", data.lastEdit, data.cid
-      if data.private is "false"
-        db.zadd "cases", data.created, data.cid
-      else
-        db.zrem "cases", data.cid
-      db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
-      data.radios.forEach (r, rID) ->
-        db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
-      console.log "saved page"
-      res.send "OK", 200
+#app.put "/case/:id/:page/old", (req, res) ->
+#  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+#  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+#    if editor
+#      data = req.body
+#      console.dir data
+#      data.cid = req.params.id
+#      data.lastEdit = new Date().getTime()
+#      data.creator = req.getAuthDetails().user.username
+#      db.zadd "casesLastEdit", data.lastEdit, data.cid
+#      if data.private is "false"
+#        db.zadd "cases", data.created, data.cid
+#      else
+#        db.zrem "cases", data.cid
+#      db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
+#      data.radios.forEach (r, rID) ->
+#        db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
+#      console.log "saved page"
+#      res.send "OK", 200
 
-app.get "/readme", (req, res) ->
-  res.render "readme",
-    title: "README"
+app.get "/:pagename", (req, res) ->
+  res.render req.params.pagename,
+    title: req.params.pagename
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-    style: ''
-
-app.get "/colophon", (req, res) ->
-  res.render "colophon",
-    title: "Colophon"
-    signed_in: req.isAuthenticated()
-    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-    style: ''
-
-app.get "/disclaimer", (req, res) ->
-  res.render "disclaimer",
-    title: "Disclaimer"
-    signed_in: req.isAuthenticated()
-    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-    style: ''
-
-app.get "/about", (req, res) ->
-  res.render "about",
-    title: "About"
-    signed_in: req.isAuthenticated()
-    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-    style: ''
 
 app.get "/radios/:user", (req, res) ->
   return res.redirect("/")  unless req.isAuthenticated()
@@ -300,7 +275,6 @@ app.get "/radios/:user", (req, res) ->
               user: req.getAuthDetails().user.username
               signed_in: req.isAuthenticated()
               radios: sendradios
-              style: ''
 
 app.get "/radio/:id", (req, res) ->
   return res.redirect("/")  unless req.isAuthenticated()
@@ -315,7 +289,7 @@ app.get "/radio/:id", (req, res) ->
     object: radio
 
 app.get "/case/:id/:page/feedback", (req, res) ->
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  return res.send 444 unless req.isAuthenticated()
   db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
     pagefeedback = []
     feedback.forEach (fb, fbID) ->
@@ -324,17 +298,17 @@ app.get "/case/:id/:page/feedback", (req, res) ->
     object: pagefeedback
 
 app.get "/img/:img", (req, res) ->
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  return res.send 444 unless req.isAuthenticated()
   image = __dirname + "/img/" + req.params.img
-  fs.readFile image, "binary", (error, file) ->
-    return res.send("huh?", 404)  if error
+  fs.readFile image, "binary", (err, file) ->
+    return res.send 444  if err
     res.statusCode = 200
     res.setHeader "Content-Type", "image/jpeg"
     res.write file, "binary"
     res.end()
 
 app.post "/case/:id/:page/feedback", (req, res) ->
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  return res.send 444 unless req.isAuthenticated()
   storefeedback = {}
   storefeedback.feedback = req.body.feedback
   storefeedback.uid = req.getAuthDetails().user.user_id
@@ -348,7 +322,7 @@ app.post "/case/:id/:page/feedback", (req, res) ->
 
 app.post "/image/:id/:page", (req, res) ->
   console.log "POST /image/ called"
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  return res.send 444 unless req.isAuthenticated()
   requestHandlers.postImage2 req, res, db
 
 app.delete "/case/:id", (req, res) ->
@@ -374,27 +348,27 @@ app.delete "/image/:id", (req, res) ->
         db.sadd "deleted_radios", req.params.id
         res.send "OK, radio removed", 200
 
-app.post "/image/:id/:page/old", (req, res) ->
-  console.log "POST /image/ called"
-  d = new Date().getTime().toString()
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
-  console.dir req.body
-  i = 0
-  req.body.userfile.forEach (file, fid) ->
-    if file.type = "image/jpeg"
-      filename = "/img/" + d + "." + i + ".jpg"
-      console.log file.name
-      fs.rename file.path, __dirname + filename
-      db.rpush "radio:" + d, filename
-      console.log filename, i
-      i++
-  db.sadd "image:" + d, req.params.id
-  db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
-  db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
-  db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "caption"
-  res.send d, 200
-  console.log "-> upload done"
-  # requestHandlers.postImage2 req, res, db
+#app.post "/image/:id/:page/old", (req, res) ->
+#  console.log "POST /image/ called"
+#  d = new Date().getTime().toString()
+#  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+#  console.dir req.body
+#  i = 0
+#  req.body.userfile.forEach (file, fid) ->
+#    if file.type = "image/jpeg"
+#      filename = "/img/" + d + "." + i + ".jpg"
+#      console.log file.name
+#      fs.rename file.path, __dirname + filename
+#      db.rpush "radio:" + d, filename
+#      console.log filename, i
+#      i++
+#  db.sadd "image:" + d, req.params.id
+#  db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
+#  db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
+#  db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "caption"
+#  res.send d, 200
+#  console.log "-> upload done"
+#  # requestHandlers.postImage2 req, res, db
 
 port = process.env.PORT or 3000
 app.listen port, ->
