@@ -1,10 +1,16 @@
 (function() {
-  var db, deletePage, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeRadio, render, rendercase, url;
+  var db, deleteCase, deleteCase2, deleteCase3, deletePage, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeRadio, render, rendercase, url;
+
   formidable = require("formidable");
+
   url = require("url");
+
   form = require("connect-form");
+
   redis = require("redis");
+
   db = redis.createClient();
+
   render = function(req, res, theCase, editor) {
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
@@ -25,21 +31,18 @@
       style: theCase.style
     });
   };
+
   rendercase = function(req, res, theCase, editor) {
     return db.get("markdown-help", function(err, data) {
       theCase.mdhelp = JSON.parse(data);
       return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
-        if (radioIDs.length < 1) {
-          return render(req, res, theCase, editor);
-        }
+        if (radioIDs.length < 1) return render(req, res, theCase, editor);
         theCase.radios = [];
         return radioIDs.forEach(function(radioID, ID) {
           return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
             theCase.radios[ID] = [];
             theCase.radios[ID].ID = radioID;
-            if (caption) {
-              theCase.radios[ID].caption = caption;
-            }
+            if (caption) theCase.radios[ID].caption = caption;
             return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
               theCase.radios[ID].images = [];
               images.forEach(function(image, imgID) {
@@ -50,9 +53,7 @@
                 feedback.forEach(function(fb, fbID) {
                   return theCase.feedback[fbID] = fb;
                 });
-                if (!radioIDs[ID + 1]) {
-                  return render(req, res, theCase, editor);
-                }
+                if (!radioIDs[ID + 1]) return render(req, res, theCase, editor);
               });
             });
           });
@@ -60,6 +61,7 @@
       });
     });
   };
+
   postImage = function(req, res, db) {
     return req.form.on("progress", function(bytesReceived, bytesExpected) {
       var percent;
@@ -67,12 +69,14 @@
       return console.log("Uploading: %" + percent + "\r");
     });
   };
+
   removeRadio = function(req, res, cid, page, radio) {
     db.del("case:" + cid + ":page:" + page + ":radio:" + radio + ":caption");
     db.lrem("case:" + cid + ":page:" + page + ":radios", 0, radio);
     db.srem("image:" + radio, cid);
     return res.send("OK", 200);
   };
+
   postImage2 = function(req, res, db) {
     var d, fields, files, i;
     d = new Date().getTime().toString();
@@ -94,36 +98,39 @@
       db.sadd("radio:" + d + ":users", req.getAuthDetails().user_id);
       db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", d);
       db.rpush("user:" + req.getAuthDetails().user.username + ":radios", d);
-      db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "double click to add caption");
+      db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption");
       res.send(d, 200);
       return console.log("-> upload done");
     });
     return form.parse(req, function(err, fields, files) {
-      if (err) {
-        return console.log(err);
-      }
+      if (err) return console.log(err);
     });
   };
+
   deletePage = function(cid, page) {
     db.lrange("case:" + cid + ":page:" + page + ":radios", 0, -1, function(err, radioIDs) {
       var radioID, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = radioIDs.length; _i < _len; _i++) {
-        radioID = radioIDs[_i];
-        _results.push(removeRadio(cid, page, radioID));
+      if (!err) {
+        _results = [];
+        for (_i = 0, _len = radioIDs.length; _i < _len; _i++) {
+          radioID = radioIDs[_i];
+          _results.push(removeRadio(cid, page, radioID));
+        }
+        return _results;
       }
-      return _results;
     });
-    return db.hgetall("case:" + cid + ":page:" + page, function(err, theCase) {
-      if (theCase.prevpage === "0") {
-        db.set("case:" + cid + ":firstpage", theCase.nextpage);
+    return db.hgetall("case:" + cid + ":page:" + page, function(err, thePage) {
+      if (!err) {
+        if (thePage.prevpage === "0") {
+          db.set("case:" + cid + ":firstpage", thePage.nextpage);
+        }
+        db.hset("case:" + cid + ":page:" + thePage.prevpage, "nextpage", thePage.nextpage);
+        db.hset("case:" + cid + ":page:" + thePage.nextpage, "prevpage", thePage.prevpage);
+        return db.del("case:" + cid + ":page:" + page);
       }
-      db.hset("case:" + cid + ":page:" + theCase.prevpage, "nextpage", theCase.nextpage);
-      db.hset("case:" + cid + ":page:" + theCase.nextpage, "prevpage", theCase.prevpage);
-      db.del("case:" + cid + ":page:" + page);
-      return 200;
     });
   };
+
   putPage = function(req, res) {
     var data;
     data = req.body;
@@ -146,6 +153,7 @@
     console.log("saved page");
     return res.send("OK", 200);
   };
+
   postNewpage = function(req, res) {
     var cid, pagedata;
     cid = req.params.id;
@@ -166,6 +174,7 @@
       });
     });
   };
+
   newpage = function(req, res, cid, page, db, pagedata) {
     var trypage;
     trypage = "case:" + cid + ":page:" + page;
@@ -179,12 +188,78 @@
       }
     });
   };
+
+  deleteCase = function(req, res) {
+    var cid;
+    cid = req.params.id;
+    console.log("deleteCase called");
+    db.zrem("listed", cid);
+    db.rpush("deletedCases", cid);
+    return res.send("OK, deleted", 200);
+  };
+
+  deleteCase3 = function(req, res) {
+    var cid;
+    cid = req.params.id;
+    console.log("deleteCase called");
+    return db.get("case:" + cid + ":pages", function(err, pages) {
+      var page;
+      if (!err) {
+        console.log("deleting " + pages + " pages");
+        db.lrange("case:" + cid + ":page:" + page + ":radios", 0, -1, function(err, radioIDs) {
+          var radioID, _i, _len, _results;
+          if (!err) {
+            _results = [];
+            for (_i = 0, _len = radioIDs.length; _i < _len; _i++) {
+              radioID = radioIDs[_i];
+              _results.push(removeRadio(cid, page, radioID));
+            }
+            return _results;
+          }
+        });
+        for (page = 0; 0 <= pages ? page <= pages : page >= pages; 0 <= pages ? page++ : page--) {
+          deletePage(cid, page);
+        }
+        db.zrem("listed", cid);
+        db.del("case:" + cid + ":pages");
+        db.del("case:" + cid + ":users");
+        db.del("case:" + cid + ":firstpage");
+        return res.send("OK, deleted " + cid, 200);
+      }
+    });
+  };
+
+  deleteCase2 = function(req, res, delpage) {
+    var cid;
+    cid = req.params.id;
+    return deletePage(cid, delpage, function(nextpage) {
+      console.log(nextpage);
+      if (nextpage) {
+        console.log("in recursive");
+        return deleteCase(req, res, nextpage);
+      } else {
+        db.zrem("listed", cid);
+        return res.send(200, "Deleted " + cid);
+      }
+    });
+  };
+
+  exports.deleteCase = deleteCase;
+
   exports.postNewpage = postNewpage;
+
   exports.putPage = putPage;
+
   exports.deletePage = deletePage;
+
   exports.removeRadio = removeRadio;
+
   exports.rendercase = rendercase;
+
   exports.newpage = newpage;
+
   exports.postImage2 = postImage2;
+
   exports.postImage = postImage;
+
 }).call(this);

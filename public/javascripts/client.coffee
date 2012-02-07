@@ -192,19 +192,19 @@ $ ->
       $(this).prev().show()
     e.preventDefault()
 
-  ).on("mousewheel_old", ".stack > .stack_image", (e) ->
-    delta = e.originalEvent.detail
-    if !delta
-      delta = e.originalEvent.wheelDelta
-    if delta > 0 and $(this).next().length > 0
-      $(this).prev().css "display", "none"
-      $(this).css "display", "none"
-      $(this).next().css "display", "inline"
-    else if delta < 0 and $(this).prev().length > 0
-      $(this).next().css "display", "none"
-      $(this).css "display", "none"
-      $(this).prev().css "display", "inline"
-    e.preventDefault()
+#  ).on("mousewheel_old", ".stack > .stack_image", (e) ->
+#    delta = e.originalEvent.detail
+#    if !delta
+#      delta = e.originalEvent.wheelDelta
+#    if delta > 0 and $(this).next().length > 0
+#      $(this).prev().css "display", "none"
+#      $(this).css "display", "none"
+#      $(this).next().css "display", "inline"
+#    else if delta < 0 and $(this).prev().length > 0
+#      $(this).next().css "display", "none"
+#      $(this).css "display", "none"
+#      $(this).prev().css "display", "inline"
+#    e.preventDefault()
 
   ).on("click", "#user_settings", ->
     $("#userinfo").toggle()
@@ -279,7 +279,7 @@ $ ->
 
   ).on("click", "#savepage_confirm", ->
     savepage()
-
+  
   ).on("click", "#savepage_cancel", ->
     $("#savepage_dialog").hide()
     
@@ -359,6 +359,26 @@ $ ->
     $(".radio:last", top.document).append $("<a class=\"removeradio abutton\" style=\"display:inline\">&#x166d;</a>")
     $(".caption:last", top.document).append $("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>")
 
+  ).on("click", ".deletecase", ->
+    $(this).addClass "selected"
+    $("#deletecase_dialog").show()
+
+  ).on("click", "#deletecase_cancel", ->
+    $("#deletecase_dialog").hide()
+
+  ).on("click", "#deletecase_confirm", ->
+    targeturl = "/case/" + $(".selected").attr("ID")
+    $.ajax
+      url: targeturl
+      type: "DELETE"
+      statusCode:
+        200: ->
+          window.location.href = window.location.href
+        405: ->
+          alert "NOT ALLOWED"
+          $(".selected").removeClass "selected"
+          $("#deletecase_dialog").hide()
+  
   ).on("click", ".deleteradio", ->
     $(this).parent().addClass "selected"
     $("#deleteradio_dialog").show()

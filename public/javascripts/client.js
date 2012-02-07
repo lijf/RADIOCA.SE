@@ -218,20 +218,6 @@
         $(this).prev().show();
       }
       return e.preventDefault();
-    }).on("mousewheel_old", ".stack > .stack_image", function(e) {
-      var delta;
-      delta = e.originalEvent.detail;
-      if (!delta) delta = e.originalEvent.wheelDelta;
-      if (delta > 0 && $(this).next().length > 0) {
-        $(this).prev().css("display", "none");
-        $(this).css("display", "none");
-        $(this).next().css("display", "inline");
-      } else if (delta < 0 && $(this).prev().length > 0) {
-        $(this).next().css("display", "none");
-        $(this).css("display", "none");
-        $(this).prev().css("display", "inline");
-      }
-      return e.preventDefault();
     }).on("click", "#user_settings", function() {
       return $("#userinfo").toggle();
     }).on("click", "#sign_in", function() {
@@ -381,6 +367,28 @@
       rendermd();
       $(".radio:last", top.document).append($("<a class=\"removeradio abutton\" style=\"display:inline\">&#x166d;</a>"));
       return $(".caption:last", top.document).append($("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>"));
+    }).on("click", ".deletecase", function() {
+      $(this).addClass("selected");
+      return $("#deletecase_dialog").show();
+    }).on("click", "#deletecase_cancel", function() {
+      return $("#deletecase_dialog").hide();
+    }).on("click", "#deletecase_confirm", function() {
+      var targeturl;
+      targeturl = "/case/" + $(".selected").attr("ID");
+      return $.ajax({
+        url: targeturl,
+        type: "DELETE",
+        statusCode: {
+          200: function() {
+            return window.location.href = window.location.href;
+          },
+          405: function() {
+            alert("NOT ALLOWED");
+            $(".selected").removeClass("selected");
+            return $("#deletecase_dialog").hide();
+          }
+        }
+      });
     }).on("click", ".deleteradio", function() {
       $(this).parent().addClass("selected");
       return $("#deleteradio_dialog").show();

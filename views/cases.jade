@@ -12,4 +12,7 @@
       | by:
       a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
         @#{c.creator}
+      - if (c.creator == user) 
+        button.deletecase(ID='#{c.cid}')
+          | DELETE
       br

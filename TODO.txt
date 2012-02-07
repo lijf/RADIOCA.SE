@@ -1,0 +1,13 @@
+Remove case
+  Find first page 
+    Find nextpage 
+      Remove first page
+        Find next-next 
+          Remove next
+
+          So - this is recursive...
+
+function removecase (firstpage)
+  removepage (firstpage) nextpage
+    if nextpage
+      removecase nextpage
