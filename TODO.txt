@@ -11,3 +11,6 @@ function removecase (firstpage)
   removepage (firstpage) nextpage
     if nextpage
       removecase nextpage
+
+
+Uploaded stacks don't automatically show - why? error in response or how it is received? 

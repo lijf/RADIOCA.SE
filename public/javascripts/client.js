@@ -61,9 +61,9 @@
     $('#locked').toggle();
     $('#open').toggle();
     $('.removeradio').toggle();
-    $("#controls").toggle();
     $(".textedit").toggle();
-    return $("#addstack").toggle();
+    $("#addstack").toggle();
+    return $("#controls").toggle();
   };
 
   getfeedback = function() {
@@ -448,7 +448,8 @@
           }
         }
       });
-    }).on("load", "#postframe", function() {
+    });
+    $('#postframe').bind('load', function() {
       var radioID;
       radioID = $("iframe")[1].contentDocument.body.innerHTML;
       $(".radio:last", top.document).attr("ID", radioID);

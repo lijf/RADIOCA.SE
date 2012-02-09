@@ -43,9 +43,9 @@ editfunctions = ->
   $('#locked').toggle()
   $('#open').toggle()
   $('.removeradio').toggle()
-  $("#controls").toggle()
   $(".textedit").toggle()
   $("#addstack").toggle()
+  $("#controls").toggle()
 
 getfeedback = ->
   $.ajax
@@ -432,8 +432,9 @@ $ ->
           $(".selected").removeClass "selected"
           $("#removeradio_dialog").hide()
 
+  )
 
-  ).on "load", "#postframe", ->
+  $('#postframe').bind('load', -> #for some reason this could not be changed to an 'on' event - working with bind though
     radioID = $("iframe")[1].contentDocument.body.innerHTML
     $(".radio:last", top.document).attr "ID", radioID
     $.ajax
@@ -445,6 +446,7 @@ $ ->
           $(".stack:last", top.document).children(":first").show()
           scrollfunction_mw()
           touchscroll()
+  )
 
   $.fn.autogrow = (options) ->
     @filter("textarea", top.document).each ->
