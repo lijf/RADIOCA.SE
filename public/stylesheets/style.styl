@@ -1,4 +1,5 @@
 .control
+    cursor pointer 
     margin 0 10px
     height 24px
 button
@@ -79,15 +80,6 @@ span#controls
 .abutton
     cursor pointer
     font-size 1.2em
-#centerindiv
-    position fixed
-    margin-right -50%
-    Text-align left
-    line-height 150%
-    width 100%
-#centereddiv
-    position relative
-    left 25%
 #container
     margin 0 auto
     width 90%
@@ -120,8 +112,21 @@ span#controls
     font-family "Damion"
 #sl
     position fixed
+#horizon
+    top 35%
+    left 0px
+    width 100%
+    height 1px
+    overflow visible
+    display block
+    position absolute 
 .dialog_box
-    width 50%
+    width 320px
+    position absolute
+    left 50%
+    margin-left -160px
+    top -50%
+    visibility visible
     background #222
     padding 8px
     border 2px
@@ -195,16 +200,12 @@ span#controls
     background-image url("/images/paper/Texture0213.jpg")
     color #006
 @media screen and (max-width: 450px)
-    #centerdiv
-        width 100%
     #markdown-help
         width 100%
     #sl
         display none
     #centereddiv
         left 0
-    .dialog_box
-        width 100%
     #container
         width 100%
     #session
@@ -218,8 +219,6 @@ span#controls
     #texts
         width 100%
 @media screen and (max-width: 585px)
-    #centerdiv
-        width 80%
     .big_logo
         font-size 30pt
 @media screen and (min-width: 1024px)
@@ -232,6 +231,7 @@ span#controls
 #readme
     padding 5%
 #about
+    clear left
     padding 5%
 textarea
     width 99%

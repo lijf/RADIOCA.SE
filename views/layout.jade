@@ -24,71 +24,59 @@ html
         a.session(id='sign_in') Sign in with twitter
       #userinfo.session(style='display:none')
         a(id='sign_out') sign out
-      span#controls
-        img.control#help(src='/icons/question.png')
-        img.control#savepage(src='/icons/disc.png')
-        span#savepage_dialog(style='display:none')
-          button(id='savepage_confirm', type='button')
-            | Save page
-        img.control#deletepage(src='/icons/minus.png')
-        span#deletepage_dialog(style='display:none')
-          button(id='deletepage_confirm', type='button')
-            | Delete Page
-        img.control#newpage(src='/icons/plus.png')
       != body // this renders the body of an individual view
-    #centerindiv
-      #centereddiv
-        #newpage_dialog.dialog_box(style='display:none')
-          h2.damion(style='text-align:left') Create new page
-          h4 - Choose page layout.
-          #pagetypes
-            img.pageimage#newpage_standard(src='/images/standardpage.svg', alt='Standard')
-            img.pageimage#newpage_text(src='/images/textpage.svg', alt='Textpage')
-            img.pageimage#newpage_image(src='/images/imagepage.svg', alt='Imagepage')
-          button#newpage_cancel
-            | Cancel
-        #deletecase_dialog.dialog_box(style='display:none')
-          | Do you want to delete this case?
-          br
-          br
-          button#deletecase_confirm(type='button')
-            | Delete
-          button#deletecase_cancel(type='button')
-            | Cancel
-        #addstack_dialog.dialog_box(style='display:none')
-          | Please choose image(s) to upload.
-          br
-          | If multiple images are uploaded together,
-          br
-          | they will be combined to a stack.
-          br
-          br
-          form#uploadform
-            .fileinputs
-              input.file(type='file', name='userfile', id='userfile', multiple='multiple')
-              .fakefile
-                input
-                button
-                  | Browse
-            input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
-            button(id='addstack_cancel')
-              | cancel
-        #removeradio_dialog.dialog_box(style='display:none')
-          | Do you want to remove the selected stack/radio from this page?
-          br
-          br
-          button#removeradio_confirm(type='button')
-            | Remove radio
-          button#removeradio_cancel(type='button')
-            | Cancel
-        #deleteradio_dialog.dialog_box(style='display:none')
-          | Do you want to delete the selected stack/radio from your collection?
-          br
-          br
-          button#deleteradio_confirm(type='button')
-            | Delete
-          button#deleteradio_cancel(type='button')
-            | Cancel
+    #horizon
+      #newpage_dialog.dialog_box(style='display:none')
+        h2.damion(style='text-align:left') Create new page
+        h4 - Choose page layout.
+        #pagetypes
+          img.pageimage#newpage_standard(src='/images/standardpage.svg', alt='Standard')
+          img.pageimage#newpage_text(src='/images/textpage.svg', alt='Textpage')
+          img.pageimage#newpage_image(src='/images/imagepage.svg', alt='Imagepage')
+        button#newpage_cancel
+          | Cancel
+      #deletecase_dialog.dialog_box(style='display:none')
+        | Do you want to delete this case?
+        br
+        br
+        button#deletecase_confirm(type='button')
+          | Delete
+        button#deletecase_cancel(type='button')
+          | Cancel
+      #addstack_dialog.dialog_box(style='display:none')
+        | Please choose image(s) to upload.
+        br
+        | If multiple images are uploaded together,
+        br
+        | they will be combined to a stack.
+        br
+        br
+        form#uploadform
+          .fileinputs
+            input.file(type='file', name='userfile', id='userfile', multiple='multiple')
+            .fakefile
+              input
+              button
+                | Browse
+          input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
+          button(id='addstack_cancel')
+            | cancel
+      #removeradio_dialog.dialog_box(style='display:none')
+        | Do you want to remove the selected stack/radio from this page?
+        br
+        br
+        button#removeradio_confirm(type='button')
+          | Remove radio
+        button#removeradio_cancel(type='button')
+          | Cancel
+      #deleteradio_dialog.dialog_box(style='display:none')
+        | Do you want to delete the selected stack/radio from your collection?
+        br
+        br
+        button#deleteradio_confirm(type='button')
+          | Delete
+        button#deleteradio_cancel(type='button')
+          | Cancel
     #footer
       a(href='/')
         | Home
