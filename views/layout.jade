@@ -25,23 +25,16 @@ html
       #userinfo.session(style='display:none')
         a(id='sign_out') sign out
       span#controls
-        a.abutton(id='help', title='Help')
-          |  &#x2002; ? &#x2002;
-        a.abutton(id='savepage', title='Save page')
-          | &#x2002; &#x29be; &#x2002;
+        img.control#help(src='/icons/question.png')
+        img.control#savepage(src='/icons/disc.png')
         span#savepage_dialog(style='display:none')
           button(id='savepage_confirm', type='button')
             | Save page
-        a.abutton(id='deletepage', title='Delete page')
-          |  &#x2002; &#x166d; &#x2002;
+        img.control#deletepage(src='/icons/minus.png')
         span#deletepage_dialog(style='display:none')
           button(id='deletepage_confirm', type='button')
             | Delete Page
-        a.abutton(id='newpage', title='New page')
-          |  &#x2002; ＋ &#x2002;
-        a.abutton(id='private_page', title='Private Page')
-          | &#x2002; &#128272;
-        input(type='checkbox', id='private', value='1', name='private')
+        img.control#newpage(src='/icons/plus.png')
       != body // this renders the body of an individual view
     #centerindiv
       #centereddiv

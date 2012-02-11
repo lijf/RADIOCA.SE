@@ -170,7 +170,8 @@ $ ->
 #        e.preventDefault()
 
   ).on("click", ".textedit", ->
-    (if $(this).html() is "改" then $(this).html("关") else $(this).html("改"))
+    src = if $(this).attr('src') == '/icons/pencil.png' then '/icons/tick.png' else '/icons/pencil.png'
+    $(this).attr('src', src)
     $(this).siblings(".mdtxt").toggle().focus().autogrow()
     $(this).siblings(".md").toggle()
     rendermd()

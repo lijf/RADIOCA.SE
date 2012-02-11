@@ -7,11 +7,11 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     @#{creator}
   | &#x2002;
   span#lock
-    a.abutton(id='lock', title='Edit Page')
+    a.abutton#lock(title='Edit Page')
       span#locked
-        | &#128274; &#x2002;
+        img.control(src='/icons/pencil.png')
       span#open
-        | &#128275; &#x2002;
+        img.control(src='/icons/tick.png')
   #created(style='display:none')
     | #{created}
 #title
@@ -19,19 +19,19 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       ##{title}
     .md
-    a.abutton.textedit.session &#x6539;
+    img.control.textedit.session(src='/icons/pencil.png')
 #textpage
   .txt
     textarea.mdtxt(style='display:none')
       #{texts}
     .md
-    a.abutton.textedit.session &#x6539;
+    img.control.textedit.session(src='/icons/pencil.png')
   br
   br
-  a(id='prevpage', href='/case/#{cid}/#{prevpage}', style='float: left')
-    | ◀
-  a(id='nextpage', href='/case/#{cid}/#{nextpage}', style='float: right')
-    | ▶
+  a#prevpage(href='/case/#{cid}/#{prevpage}', style='float: left')
+    img.control(src='/icons/arrow-180.png')
+  a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right')
+    img.control(src='/icons/arrow.png')
 #markdown-help(style='display:none')
   a.session(id='help_cancel')
     | X

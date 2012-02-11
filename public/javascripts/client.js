@@ -194,11 +194,9 @@
     touchscroll();
     $(".stack").children(":first-child").show();
     $(document).on("click", ".textedit", function() {
-      if ($(this).html() === "改") {
-        $(this).html("关");
-      } else {
-        $(this).html("改");
-      }
+      var src;
+      src = $(this).attr('src') === '/icons/pencil.png' ? '/icons/tick.png' : '/icons/pencil.png';
+      $(this).attr('src', src);
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
       return rendermd();

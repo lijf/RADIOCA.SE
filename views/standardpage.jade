@@ -9,9 +9,9 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   span#lock
     a.abutton#lock(title='Edit Page')
       span#locked
-        | &#128274; &#x2002;
+        img.control(src='/icons/pencil.png')
       span#open
-        | &#128275; &#x2002;
+        img.control(src='/icons/tick.png')
   #created(style='display:none')
     | #{created}
 #title
@@ -19,19 +19,19 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       ##{title}
     .md
-    a.abutton.textedit.session 改
+    img.control.textedit.session(src='/icons/pencil.png')
 #texts
   .txt
     textarea.mdtxt(style='display:none')
       #{texts}
     .md
-    a.abutton.textedit.session 改
+    img.control.textedit.session(src='/icons/pencil.png')
   br
   br
   a#prevpage(href='/case/#{cid}/#{prevpage}', style='float: left')
-    | ◀
+    img.control(src='/icons/arrow-180.png')
   a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right')
-    | ▶
+    img.control(src='/icons/arrow.png')
 #radios
   - each r in radios
     .radio(id='#{r.ID}')
@@ -39,16 +39,14 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
         - if (r.images)
           - each i in r.images
             img.stack_image(src='#{i}')
-      a.removeradio.abutton(style='display:none')
-        | &#x166d;
+      img.control.removeradio(style='display:none', src='/icons/cross.png')
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-        a.abutton.textedit.session 改
+        img.control.textedit(src='/icons/pencil.png')
       br
-  a.abutton#addstack(style='display:none')
-    | &#x2295;
+  img.control#addstack(style='display:none', src='/icons/plus.png')
   #markdown-help(style='display:none')
     a.session(id='help_cancel')
       | X
