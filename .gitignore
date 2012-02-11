@@ -7,3 +7,5 @@ dump.rdb
 img
 keys_file.js
 public/stylesheets/style.css
+nginx_access.log
+nginx_error.log
