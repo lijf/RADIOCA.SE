@@ -336,6 +336,14 @@ $ ->
         200: ->
           window.location.replace $("#prevpage").attr("href")
 
+  ).on("click", "#cleanupbutton", ->
+    $.ajax
+      type: "DELETE"
+      url: '/sys/deletedcases'
+      statusCode:
+        200: ->
+          alert "OK, cases deleted"
+
   ).on("click", "#addstack", ->
     $("#addstack_dialog").show()
 
@@ -355,10 +363,10 @@ $ ->
       target: "postframe"
 
     $("#uploadform").submit()
-    $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore "#addstack"
+    $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "edit caption </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore "#addstack"
     rendermd()
-    $(".radio:last", top.document).append $("<a class=\"removeradio abutton\" style=\"display:inline\">&#x166d;</a>")
-    $(".caption:last", top.document).append $("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>")
+    $(".radio:last", top.document).append $("<img class=\"control removeradio\" src=\'/icons/cross.png\'>")
+    $(".caption:last", top.document).append $("<img class=\"control textedit\" src=\'/icons/pencil.png\' style=\'display:inline\'>")
 
   ).on("click", ".deletecase", ->
     $(this).addClass "selected"
@@ -445,7 +453,7 @@ $ ->
         200: (data) ->
           $(".stack:last", top.document).html data
           $(".stack:last", top.document).children(":first").show()
-          scrollfunction_mw()
+          #scrollfunction_mw()
           touchscroll()
   )
 

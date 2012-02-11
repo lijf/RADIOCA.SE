@@ -343,6 +343,16 @@
           }
         }
       });
+    }).on("click", "#cleanupbutton", function() {
+      return $.ajax({
+        type: "DELETE",
+        url: '/sys/deletedcases',
+        statusCode: {
+          200: function() {
+            return alert("OK, cases deleted");
+          }
+        }
+      });
     }).on("click", "#addstack", function() {
       return $("#addstack_dialog").show();
     }).on("click", "#addstack_cancel", function() {
@@ -361,10 +371,10 @@
         target: "postframe"
       });
       $("#uploadform").submit();
-      $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "placeholder </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
+      $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "edit caption </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
-      $(".radio:last", top.document).append($("<a class=\"removeradio abutton\" style=\"display:inline\">&#x166d;</a>"));
-      return $(".caption:last", top.document).append($("<a class=\"abutton session textedit\" style=\"display:inline\">Edit</a>"));
+      $(".radio:last", top.document).append($("<img class=\"control removeradio\" src=\'/icons/cross.png\'>"));
+      return $(".caption:last", top.document).append($("<img class=\"control textedit\" src=\'/icons/pencil.png\' style=\'display:inline\'>"));
     }).on("click", ".deletecase", function() {
       $(this).addClass("selected");
       return $("#deletecase_dialog").show();
@@ -458,7 +468,6 @@
           200: function(data) {
             $(".stack:last", top.document).html(data);
             $(".stack:last", top.document).children(":first").show();
-            scrollfunction_mw();
             return touchscroll();
           }
         }

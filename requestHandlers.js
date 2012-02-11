@@ -1,5 +1,5 @@
 (function() {
-  var db, deleteCase, deleteCase2, deleteCase3, deletePage, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeRadio, render, rendercase, url;
+  var cleanupCases, db, deleteCase, deleteCaseID, deletePage, deletePage2, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeRadio2, render, rendercase, url;
 
   formidable = require("formidable");
 
@@ -70,13 +70,6 @@
     });
   };
 
-  removeRadio = function(req, res, cid, page, radio) {
-    db.del("case:" + cid + ":page:" + page + ":radio:" + radio + ":caption");
-    db.lrem("case:" + cid + ":page:" + page + ":radios", 0, radio);
-    db.srem("image:" + radio, cid);
-    return res.send("OK", 200);
-  };
-
   postImage2 = function(req, res, db) {
     var d, fields, files, i;
     d = new Date().getTime().toString();
@@ -94,8 +87,6 @@
       }
       return files.push([field, file]);
     }).on("end", function() {
-      db.sadd("image:" + d, req.params.id);
-      db.sadd("radio:" + d + ":users", req.getAuthDetails().user_id);
       db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", d);
       db.rpush("user:" + req.getAuthDetails().user.username + ":radios", d);
       db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption");
@@ -127,6 +118,55 @@
         db.hset("case:" + cid + ":page:" + thePage.prevpage, "nextpage", thePage.nextpage);
         db.hset("case:" + cid + ":page:" + thePage.nextpage, "prevpage", thePage.prevpage);
         return db.del("case:" + cid + ":page:" + page);
+      }
+    });
+  };
+
+  removeRadio2 = function(cid, page, radio) {
+    db.del("case:" + cid + ":page:" + page + ":radio:" + radio + ":caption");
+    db.lrem("case:" + cid + ":page:" + page + ":radios", 0, radio);
+    return db.lpush("removedRadios", radio);
+  };
+
+  deletePage2 = function(cid, page) {
+    return db.lrange("case:" + cid + ":page:" + page + ":radios", 0, -1, function(err, radioIDs) {
+      var radioID, _i, _len;
+      if (!(err || !radioIDs)) {
+        for (_i = 0, _len = radioIDs.length; _i < _len; _i++) {
+          radioID = radioIDs[_i];
+          removeRadio2(cid, page, radioID);
+        }
+      }
+      db.del("case:" + cid + ":page:" + page);
+      return db.del("case:" + cid + ":page:" + page + ":radios");
+    });
+  };
+
+  deleteCaseID = function(cid) {
+    db.lrem("deletedCases", 0, cid);
+    return db.get("case:" + cid + ":pages", function(err, pages) {
+      var page;
+      if (!(err || !pages)) {
+        for (page = 0; 0 <= pages ? page <= pages : page >= pages; 0 <= pages ? page++ : page--) {
+          deletePage2(cid, page);
+        }
+        db.del("case:" + cid + ":pages");
+        db.del("case:" + cid + ":users");
+        return db.del("case:" + cid + ":firstpage");
+      }
+    });
+  };
+
+  cleanupCases = function(req, res) {
+    return db.lrange('deletedCases', 0, -1, function(err, caseIDs) {
+      var caseID, _i, _len, _results;
+      if (!(err || !caseIDs)) {
+        _results = [];
+        for (_i = 0, _len = caseIDs.length; _i < _len; _i++) {
+          caseID = caseIDs[_i];
+          _results.push(deleteCaseID(caseID));
+        }
+        return _results;
       }
     });
   };
@@ -198,52 +238,6 @@
     return res.send("OK, deleted", 200);
   };
 
-  deleteCase3 = function(req, res) {
-    var cid;
-    cid = req.params.id;
-    console.log("deleteCase called");
-    return db.get("case:" + cid + ":pages", function(err, pages) {
-      var page;
-      if (!err) {
-        console.log("deleting " + pages + " pages");
-        db.lrange("case:" + cid + ":page:" + page + ":radios", 0, -1, function(err, radioIDs) {
-          var radioID, _i, _len, _results;
-          if (!err) {
-            _results = [];
-            for (_i = 0, _len = radioIDs.length; _i < _len; _i++) {
-              radioID = radioIDs[_i];
-              _results.push(removeRadio(cid, page, radioID));
-            }
-            return _results;
-          }
-        });
-        for (page = 0; 0 <= pages ? page <= pages : page >= pages; 0 <= pages ? page++ : page--) {
-          deletePage(cid, page);
-        }
-        db.zrem("listed", cid);
-        db.del("case:" + cid + ":pages");
-        db.del("case:" + cid + ":users");
-        db.del("case:" + cid + ":firstpage");
-        return res.send("OK, deleted " + cid, 200);
-      }
-    });
-  };
-
-  deleteCase2 = function(req, res, delpage) {
-    var cid;
-    cid = req.params.id;
-    return deletePage(cid, delpage, function(nextpage) {
-      console.log(nextpage);
-      if (nextpage) {
-        console.log("in recursive");
-        return deleteCase(req, res, nextpage);
-      } else {
-        db.zrem("listed", cid);
-        return res.send(200, "Deleted " + cid);
-      }
-    });
-  };
-
   exports.deleteCase = deleteCase;
 
   exports.postNewpage = postNewpage;
@@ -252,8 +246,6 @@
 
   exports.deletePage = deletePage;
 
-  exports.removeRadio = removeRadio;
-
   exports.rendercase = rendercase;
 
   exports.newpage = newpage;
@@ -261,5 +253,7 @@
   exports.postImage2 = postImage2;
 
   exports.postImage = postImage;
+
+  exports.cleanupCases = cleanupCases;
 
 }).call(this);

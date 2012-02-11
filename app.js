@@ -121,7 +121,7 @@
     return res.send("<button id=\"twitbutt\">Sign in with twitter</button>");
   });
 
-  app.get("/:pagename", function(req, res) {
+  app.get("/stat/:pagename", function(req, res) {
     return res.render(req.params.pagename, {
       title: req.params.pagename,
       signed_in: req.isAuthenticated(),
@@ -255,6 +255,31 @@
     });
   });
 
+  app["delete"]("/sys/deletedcases", function(req, res) {
+    console.log("DELETE CASES, CLEANUP CALLED");
+    if (req.getAuthDetails().user.username !== 'radioca1se') {
+      return res.send("FORBIDDEN", 403);
+    }
+    if (req.getAuthDetails().user.username === 'radioca1se') {
+      return requestHandlers.cleanupCases(req, res);
+    }
+  });
+
+  app.get("/sys/admin", function(req, res) {
+    console.log("ADMINPAGE CALLED");
+    if (req.getAuthDetails().user.username !== 'radioca1se') {
+      return res.send("FORBIDDEN", 403);
+    }
+    if (req.getAuthDetails().user.username === 'radioca1se') {
+      console.log("rendering adminpage");
+      return res.render("admin", {
+        title: "ADMINPAGE",
+        signed_in: req.isAuthenticated(),
+        user: req.getAuthDetails().user.username
+      });
+    }
+  });
+
   app["delete"]("/case/:id/:page", function(req, res) {
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
@@ -271,38 +296,10 @@
       if (editor) {
         db.del("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption");
         db.lrem("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, req.params.radio);
-        db.srem("image:" + req.params.radio, req.params.id);
+        db.lpush("removedRadios", req.params.radio);
         return res.send("OK", 200);
       }
     });
-  });
-
-  app.get("/radios/:user", function(req, res) {
-    var sendradios;
-    if (!req.isAuthenticated()) return res.redirect("/");
-    if (!req.getAuthDetails().user.username !== req.params.user) {
-      sendradios = [];
-      return db.lrange("user:" + req.params.user + ":radios", 0, -1, function(err, radios) {
-        return radios.forEach(function(radio, id) {
-          sendradios[id] = {};
-          sendradios[id].ID = radio;
-          return db.lrange("radio:" + radio, 0, -1, function(err, images) {
-            sendradios[id].images = [];
-            images.forEach(function(image, imgID) {
-              return sendradios[id].images[imgID] = image;
-            });
-            if (!radios[id + 1]) {
-              return res.render("userradios", {
-                title: "Radios - " + req.params.user,
-                user: req.getAuthDetails().user.username,
-                signed_in: req.isAuthenticated(),
-                radios: sendradios
-              });
-            }
-          });
-        });
-      });
-    }
   });
 
   app.get("/radio/:id", function(req, res) {
@@ -338,24 +335,6 @@
     console.log("POST /image/ called");
     if (!req.isAuthenticated()) return res.send(444);
     return requestHandlers.postImage2(req, res, db);
-  });
-
-  app["delete"]("/image/:id", function(req, res) {
-    console.log("DELETE /image/" + req.params.id + " called");
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
-    return db.sismember("radio:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
-      if (owner) {
-        return db.smembers("image:" + req.params.id, function(err, pages) {
-          console.log(pages);
-          db.del("radio:" + req.params.id);
-          db.del("image:" + req.params.id);
-          db.del("image:" + req.params.id + ":users");
-          db.lrem("user:" + req.getAuthDetails().user.username + ":radios", 0, req.params.id);
-          db.sadd("deleted_radios", req.params.id);
-          return res.send("OK, radio removed", 200);
-        });
-      }
-    });
   });
 
   port = process.env.PORT || 3000;

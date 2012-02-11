@@ -50,12 +50,6 @@ postImage = (req, res, db) ->
     percent = (bytexReceived / bytesExpected * 100) or 0
     console.log "Uploading: %" + percent + "\r"
 
-removeRadio = (req, res, cid, page, radio) ->
-  db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
-  db.lrem "case:" + cid + ":page:" + page + ":radios", 0, radio
-  db.srem "image:" + radio, cid
-  res.send "OK", 200
-
 postImage2 = (req, res, db) ->
   d = new Date().getTime().toString()
   i = 0
@@ -74,8 +68,8 @@ postImage2 = (req, res, db) ->
       i++
     files.push [ field, file ]
   ).on "end", ->
-    db.sadd "image:" + d, req.params.id
-    db.sadd "radio:" + d + ":users", req.getAuthDetails().user_id
+#    db.sadd "image:" + d, req.params.id
+#    db.sadd "radio:" + d + ":users", req.getAuthDetails().user_id
     db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
     db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
     db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption"
@@ -96,6 +90,33 @@ deletePage = (cid, page) ->
         db.hset "case:" + cid + ":page:" + thePage.prevpage, "nextpage", thePage.nextpage
         db.hset "case:" + cid + ":page:" + thePage.nextpage, "prevpage", thePage.prevpage
         db.del "case:" + cid + ":page:" + page
+
+removeRadio2 = (cid, page, radio) ->
+  db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
+  db.lrem "case:" + cid + ":page:" + page + ":radios", 0, radio
+#  db.srem "image:" + radio, cid
+  db.lpush "removedRadios", radio
+
+deletePage2 = (cid, page) ->
+  db.lrange "case:" + cid + ":page:" + page + ":radios", 0, -1, (err, radioIDs) ->
+    unless err or !radioIDs
+      removeRadio2 cid, page, radioID for radioID in radioIDs
+    db.del "case:" + cid + ":page:" + page
+    db.del "case:" + cid + ":page:" + page + ":radios"
+
+deleteCaseID = (cid) ->
+  db.lrem "deletedCases", 0, cid
+  db.get "case:" + cid + ":pages", (err, pages) ->
+    unless err or !pages
+      deletePage2 cid, page for page in [0..pages]
+      db.del "case:" + cid + ":pages"
+      db.del "case:" + cid + ":users"
+      db.del "case:" + cid + ":firstpage"
+
+cleanupCases = (req, res) ->
+  db.lrange 'deletedCases', 0, -1, (err, caseIDs) ->
+    unless err or !caseIDs
+      deleteCaseID caseID for caseID in caseIDs
 
 putPage = (req, res) ->
   data = req.body
@@ -147,41 +168,13 @@ deleteCase = (req, res) ->
   db.zrem "listed", cid
   db.rpush "deletedCases", cid
   return res.send "OK, deleted", 200
-
-deleteCase3 = (req, res) ->
-  cid = req.params.id
-  console.log "deleteCase called"
-  db.get "case:" + cid + ":pages", (err, pages) ->
-    unless err
-      console.log "deleting " + pages + " pages" 
-     
-      db.lrange "case:" + cid + ":page:" + page + ":radios", 0, -1, (err, radioIDs) ->
-        unless err
-         removeRadio cid, page, radioID for radioID in radioIDs
-      deletePage cid, page for page in [0..pages]
-      db.zrem "listed", cid
-      db.del "case:" + cid + ":pages"
-      db.del "case:" + cid + ":users"
-      db.del "case:" + cid + ":firstpage"
-      return res.send "OK, deleted " + cid, 200
-
-deleteCase2 = (req, res, delpage) ->
-  cid = req.params.id
-  deletePage cid, delpage, (nextpage) ->
-    console.log nextpage
-    if nextpage
-      console.log "in recursive"
-      deleteCase req, res, nextpage
-    else
-      db.zrem "listed", cid
-      res.send 200, "Deleted " + cid
     
 exports.deleteCase = deleteCase
 exports.postNewpage = postNewpage
 exports.putPage = putPage
 exports.deletePage = deletePage
-exports.removeRadio = removeRadio
 exports.rendercase = rendercase
 exports.newpage = newpage
 exports.postImage2 = postImage2
 exports.postImage = postImage
+exports.cleanupCases = cleanupCases
