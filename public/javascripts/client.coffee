@@ -124,7 +124,7 @@ authcallback = (data) ->
     statusCode:
       200: ->
         $("#session").html "<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>"
-        $("#feedbackbutton").attr("id", "editbutton").html "Edit"
+        #$("#feedbackbutton").attr("id", "editbutton").html "Edit"
       403: (data) ->
         alert "not allowed - if you feel that this is an error, please write to info@radioca.se"
 
@@ -311,7 +311,7 @@ $ ->
           alert "Forbidden, maybe your session timed out?"
 
   ).on("click", "#help", ->
-    $("#markdown-help").show()
+    $("#markdown-help").toggle()
 
   ).on("change", "#private", ->
     $("#savepage_confirm").trigger('click')
@@ -388,14 +388,6 @@ $ ->
           $(".selected").removeClass "selected"
           $("#deletecase_dialog").hide()
   
-  ).on("click", ".deleteradio", ->
-    $(this).parent().addClass "selected"
-    $("#deleteradio_dialog").show()
-
-  ).on("click", "#deleteradio_cancel", ->
-    $(".selected").removeClass "selected"
-    $("#deleteradio_dialog").hide()
-
   ).on("click", ".removeradio", ->
     $(this).parent().addClass "selected"
     $("#removeradio_dialog").show()
@@ -403,24 +395,6 @@ $ ->
   ).on("click", "#removeradio_cancel", ->
     $(".selected").removeClass "selected"
     $("#removeradio_dialog").hide()
-
-  ).on("click", "#deleteradio_confirm", ->
-    targeturl = "/image/" + $(".selected").attr("ID")
-    $.ajax
-      url: targeturl
-      type: "DELETE"
-      statusCode:
-        200: ->
-          $(".selected").remove()
-          $("#deleteradio_dialog").hide()
-        404: ->
-          alert "NOT ALLOWED"
-          $(".selected").removeClass "selected"
-          $("#deleteradio_dialog").hide()
-        403: ->
-          alert "FORBIDDEN"
-          $(".selected").removeClass "selected"
-          $("#deleteradio_dialog").hide()
 
   ).on("click", "#removeradio_confirm", ->
     pathname = window.location.pathname.split("/")
@@ -440,7 +414,6 @@ $ ->
           alert "FORBIDDEN"
           $(".selected").removeClass "selected"
           $("#removeradio_dialog").hide()
-
   )
 
   $('#postframe').bind('load', -> #for some reason this could not be changed to an 'on' event - working with bind though

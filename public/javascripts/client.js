@@ -162,8 +162,7 @@
       url: "/signed_in",
       statusCode: {
         200: function() {
-          $("#session").html("<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>");
-          return $("#feedbackbutton").attr("id", "editbutton").html("Edit");
+          return $("#session").html("<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>");
         },
         403: function(data) {
           return alert("not allowed - if you feel that this is an error, please write to info@radioca.se");
@@ -318,7 +317,7 @@
         }
       });
     }).on("click", "#help", function() {
-      return $("#markdown-help").show();
+      return $("#markdown-help").toggle();
     }).on("change", "#private", function() {
       return $("#savepage_confirm").trigger('click');
     }).on("click", "#private_page", function() {
@@ -397,41 +396,12 @@
           }
         }
       });
-    }).on("click", ".deleteradio", function() {
-      $(this).parent().addClass("selected");
-      return $("#deleteradio_dialog").show();
-    }).on("click", "#deleteradio_cancel", function() {
-      $(".selected").removeClass("selected");
-      return $("#deleteradio_dialog").hide();
     }).on("click", ".removeradio", function() {
       $(this).parent().addClass("selected");
       return $("#removeradio_dialog").show();
     }).on("click", "#removeradio_cancel", function() {
       $(".selected").removeClass("selected");
       return $("#removeradio_dialog").hide();
-    }).on("click", "#deleteradio_confirm", function() {
-      var targeturl;
-      targeturl = "/image/" + $(".selected").attr("ID");
-      return $.ajax({
-        url: targeturl,
-        type: "DELETE",
-        statusCode: {
-          200: function() {
-            $(".selected").remove();
-            return $("#deleteradio_dialog").hide();
-          },
-          404: function() {
-            alert("NOT ALLOWED");
-            $(".selected").removeClass("selected");
-            return $("#deleteradio_dialog").hide();
-          },
-          403: function() {
-            alert("FORBIDDEN");
-            $(".selected").removeClass("selected");
-            return $("#deleteradio_dialog").hide();
-          }
-        }
-      });
     }).on("click", "#removeradio_confirm", function() {
       var pathname, targeturl;
       pathname = window.location.pathname.split("/");

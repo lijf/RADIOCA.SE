@@ -31,7 +31,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       ##{title}
     .md
     img.control.textedit.session(src='/icons/pencil.png')
-#textpage
+#texts(style='width: 100%')
   .txt
     textarea.mdtxt(style='display:none')
       #{texts}
@@ -49,8 +49,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   textarea.mdtxt(style='display:none')
     #{mdhelp}
   .md
-a.abutton(id='feedbackbutton', title='Show comments')
-  &#x1f4ac;
+img.control#feedbackbutton(src='/icons/balloon.png')
 #feedbackarea(style='display:none')
   #feedbacktext
   textarea#feedbackbox
