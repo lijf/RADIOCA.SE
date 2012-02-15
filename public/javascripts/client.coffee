@@ -110,6 +110,9 @@ spiderpage = ->
   json.texts = $("#texts>.txt>.mdtxt").map(->
     $(this).val()
   ).get()
+  json.modalities = $(".modality :checked").map(->
+    $(this).val()
+  ).get()
   #alert JSON.stringify json
   json
 
@@ -222,6 +225,9 @@ $ ->
           $("#session").html "<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>"
 
     $("#userinfo").hide()
+
+  ).on("click", "#boxit", ->
+    $("#boxit_dialog").toggle()
 
   ).on("click", "#newpage", ->
     $("#newpage_dialog").show()

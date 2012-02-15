@@ -1,3 +1,7 @@
+#modalities_form
+    font-family helvetica, arial
+#description_form
+    font-family helvetica, arial
 .control
     cursor pointer 
     margin 0 10px
@@ -21,6 +25,8 @@ a
     float left
     width 100%
     position relative
+.radioimagepage
+    width 50%
 #help_cancel
     cursor pointer
     position absolute
@@ -126,7 +132,7 @@ span#controls
     height 1px
     overflow visible
     display block
-    position absolute 
+    position fixed 
 .dialog_box
     width 320px
     position absolute
@@ -155,6 +161,8 @@ span#controls
 #radios
     float left
     width 50%
+#imagepageradios
+    width 100%
 .selected
     border-color #f00
     border solid
@@ -221,10 +229,14 @@ span#controls
         width 100%
     #texts
         width 100%
+    .radioimagepage
+        width 100%
 @media screen and (max-width: 585px)
     .big_logo
         font-size 30pt
 @media screen and (min-width: 1024px)
+    .radioimagepage
+        width 33%
     #radios
         width 65%
     #texts

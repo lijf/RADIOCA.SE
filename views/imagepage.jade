@@ -31,20 +31,19 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       ##{title}
     .md
     img.control.textedit.session(src='/icons/pencil.png')
-#radios
+#imagepageradios
   - each r in radios
-    .radio(id='#{r.ID}')
+    .radio.radioimagepage(id='#{r.ID}')
       .stack
         - each i in r.images
           img.stack_image(src='#{i}')
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
+        .md
         img.control.textedit.session(src='/icons/pencil.png')
-      a.removeradio.abutton(style='display:none')
-        | &#x166d;
-  a.abutton(id='addstack', style='display:none')
-    | &#x2295;
+      img.control.removeradio(style='display:none', src='/icons/cross.png')
+    img.control#addstack(style='display:none', src='/icons/plus.png')
 a#prevpage(href='/case/#{cid}/#{prevpage}', style='float: left')
   img.control(src='/icons/arrow-180.png')
 a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right')
@@ -55,8 +54,7 @@ a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right')
     textarea.mdtxt(style='display:none')
       #{mdhelp}
     .md
-a.abutton(id='feedbackbutton', title='Show comments')
-  &#x1f4ac;
+img.control#feedbackbutton(src='/icons/balloon.png')
 #feedbackarea(style='display:none')
   #feedbacktext
   textarea#feedbackbox

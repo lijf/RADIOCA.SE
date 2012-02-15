@@ -43,6 +43,56 @@ html
           | Delete
         button#deletecase_cancel(type='button')
           | Cancel
+      #boxit_dialog.dialog_box(style='display:none')
+        | Please check applicable modalities and areas
+        br
+        br
+        br
+        form#modalities_form
+          input.modality(type='checkbox', value='plainfilm') 
+          | Plain Film
+          input.modality(type='checkbox', value='fluro') 
+          | Fluoroscopy
+          br
+          br
+          input.modality(type='checkbox', value='angio') 
+          | Angiography
+          input.modality(type='checkbox', value='CT') 
+          | CT
+          input.modality(type='checkbox', value='MR') 
+          | MR
+          br
+          br
+          input.modality(type='checkbox', value='ultrasound') 
+          | Ultrasound
+          input.modality(type='checkbox', value='nuclear')
+          | Nuclear Medicine
+        br
+        br
+        form#description_form
+          input.description(type='checkbox', value='Neuro')
+          | Neuro
+          input.description(type='checkbox', value='Head & Neck')
+          | Head & Neck 
+          br
+          br
+          input.description(type='checkbox', value='Cardiothoracic')
+          | Cardiothoracic
+          input.description(type='checkbox', value='Abdominal')
+          | Abdominal
+          br
+          br
+          input.description(type='checkbox', value='Interventional')
+          | Interventional
+          input.description(type='checkbox', value='Musculoskeletal')
+          | Musculoskeletal
+          br
+          br
+          input.description(type='checkbox', value='Pediatric')
+          | Pediatric
+          input.description(type='checkbox', value='Breast')
+          | Breast
+
       #addstack_dialog.dialog_box(style='display:none')
         | Please choose image(s) to upload.
         br

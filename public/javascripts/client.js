@@ -148,6 +148,9 @@
     json.texts = $("#texts>.txt>.mdtxt").map(function() {
       return $(this).val();
     }).get();
+    json.modalities = $(".modality :checked").map(function() {
+      return $(this).val();
+    }).get();
     return json;
   };
 
@@ -230,6 +233,8 @@
         }
       });
       return $("#userinfo").hide();
+    }).on("click", "#boxit", function() {
+      return $("#boxit_dialog").toggle();
     }).on("click", "#newpage", function() {
       return $("#newpage_dialog").show();
     }).on("click", "#newpage_cancel", function() {
