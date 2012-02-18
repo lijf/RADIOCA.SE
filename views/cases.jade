@@ -1,40 +1,35 @@
 #topleftdiv
 #cases
   h1.damion Cases
-  br
+  input.rounded(type='text', name='filter', value='Type to filter', id='filter')
   table#cases
     thead
       tr 
         th Modalities
         th Area
         th Title
-        //        th Creator
+        th Creator
         th
         th
     tbody
       - each c in cases
-        tr 
-          td #{c.modalities} 
-          td #{c.description}
-          td 
-            a(href='/case/#{c.cid}/1') #{c.title}
-          //          td
-          //            a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
-          //              @#{c.creator}
-          td(style='width:24px')
-            - if (c.creator == user) 
-              img.deletecase(ID='#{c.cid}', src='/icons/minus.png')
-          td(style='width:24px')
-            - if (c.creator == user) 
-                img.showcase(ID='#{c.cid}', src='/icons/eye-prohibition.png', style='visibility:hidden')
-                img.hidecase(ID='#{c.cid}', src='/icons/eye.png', style='visibility:hidden')
+        - if (c.hidden == 'false' || c.creator == user || user == 'radioca1se')
+          tr 
+            td #{c.modalities} 
+            td #{c.description}
+            td 
+              a(href='/case/#{c.cid}/1') #{c.title}
+            td
+              a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
+              @#{c.creator}
+            td(style='width:24px')
+              - if (c.creator == user) 
+                img.deletecase(ID='#{c.cid}', src='/icons/minus.png')
+            td(style='width:24px')
+              - if (c.creator == user || user == 'radioca1se') 
+                - if (c.hidden=='true')
+                  img.showcase(ID='#{c.cid}', src='/icons/eye-prohibition.png')
+                - else
+                  img.hidecase(ID='#{c.cid}', src='/icons/eye.png')
   a(href='/newcase')
     img.control(src='/icons/plus.png', style='margin-top:30px')
-script(type='text/javascript')
-  if(#{c.hidden}){
-    $(".showcase").show()}
-  else{
-    $(".hidecase").show();
-      }
-
-  

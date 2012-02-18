@@ -22,7 +22,6 @@
       signed_in: req.isAuthenticated(),
       user: req.getAuthDetails().user.username,
       cid: req.params.id,
-      hidden: theCase.hidden || "",
       modalities: theCase.modalities || "",
       description: theCase.description || "",
       prevpage: theCase.prevpage,

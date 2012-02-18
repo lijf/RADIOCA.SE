@@ -1,3 +1,22 @@
+input.rounded
+    -moz-border-radus 10px
+    -webkit-border-radius 10px
+    border-radius 10px
+    -moz-box-shadow 2px 2px 3px #222
+    -webkit-box-shadow 2px 2px 3px #222
+    box-shadow 2px 2px 3px #222
+    position absolute
+    top 35px
+    right 35px
+tbody td
+    background-color #444
+    color #ccc
+tbody td.odd
+    background-color #555
+    color #ccc
+td.hovered
+    background-color lightblue
+    color #666
 .hidecase
     position absolute
     cursor pointer
@@ -220,16 +239,6 @@ span#controls
 .deletecase
     position absolute
     cursor pointer
-#cases_lc
-    width 48%
-    float left
-    text-align right
-    padding 1%
-#cases_rc
-    width 48%
-    padding 1%
-    float right
-    text-align left
 #cases
     line-height 150%
     width 100%
@@ -243,6 +252,8 @@ span#controls
     background-image url("/images/paper/Texture0213.jpg")
     color #006
 @media screen and (max-width: 450px)
+    input.rounded
+        right 0px
     #markdown-help
         width 100%
     #sl

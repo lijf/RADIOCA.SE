@@ -125,7 +125,7 @@ app.get "/cases/:start/:finish", (req, res) ->
     sendcases = []
     cases.forEach (theCase, iteration) ->
       db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
-        db.hgetall "case:" + theCase + ":page:" + firstpage, (err, sendcase) ->
+        db.hgetall "case:" + theCase, (err, sendcase) ->
           sendcases[iteration] = sendcase
           unless cases[iteration + 1]
             console.log "rendering cases"
@@ -183,15 +183,21 @@ app.post "/hide/:id", (req, res) ->
   console.log "Hide case " + req.params.id + " called"
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
-    if owner
-      db.hset "case:" + req.params.id, "hidden", "1"
+    if owner || req.getAuthDetails().user.username == 'radioca1se'
+      db.hset "case:" + req.params.id, "hidden", true, (err) ->
+        if err
+          console.log err
+        else res.send "OK", 200
 
 app.post "/show/:id", (req, res) ->
-  console.log "Hide case " + req.params.id + " called"
+  console.log "Show case " + req.params.id + " called"
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
-    if owner
-      db.hset "case:" + req.params.id, "hidden", "0"
+    if owner || req.getAuthDetails().user.username == 'radioca1se'
+      db.hset "case:" + req.params.id, "hidden", false, (err) ->
+        if err
+          console.log err
+        else res.send "OK", 200
 
 app.delete "/case/:id", (req, res) ->
   console.log "DELETE /case/" + req.params.id + " called"

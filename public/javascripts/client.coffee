@@ -57,6 +57,19 @@ editfunctions = ->
   $("#boxit_dialog").hide()
   $("#addstack_dialog").hide()
 
+zebrarows = (selector, className) ->
+  $(selector).removeClass(className).addClass(className)
+
+filter2 = (selector, query) ->
+  query = $.trim(query)
+  query = query.replace /\ /gi, '|'
+  $(selector).each ->
+    if ($(this).text().search(new RegExp(query, "i")) < 0)
+      $(this).hide().removeClass('visible')
+    else
+      $(this).show().addClass('visible')
+  
+
 getfeedback = ->
   $.ajax
     type: "GET"
@@ -160,6 +173,14 @@ $ ->
   rendermd()
   touchscroll()
   $(".stack").children(":first-child").show()
+  $('tbody tr').addClass('visible')
+  zebrarows('tbody tr:odd td', 'odd')
+  
+  #$('tbody tr').hover(
+  #  ->$(this).find('td').addClass('hovered')
+  #  ->$(this).find('td').removeClass('hovered')
+  #)
+  
 
   $(document
   
@@ -184,6 +205,19 @@ $ ->
 #            visimg = visimg.next()
 #          return lastY = parseInt(touch.pageY, 10)
 #        e.preventDefault()
+  ).on("focus", "#filter", ->
+    if $(this).val()=='Type to filter' then $(this).val('')
+
+  ).on("keyup", "#filter", ->
+    # if esc is pressed or nothing is entered 
+    if (event.keyCode == 27 || $(this).val() == '')
+      # if esc is pressed we want to clear the value of search box
+      $(this).val('')
+      # we want each row to be visible because if nothing is entered then all rows are matched
+      $('tbody tr').removeClass('visible').show().addClass('visible')
+    # if there is text, let's fulter
+    else
+      filter2('tbody tr', $(this).val())
 
   ).on("click", ".textedit", ->
     src = if $(this).attr('src') == '/icons/pencil.png' then '/icons/tick.png' else '/icons/pencil.png'
@@ -235,7 +269,8 @@ $ ->
       url: "/sign_out"
       statusCode:
         200: (data) ->
-          $("#session").html "<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>"
+          window.location.href = '/'
+          #$("#session").html "<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>"
 
     $("#userinfo").hide()
 
@@ -389,16 +424,18 @@ $ ->
 
   ).on("click", ".hidecase", ->
     targeturl = "/hide/" + $(this).attr("ID")
-    $(this).siblings(".showcase").show()
-    $(this).hide()
+    $(this).addClass("showcase")
+    $(this).removeClass("hidecase")
+    $(this).attr('src', '/icons/eye-prohibition.png')
     $.ajax
       url: targeturl
       type: "POST"
 
   ).on("click", ".showcase", ->
     targeturl = "/show/" + $(this).attr("ID")
-    $(this).siblings(".hidecase").show()
-    $(this).hide()
+    $(this).addClass("hidecase")
+    $(this).removeClass("showcase")
+    $(this).attr('src', '/icons/eye.png')
     $.ajax
       url: targeturl
       type: "POST"

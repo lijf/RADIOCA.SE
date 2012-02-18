@@ -176,7 +176,7 @@
       sendcases = [];
       return cases.forEach(function(theCase, iteration) {
         return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
-          return db.hgetall("case:" + theCase + ":page:" + firstpage, function(err, sendcase) {
+          return db.hgetall("case:" + theCase, function(err, sendcase) {
             sendcases[iteration] = sendcase;
             if (!cases[iteration + 1]) {
               console.log("rendering cases");
@@ -251,15 +251,31 @@
     console.log("Hide case " + req.params.id + " called");
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
-      if (owner) return db.hset("case:" + req.params.id, "hidden", "1");
+      if (owner || req.getAuthDetails().user.username === 'radioca1se') {
+        return db.hset("case:" + req.params.id, "hidden", true, function(err) {
+          if (err) {
+            return console.log(err);
+          } else {
+            return res.send("OK", 200);
+          }
+        });
+      }
     });
   });
 
   app.post("/show/:id", function(req, res) {
-    console.log("Hide case " + req.params.id + " called");
+    console.log("Show case " + req.params.id + " called");
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
-      if (owner) return db.hset("case:" + req.params.id, "hidden", "0");
+      if (owner || req.getAuthDetails().user.username === 'radioca1se') {
+        return db.hset("case:" + req.params.id, "hidden", false, function(err) {
+          if (err) {
+            return console.log(err);
+          } else {
+            return res.send("OK", 200);
+          }
+        });
+      }
     });
   });
 

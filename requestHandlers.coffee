@@ -16,7 +16,6 @@ render = (req, res, theCase, editor) ->
     signed_in: req.isAuthenticated()
     user: req.getAuthDetails().user.username
     cid: req.params.id
-    hidden: theCase.hidden or ""
     modalities: theCase.modalities or ""
     description: theCase.description or ""
     prevpage: theCase.prevpage

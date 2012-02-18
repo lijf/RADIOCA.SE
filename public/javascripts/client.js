@@ -1,5 +1,5 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, getTitle, getfeedback, lastY, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg;
+  var authcallback, change_url, converter, editfunctions, filter2, getTitle, getfeedback, lastY, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
 
   lastY = 0;
 
@@ -74,6 +74,22 @@
     $(".moveradiodown").toggle();
     $("#boxit_dialog").hide();
     return $("#addstack_dialog").hide();
+  };
+
+  zebrarows = function(selector, className) {
+    return $(selector).removeClass(className).addClass(className);
+  };
+
+  filter2 = function(selector, query) {
+    query = $.trim(query);
+    query = query.replace(/\ /gi, '|');
+    return $(selector).each(function() {
+      if ($(this).text().search(new RegExp(query, "i")) < 0) {
+        return $(this).hide().removeClass('visible');
+      } else {
+        return $(this).show().addClass('visible');
+      }
+    });
   };
 
   getfeedback = function() {
@@ -208,7 +224,18 @@
     rendermd();
     touchscroll();
     $(".stack").children(":first-child").show();
-    $(document).on("click", ".textedit", function() {
+    $('tbody tr').addClass('visible');
+    zebrarows('tbody tr:odd td', 'odd');
+    $(document).on("focus", "#filter", function() {
+      if ($(this).val() === 'Type to filter') return $(this).val('');
+    }).on("keyup", "#filter", function() {
+      if (event.keyCode === 27 || $(this).val() === '') {
+        $(this).val('');
+        return $('tbody tr').removeClass('visible').show().addClass('visible');
+      } else {
+        return filter2('tbody tr', $(this).val());
+      }
+    }).on("click", ".textedit", function() {
       var src;
       src = $(this).attr('src') === '/icons/pencil.png' ? '/icons/tick.png' : '/icons/pencil.png';
       $(this).attr('src', src);
@@ -241,7 +268,7 @@
         url: "/sign_out",
         statusCode: {
           200: function(data) {
-            return $("#session").html("<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>");
+            return window.location.href = '/';
           }
         }
       });
@@ -395,8 +422,9 @@
     }).on("click", ".hidecase", function() {
       var targeturl;
       targeturl = "/hide/" + $(this).attr("ID");
-      $(this).siblings(".showcase").show();
-      $(this).hide();
+      $(this).addClass("showcase");
+      $(this).removeClass("hidecase");
+      $(this).attr('src', '/icons/eye-prohibition.png');
       return $.ajax({
         url: targeturl,
         type: "POST"
@@ -404,8 +432,9 @@
     }).on("click", ".showcase", function() {
       var targeturl;
       targeturl = "/show/" + $(this).attr("ID");
-      $(this).siblings(".hidecase").show();
-      $(this).hide();
+      $(this).addClass("hidecase");
+      $(this).removeClass("showcase");
+      $(this).attr('src', '/icons/eye.png');
       return $.ajax({
         url: targeturl,
         type: "POST"
