@@ -22,6 +22,7 @@
       signed_in: req.isAuthenticated(),
       user: req.getAuthDetails().user.username,
       cid: req.params.id,
+      hidden: theCase.hidden || "",
       modalities: theCase.modalities || "",
       description: theCase.description || "",
       prevpage: theCase.prevpage,
@@ -37,25 +38,31 @@
   rendercase = function(req, res, theCase, editor) {
     return db.get("markdown-help", function(err, data) {
       theCase.mdhelp = JSON.parse(data);
-      return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
-        if (radioIDs.length < 1) return render(req, res, theCase, editor);
-        theCase.radios = [];
-        return radioIDs.forEach(function(radioID, ID) {
-          return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
-            theCase.radios[ID] = [];
-            theCase.radios[ID].ID = radioID;
-            if (caption) theCase.radios[ID].caption = caption;
-            return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
-              theCase.radios[ID].images = [];
-              images.forEach(function(image, imgID) {
-                return theCase.radios[ID].images[imgID] = image;
-              });
-              theCase.feedback = [];
-              return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
-                feedback.forEach(function(fb, fbID) {
-                  return theCase.feedback[fbID] = fb;
+      return db.hgetall("case:" + req.params.id, function(err, casedata) {
+        if (!(err || !casedata)) {
+          theCase.modalities = casedata.modalities;
+          theCase.description = casedata.description;
+        }
+        return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
+          if (radioIDs.length < 1) return render(req, res, theCase, editor);
+          theCase.radios = [];
+          return radioIDs.forEach(function(radioID, ID) {
+            return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
+              theCase.radios[ID] = [];
+              theCase.radios[ID].ID = radioID;
+              if (caption) theCase.radios[ID].caption = caption;
+              return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
+                theCase.radios[ID].images = [];
+                images.forEach(function(image, imgID) {
+                  return theCase.radios[ID].images[imgID] = image;
                 });
-                if (!radioIDs[ID + 1]) return render(req, res, theCase, editor);
+                theCase.feedback = [];
+                return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
+                  feedback.forEach(function(fb, fbID) {
+                    return theCase.feedback[fbID] = fb;
+                  });
+                  if (!radioIDs[ID + 1]) return render(req, res, theCase, editor);
+                });
               });
             });
           });
@@ -152,6 +159,7 @@
         for (page = 0; 0 <= pages ? page <= pages : page >= pages; 0 <= pages ? page++ : page--) {
           deletePage2(cid, page);
         }
+        db.del("case:" + cid);
         db.del("case:" + cid + ":pages");
         db.del("case:" + cid + ":users");
         return db.del("case:" + cid + ":firstpage");
@@ -184,6 +192,7 @@
     db.zadd("cases", data.created, data.cid);
     db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);
     db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
+    db.hmset("case:" + req.params.id, data);
     if (data.radios) {
       data.radios.forEach(function(r, rID) {
         db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
@@ -207,6 +216,7 @@
       return db.hget("case:" + cid + ":page:" + prevpage, "nextpage", function(err, nextpage) {
         pagedata.prevpage = prevpage;
         pagedata.nextpage = nextpage;
+        db.hmset("case:" + cid, pagedata);
         db.hmset("case:" + cid + ":page:" + page, pagedata);
         db.hset("case:" + cid + ":page:" + prevpage, "nextpage", page);
         db.hset("case:" + cid + ":page:" + nextpage, "prevpage", page);

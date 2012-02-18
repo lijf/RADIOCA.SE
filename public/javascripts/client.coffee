@@ -12,6 +12,12 @@ newpage  = (type) ->
   json.private = $("#private").is(":checked")
   json.created = $("#created").val()
   json.pagetype = type
+  json.modalities = $(".modality:checked").map(->
+    $(this).val()
+  ).get()
+  json.description = $(".description:checked").map(->
+    $(this).val()
+  ).get()
   $.ajax
     url: window.location.pathname + "/newpage"
     type: "POST"
@@ -72,14 +78,14 @@ touchscroll = ->
           samp = 0
           touch = e.touches[0]
           if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
+            visimg.prev().show()
             visimg.next().hide()
             visimg.hide()
-            visimg.prev().show()
             visimg = visimg.prev()
           else if visimg.next().length > 0
+            visimg.next().show()
             visimg.prev().hide()
             visimg.hide()
-            visimg.next().show()
             visimg = visimg.next()
           return lastY = parseInt(touch.pageY, 10)
         e.preventDefault()
@@ -120,13 +126,13 @@ spiderpage = ->
   json.description = $(".description:checked").map(->
     $(this).val()
   ).get()
-  alert JSON.stringify json
+#  alert JSON.stringify json
   json
 
 sessionButton = (user) ->
   $("#session").html "<button id=\"sign_out\">Sign out " + user + "</button>"
 
-converter = new Showdown.converter()
+converter = Markdown.getSanitizingConverter()
 
 authcallback = (data) ->
   $.ajax
@@ -194,13 +200,13 @@ $ ->
     if !delta
       delta = e.originalEvent.wheelDelta
     if delta > 0 and $(this).next().length > 0
-      $(this).prev().hide()
-      $(this).hide()
       $(this).next().show()
-    else if delta < 0 and $(this).prev().length > 0
-      $(this).next().hide()
       $(this).hide()
+      $(this).prev().hide()
+    else if delta < 0 and $(this).prev().length > 0
       $(this).prev().show()
+      $(this).hide()
+      $(this).next().hide()
     e.preventDefault()
 
 #  ).on("mousewheel_old", ".stack > .stack_image", (e) ->
@@ -381,11 +387,28 @@ $ ->
     $(".radio:last", top.document).append $("<img class=\"control removeradio\" src=\'/icons/cross.png\'>")
     $(".caption:last", top.document).append $("<img class=\"control textedit\" src=\'/icons/pencil.png\' style=\'display:inline\'>")
 
+  ).on("click", ".hidecase", ->
+    targeturl = "/hide/" + $(this).attr("ID")
+    $(this).siblings(".showcase").show()
+    $(this).hide()
+    $.ajax
+      url: targeturl
+      type: "POST"
+
+  ).on("click", ".showcase", ->
+    targeturl = "/show/" + $(this).attr("ID")
+    $(this).siblings(".hidecase").show()
+    $(this).hide()
+    $.ajax
+      url: targeturl
+      type: "POST"
+
   ).on("click", ".deletecase", ->
-    $(this).addClass "selected"
+    $(this).parent().parent().addClass "selected"
     $("#deletecase_dialog").show()
 
   ).on("click", "#deletecase_cancel", ->
+    $(".selected").removeClass "selected"
     $("#deletecase_dialog").hide()
 
   ).on("click", "#deletecase_confirm", ->

@@ -32,6 +32,10 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       ##{title}
     .md
     img.control.textedit.session(src='/icons/pencil.png')
+a#prevpage(href='/case/#{cid}/#{prevpage}')
+  img.control(src='/icons/arrow-180.png')
+a#nextpage(href='/case/#{cid}/#{nextpage}')
+  img.control(src='/icons/arrow.png')
 #imagepageradios
   - each r in radios
     .radio.radioimagepage(id='#{r.ID}')
@@ -47,10 +51,6 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       img.control.moveradioup(style='display:none', src='/icons/arrow-090.png')
       img.control.moveradiodown(style='display:none', src='/icons/arrow-270.png')
   img.control#addstack(style='display:none', src='/icons/plus.png')
-a#prevpage(href='/case/#{cid}/#{prevpage}', style='float: left; clear: left')
-  img.control(src='/icons/arrow-180.png')
-a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right; clear right')
-  img.control(src='/icons/arrow.png')
 #markdown-help(style='display:none')
   img#help_cancel(src='/icons/cross.png')
   textarea.mdtxt(style='display:none')
@@ -66,6 +66,12 @@ img.control#feedbackbutton(src='/icons/balloon.png')
 #info(style='display:none')
 script(type='text/javascript')
   $(function(){
+    $("#{modalities}").each(function(){
+      $(this).attr("checked",true);
+    });
+    $("#{description}").each(function(){
+      $(this).attr("checked",true);
+    });
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {

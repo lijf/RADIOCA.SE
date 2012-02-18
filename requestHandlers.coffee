@@ -16,6 +16,7 @@ render = (req, res, theCase, editor) ->
     signed_in: req.isAuthenticated()
     user: req.getAuthDetails().user.username
     cid: req.params.id
+    hidden: theCase.hidden or ""
     modalities: theCase.modalities or ""
     description: theCase.description or ""
     prevpage: theCase.prevpage
@@ -29,23 +30,27 @@ render = (req, res, theCase, editor) ->
 rendercase = (req, res, theCase, editor) ->
   db.get "markdown-help", (err, data) ->
     theCase.mdhelp = JSON.parse(data)
-    db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
-      return render(req, res, theCase, editor)  if radioIDs.length < 1
-      theCase.radios = []
-      radioIDs.forEach (radioID, ID) ->
-        db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
-          theCase.radios[ID] = []
-          theCase.radios[ID].ID = radioID
-          theCase.radios[ID].caption = caption  if caption
-          db.lrange "radio:" + radioID, 0, -1, (err, images) ->
-            theCase.radios[ID].images = []
-            images.forEach (image, imgID) ->
-              theCase.radios[ID].images[imgID] = image
-            theCase.feedback = []
-            db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
-              feedback.forEach (fb, fbID) ->
-                theCase.feedback[fbID] = fb
-              render req, res, theCase, editor  unless radioIDs[ID + 1]
+    db.hgetall "case:" + req.params.id, (err, casedata) ->
+      unless err || !casedata
+        theCase.modalities = casedata.modalities
+        theCase.description = casedata.description
+      db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
+        return render(req, res, theCase, editor)  if radioIDs.length < 1
+        theCase.radios = []
+        radioIDs.forEach (radioID, ID) ->
+          db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
+            theCase.radios[ID] = []
+            theCase.radios[ID].ID = radioID
+            theCase.radios[ID].caption = caption  if caption
+            db.lrange "radio:" + radioID, 0, -1, (err, images) ->
+              theCase.radios[ID].images = []
+              images.forEach (image, imgID) ->
+                theCase.radios[ID].images[imgID] = image
+              theCase.feedback = []
+              db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+                feedback.forEach (fb, fbID) ->
+                  theCase.feedback[fbID] = fb
+                render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->
@@ -111,6 +116,7 @@ deleteCaseID = (cid) ->
   db.get "case:" + cid + ":pages", (err, pages) ->
     unless err or !pages
       deletePage2 cid, page for page in [0..pages]
+      db.del "case:" + cid
       db.del "case:" + cid + ":pages"
       db.del "case:" + cid + ":users"
       db.del "case:" + cid + ":firstpage"
@@ -134,6 +140,9 @@ putPage = (req, res) ->
   db.zadd "cases", data.created, data.cid
   db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
   db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
+  db.hmset "case:" + req.params.id, data
+#  db.hset "case:" + req.params.id, "modalities", data.modalities
+#  db.hset "case:" + req.params.id, "description", data.description
   if data.radios
   #  db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->
@@ -153,6 +162,7 @@ postNewpage = (req, res) ->
     db.hget "case:" + cid + ":page:" + prevpage, "nextpage", (err, nextpage) ->
       pagedata.prevpage = prevpage
       pagedata.nextpage = nextpage
+      db.hmset "case:" + cid, pagedata
       db.hmset "case:" + cid + ":page:" + page, pagedata
       db.hset "case:" + cid + ":page:" + prevpage, "nextpage", page
       db.hset "case:" + cid + ":page:" + nextpage, "prevpage", page

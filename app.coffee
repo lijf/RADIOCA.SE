@@ -179,6 +179,20 @@ app.put "/case/:id/:page", (req, res) ->
     if editor
       requestHandlers.putPage req, res
 
+app.post "/hide/:id", (req, res) ->
+  console.log "Hide case " + req.params.id + " called"
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
+    if owner
+      db.hset "case:" + req.params.id, "hidden", "1"
+
+app.post "/show/:id", (req, res) ->
+  console.log "Hide case " + req.params.id + " called"
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
+    if owner
+      db.hset "case:" + req.params.id, "hidden", "0"
+
 app.delete "/case/:id", (req, res) ->
   console.log "DELETE /case/" + req.params.id + " called"
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()

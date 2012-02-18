@@ -247,6 +247,22 @@
     });
   });
 
+  app.post("/hide/:id", function(req, res) {
+    console.log("Hide case " + req.params.id + " called");
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
+    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
+      if (owner) return db.hset("case:" + req.params.id, "hidden", "1");
+    });
+  });
+
+  app.post("/show/:id", function(req, res) {
+    console.log("Hide case " + req.params.id + " called");
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
+    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
+      if (owner) return db.hset("case:" + req.params.id, "hidden", "0");
+    });
+  });
+
   app["delete"]("/case/:id", function(req, res) {
     console.log("DELETE /case/" + req.params.id + " called");
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);

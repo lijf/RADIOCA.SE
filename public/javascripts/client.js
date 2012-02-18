@@ -18,6 +18,12 @@
     json.private = $("#private").is(":checked");
     json.created = $("#created").val();
     json.pagetype = type;
+    json.modalities = $(".modality:checked").map(function() {
+      return $(this).val();
+    }).get();
+    json.description = $(".description:checked").map(function() {
+      return $(this).val();
+    }).get();
     return $.ajax({
       url: window.location.pathname + "/newpage",
       type: "POST",
@@ -98,14 +104,14 @@
             samp = 0;
             touch = e.touches[0];
             if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
+              visimg.prev().show();
               visimg.next().hide();
               visimg.hide();
-              visimg.prev().show();
               visimg = visimg.prev();
             } else if (visimg.next().length > 0) {
+              visimg.next().show();
               visimg.prev().hide();
               visimg.hide();
-              visimg.next().show();
               visimg = visimg.next();
             }
             return lastY = parseInt(touch.pageY, 10);
@@ -158,7 +164,6 @@
     json.description = $(".description:checked").map(function() {
       return $(this).val();
     }).get();
-    alert(JSON.stringify(json));
     return json;
   };
 
@@ -166,7 +171,7 @@
     return $("#session").html("<button id=\"sign_out\">Sign out " + user + "</button>");
   };
 
-  converter = new Showdown.converter();
+  converter = Markdown.getSanitizingConverter();
 
   authcallback = function(data) {
     return $.ajax({
@@ -217,13 +222,13 @@
       delta = e.originalEvent.detail;
       if (!delta) delta = e.originalEvent.wheelDelta;
       if (delta > 0 && $(this).next().length > 0) {
-        $(this).prev().hide();
-        $(this).hide();
         $(this).next().show();
-      } else if (delta < 0 && $(this).prev().length > 0) {
-        $(this).next().hide();
         $(this).hide();
+        $(this).prev().hide();
+      } else if (delta < 0 && $(this).prev().length > 0) {
         $(this).prev().show();
+        $(this).hide();
+        $(this).next().hide();
       }
       return e.preventDefault();
     }).on("click", "#user_settings", function() {
@@ -387,10 +392,29 @@
       rendermd();
       $(".radio:last", top.document).append($("<img class=\"control removeradio\" src=\'/icons/cross.png\'>"));
       return $(".caption:last", top.document).append($("<img class=\"control textedit\" src=\'/icons/pencil.png\' style=\'display:inline\'>"));
+    }).on("click", ".hidecase", function() {
+      var targeturl;
+      targeturl = "/hide/" + $(this).attr("ID");
+      $(this).siblings(".showcase").show();
+      $(this).hide();
+      return $.ajax({
+        url: targeturl,
+        type: "POST"
+      });
+    }).on("click", ".showcase", function() {
+      var targeturl;
+      targeturl = "/show/" + $(this).attr("ID");
+      $(this).siblings(".hidecase").show();
+      $(this).hide();
+      return $.ajax({
+        url: targeturl,
+        type: "POST"
+      });
     }).on("click", ".deletecase", function() {
-      $(this).addClass("selected");
+      $(this).parent().parent().addClass("selected");
       return $("#deletecase_dialog").show();
     }).on("click", "#deletecase_cancel", function() {
+      $(".selected").removeClass("selected");
       return $("#deletecase_dialog").hide();
     }).on("click", "#deletecase_confirm", function() {
       var targeturl;
