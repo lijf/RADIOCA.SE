@@ -296,6 +296,7 @@
       if (editor) {
         db.del("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption");
         db.lrem("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, req.params.radio);
+        db.del("radio:" + req.params.radio);
         db.lpush("removedRadios", req.params.radio);
         return res.send("OK", 200);
       }

@@ -216,6 +216,7 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
       db.del "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption"
       db.lrem "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, req.params.radio
 #      db.srem "image:" + req.params.radio, req.params.id
+      db.del "radio:" + req.params.radio
       db.lpush "removedRadios", req.params.radio
       res.send "OK", 200
 

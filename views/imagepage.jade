@@ -23,6 +23,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
       button(id='deletepage_confirm', type='button')
         | Delete Page
     img.control#newpage(src='/icons/plus.png')
+    img.control#boxit(src='/icons/box.png')
   #created(style='display:none')
     | #{created}
 #title
@@ -43,17 +44,18 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
         .md
         img.control.textedit.session(src='/icons/pencil.png')
       img.control.removeradio(style='display:none', src='/icons/cross.png')
-    img.control#addstack(style='display:none', src='/icons/plus.png')
-a#prevpage(href='/case/#{cid}/#{prevpage}', style='float: left')
+      img.control.moveradioup(style='display:none', src='/icons/arrow-090.png')
+      img.control.moveradiodown(style='display:none', src='/icons/arrow-270.png')
+  img.control#addstack(style='display:none', src='/icons/plus.png')
+a#prevpage(href='/case/#{cid}/#{prevpage}', style='float: left; clear: left')
   img.control(src='/icons/arrow-180.png')
-a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right')
+a#nextpage(href='/case/#{cid}/#{nextpage}', style='float: right; clear right')
   img.control(src='/icons/arrow.png')
-  #markdown-help(style='display:none')
-    a.session(id='help_cancel')
-      | X
-    textarea.mdtxt(style='display:none')
-      #{mdhelp}
-    .md
+#markdown-help(style='display:none')
+  img#help_cancel(src='/icons/cross.png')
+  textarea.mdtxt(style='display:none')
+    #{mdhelp}
+  .md
 img.control#feedbackbutton(src='/icons/balloon.png')
 #feedbackarea(style='display:none')
   #feedbacktext

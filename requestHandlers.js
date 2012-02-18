@@ -185,9 +185,12 @@
       db.zrem("cases", data.cid);
     }
     db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);
+    db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
     if (data.radios) {
+      db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
       data.radios.forEach(function(r, rID) {
-        return db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
+        db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
+        return db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id);
       });
     }
     console.log("saved page");

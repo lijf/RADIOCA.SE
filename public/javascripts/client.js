@@ -63,7 +63,11 @@
     $('.removeradio').toggle();
     $(".textedit").toggle();
     $("#addstack").toggle();
-    return $("#controls").toggle();
+    $("#controls").toggle();
+    $(".moveradioup").toggle();
+    $(".moveradiodown").toggle();
+    $("#boxit_dialog").hide();
+    return $("#addstack_dialog").hide();
   };
 
   getfeedback = function() {
@@ -401,6 +405,10 @@
           }
         }
       });
+    }).on("click", ".moveradioup", function() {
+      return $(this).parent().insertBefore($(this).parent().prev());
+    }).on("click", ".moveradiodown", function() {
+      return $(this).parent().insertAfter($(this).parent().next());
     }).on("click", ".removeradio", function() {
       $(this).parent().addClass("selected");
       return $("#removeradio_dialog").show();

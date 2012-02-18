@@ -46,6 +46,10 @@ editfunctions = ->
   $(".textedit").toggle()
   $("#addstack").toggle()
   $("#controls").toggle()
+  $(".moveradioup").toggle()
+  $(".moveradiodown").toggle()
+  $("#boxit_dialog").hide()
+  $("#addstack_dialog").hide()
 
 getfeedback = ->
   $.ajax
@@ -393,6 +397,12 @@ $ ->
           alert "NOT ALLOWED"
           $(".selected").removeClass "selected"
           $("#deletecase_dialog").hide()
+  
+  ).on("click", ".moveradioup", ->
+    $(this).parent().insertBefore($(this).parent().prev())
+
+  ).on("click", ".moveradiodown", ->
+    $(this).parent().insertAfter($(this).parent().next())
   
   ).on("click", ".removeradio", ->
     $(this).parent().addClass "selected"
