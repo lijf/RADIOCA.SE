@@ -2,6 +2,8 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
 #pageinfo
   #meta_cid.hidden #{cid}
   #meta_page.hidden #{page}
+  #meta_modalities.hidden #{modalities}
+  #meta_description.hidden #{description}
   | by:
   a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
@@ -74,6 +76,12 @@ img.control#feedbackbutton(src='/icons/balloon.png')
 #info(style='display:none')
 script(type='text/javascript')
   $(function(){
+    $("#{modalities}").each(function(){
+      $(this).attr("checked",true);
+    });
+    $("#{description}").each(function(){
+      $(this).attr("checked",true);
+    });
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {

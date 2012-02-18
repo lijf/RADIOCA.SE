@@ -3,16 +3,23 @@
   h1.damion Cases
   a(href='/newcase') Create Case
   br
-  #cases_lc
-    - each c in cases
-      a(href='/case/#{c.cid}/1') #{c.title}
-      br
-  #cases_rc
-    - each c in cases
-      | by:
-      a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
-        @#{c.creator}
-      - if (c.creator == user) 
-        button.deletecase(ID='#{c.cid}')
-          | DELETE
-      br
+  table#cases
+    thead
+      tr 
+        th Modalities
+        th Area
+        th Title
+        th Creator
+    tbody
+      - each c in cases
+        tr 
+          td #{c.modalities} 
+          td #{c.description}
+          td 
+            a(href='/case/#{c.cid}/1') #{c.title}
+          td
+            a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
+              @#{c.creator}
+            - if (c.creator == user) 
+              button.deletecase(ID='#{c.cid}')
+                | DELETE

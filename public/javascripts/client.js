@@ -152,9 +152,13 @@
     json.texts = $("#texts>.txt>.mdtxt").map(function() {
       return $(this).val();
     }).get();
-    json.modalities = $(".modality :checked").map(function() {
+    json.modalities = $(".modality:checked").map(function() {
       return $(this).val();
     }).get();
+    json.description = $(".description:checked").map(function() {
+      return $(this).val();
+    }).get();
+    alert(JSON.stringify(json));
     return json;
   };
 

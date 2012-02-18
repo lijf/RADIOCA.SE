@@ -114,10 +114,13 @@ spiderpage = ->
   json.texts = $("#texts>.txt>.mdtxt").map(->
     $(this).val()
   ).get()
-  json.modalities = $(".modality :checked").map(->
+  json.modalities = $(".modality:checked").map(->
     $(this).val()
   ).get()
-  #alert JSON.stringify json
+  json.description = $(".description:checked").map(->
+    $(this).val()
+  ).get()
+  alert JSON.stringify json
   json
 
 sessionButton = (user) ->

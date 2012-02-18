@@ -16,6 +16,8 @@ render = (req, res, theCase, editor) ->
     signed_in: req.isAuthenticated()
     user: req.getAuthDetails().user.username
     cid: req.params.id
+    modalities: theCase.modalities or ""
+    description: theCase.description or ""
     prevpage: theCase.prevpage
     nextpage: theCase.nextpage
     page: req.params.page
@@ -125,14 +127,15 @@ putPage = (req, res) ->
   data.lastEdit = new Date().getTime()
   data.creator = req.getAuthDetails().user.username
   db.zadd "casesLastEdit", data.lastEdit, data.cid
-  if data.private is "false"
-    db.zadd "cases", data.created, data.cid
-  else
-    db.zrem "cases", data.cid
+#  if data.private is "false"
+#    db.zadd "cases", data.created, data.cid
+#  else
+#   db.zrem "cases", data.cid
+  db.zadd "cases", data.created, data.cid
   db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
   db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
   if data.radios
-    db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
+  #  db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->
       db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
       db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id

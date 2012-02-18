@@ -49,42 +49,44 @@ html
         br
         br
         form#modalities_form
-          input.modality(type='checkbox', value='plainfilm') 
+          input.modality#plainfilm(type='checkbox', value='#plainfilm') 
           | Plain Film
-          input.modality(type='checkbox', value='fluro') 
+          input.modality#fluoro(type='checkbox', value='#fluro') 
           | Fluoroscopy
-          input.modality(type='checkbox', value='angio') 
+          input.modality#angio(type='checkbox', value='#angio') 
           | Angiography
           br
-          input.modality(type='checkbox', value='CT') 
+          input.modality#CT(type='checkbox', value='#CT') 
           | CT
-          input.modality(type='checkbox', value='MR') 
+          input.modality#MR(type='checkbox', value='#MR') 
           | MR
-          input.modality(type='checkbox', value='ultrasound') 
+          input.modality#ultrasound(type='checkbox', value='#ultrasound') 
           | Ultrasound
-          input.modality(type='checkbox', value='nuclear')
+          input.modality#nuclear(type='checkbox', value='#nuclear')
           | Nuclear Medicine
         br
         br
         form#description_form
-          input.description(type='checkbox', value='Neuro')
+          input.description#neuro(type='checkbox', value='#neuro')
           | Neuro
-          input.description(type='checkbox', value='Head & Neck')
+          input.description#headNeck(type='checkbox', value='#headNeck')
           | Head & Neck 
-          input.description(type='checkbox', value='Cardiothoracic')
+          input.description#cardiothoracic(type='checkbox', value='#cardiothoracic')
           | Cardiothoracic
           br
-          input.description(type='checkbox', value='Abdominal')
+          input.description#abdominal(type='checkbox', value='#abdominal')
           | Abdominal
-          input.description(type='checkbox', value='Interventional')
+          input.description#interventional(type='checkbox', value='#interventional')
           | Interventional
-          input.description(type='checkbox', value='Musculoskeletal')
+          input.description#musculoskeletal(type='checkbox', value='#musculoskeletal')
           | Musculoskeletal
           br
-          input.description(type='checkbox', value='Breast')
+          input.description#breast(type='checkbox', value='#breast')
           | Breast
-          input.description(type='checkbox', value='Pediatric')
+          input.description#pediatric(type='checkbox', value='#pediatric')
           | Pediatric
+          input.description#other(type='checkbox', value='#other')
+          | Other
 
       #addstack_dialog.dialog_box(style='display:none')
         | Please choose image(s) to upload.
