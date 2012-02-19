@@ -154,6 +154,14 @@ app.get "/case/:id/:page/feedback", (req, res) ->
     res.partial "feedback",
     object: pagefeedback
 
+app.post "/bookmark/:id", (req, res) ->
+  return res.send 444 unless req.isAuthenticated()
+  db.sadd "bookmarks:" + req.getAuthDetails().user_id, req.params.id
+
+app.post "/rmbookmark/:id", (req, res) ->
+  return res.send 444 unless req.isAuthenticated()
+  db.srem "bookmarks:" + req.getAuthDetails().user_id, req.params.id
+
 app.post "/case/:id/:page/newpage", (req, res) ->
   console.log "newpage triggered"
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->

@@ -8,6 +8,10 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
   | &#x2002;
+  - if (bookmarked)
+    img.control.rmbookmark(ID='#{cid}', src='/icons/bookmark.png')
+  - else 
+    img.control.bookmark(ID='#{cid}', src='/icons/bookmark_bw.png')
   span#lock
     a.abutton#lock(title='Edit Page')
       span#locked
@@ -82,10 +86,10 @@ script(type='text/javascript')
     $("#{description}").each(function(){
       $(this).attr("checked",true);
     });
+    $("##{language}").attr("checked", true);
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {
       $("#lock").show();
       };
-    if(#{private}=='1'){$('#private').attr('checked', true);}
   });

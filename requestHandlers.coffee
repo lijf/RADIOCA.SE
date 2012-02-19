@@ -5,6 +5,7 @@ redis = require("redis")
 db = redis.createClient()
 
 render = (req, res, theCase, editor) ->
+  console.dir theCase
   #console.log theCase.pagetype
   res.render theCase.pagetype,
     title: theCase.title or " - untitled"
@@ -18,8 +19,10 @@ render = (req, res, theCase, editor) ->
     cid: req.params.id
     modalities: theCase.modalities or ""
     description: theCase.description or ""
+    language: theCase.language or ""
     prevpage: theCase.prevpage
     nextpage: theCase.nextpage
+    bookmarked: theCase.bookmarked
     page: req.params.page
     editor: editor
     private: theCase.private or 0
@@ -27,29 +30,36 @@ render = (req, res, theCase, editor) ->
     style: theCase.style
 
 rendercase = (req, res, theCase, editor) ->
+  #console.dir req.getAuthDetails()
   db.get "markdown-help", (err, data) ->
     theCase.mdhelp = JSON.parse(data)
     db.hgetall "case:" + req.params.id, (err, casedata) ->
-      unless err || !casedata
+      unless err or !casedata
         theCase.modalities = casedata.modalities
         theCase.description = casedata.description
-      db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
-        return render(req, res, theCase, editor)  if radioIDs.length < 1
-        theCase.radios = []
-        radioIDs.forEach (radioID, ID) ->
-          db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
-            theCase.radios[ID] = []
-            theCase.radios[ID].ID = radioID
-            theCase.radios[ID].caption = caption  if caption
-            db.lrange "radio:" + radioID, 0, -1, (err, images) ->
-              theCase.radios[ID].images = []
-              images.forEach (image, imgID) ->
-                theCase.radios[ID].images[imgID] = image
-              theCase.feedback = []
-              db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
-                feedback.forEach (fb, fbID) ->
-                  theCase.feedback[fbID] = fb
-                render req, res, theCase, editor  unless radioIDs[ID + 1]
+      if casedata.hidden == 'true' && !editor && req.getAuthDetails().username != 'radioca1se'
+        res.redirect '/'
+      db.sismember "bookmarks:" + req.getAuthDetails().user_id, req.params.id, (err, bookmarked) ->
+        unless err
+          theCase.bookmarked = bookmarked
+        db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
+          return render(req, res, theCase, editor)  if radioIDs.length < 1
+          theCase.radios = []
+          radioIDs.forEach (radioID, ID) ->
+            db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
+              theCase.radios[ID] = []
+              theCase.radios[ID].ID = radioID
+              theCase.radios[ID].caption = caption  if caption
+              db.lrange "radio:" + radioID, 0, -1, (err, images) ->
+                theCase.radios[ID].images = []
+                images.forEach (image, imgID) ->
+                  theCase.radios[ID].images[imgID] = image
+                theCase.feedback = []
+                db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+                  feedback.forEach (fb, fbID) ->
+                    theCase.feedback[fbID] = fb
+                  #console.dir theCase
+                  render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->

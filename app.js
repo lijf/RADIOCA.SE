@@ -218,6 +218,16 @@
     });
   });
 
+  app.post("/bookmark/:id", function(req, res) {
+    if (!req.isAuthenticated()) return res.send(444);
+    return db.sadd("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
+  });
+
+  app.post("/rmbookmark/:id", function(req, res) {
+    if (!req.isAuthenticated()) return res.send(444);
+    return db.srem("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
+  });
+
   app.post("/case/:id/:page/newpage", function(req, res) {
     console.log("newpage triggered");
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {

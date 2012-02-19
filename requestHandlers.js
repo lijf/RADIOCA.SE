@@ -12,6 +12,7 @@
   db = redis.createClient();
 
   render = function(req, res, theCase, editor) {
+    console.dir(theCase);
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
       radios: theCase.radios || "",
@@ -24,8 +25,10 @@
       cid: req.params.id,
       modalities: theCase.modalities || "",
       description: theCase.description || "",
+      language: theCase.language || "",
       prevpage: theCase.prevpage,
       nextpage: theCase.nextpage,
+      bookmarked: theCase.bookmarked,
       page: req.params.page,
       editor: editor,
       private: theCase.private || 0,
@@ -42,25 +45,33 @@
           theCase.modalities = casedata.modalities;
           theCase.description = casedata.description;
         }
-        return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
-          if (radioIDs.length < 1) return render(req, res, theCase, editor);
-          theCase.radios = [];
-          return radioIDs.forEach(function(radioID, ID) {
-            return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
-              theCase.radios[ID] = [];
-              theCase.radios[ID].ID = radioID;
-              if (caption) theCase.radios[ID].caption = caption;
-              return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
-                theCase.radios[ID].images = [];
-                images.forEach(function(image, imgID) {
-                  return theCase.radios[ID].images[imgID] = image;
-                });
-                theCase.feedback = [];
-                return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
-                  feedback.forEach(function(fb, fbID) {
-                    return theCase.feedback[fbID] = fb;
+        if (casedata.hidden === 'true' && !editor && req.getAuthDetails().username !== 'radioca1se') {
+          res.redirect('/');
+        }
+        return db.sismember("bookmarks:" + req.getAuthDetails().user_id, req.params.id, function(err, bookmarked) {
+          if (!err) theCase.bookmarked = bookmarked;
+          return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
+            if (radioIDs.length < 1) return render(req, res, theCase, editor);
+            theCase.radios = [];
+            return radioIDs.forEach(function(radioID, ID) {
+              return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
+                theCase.radios[ID] = [];
+                theCase.radios[ID].ID = radioID;
+                if (caption) theCase.radios[ID].caption = caption;
+                return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
+                  theCase.radios[ID].images = [];
+                  images.forEach(function(image, imgID) {
+                    return theCase.radios[ID].images[imgID] = image;
                   });
-                  if (!radioIDs[ID + 1]) return render(req, res, theCase, editor);
+                  theCase.feedback = [];
+                  return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
+                    feedback.forEach(function(fb, fbID) {
+                      return theCase.feedback[fbID] = fb;
+                    });
+                    if (!radioIDs[ID + 1]) {
+                      return render(req, res, theCase, editor);
+                    }
+                  });
                 });
               });
             });

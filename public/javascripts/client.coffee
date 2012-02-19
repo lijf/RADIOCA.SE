@@ -139,7 +139,8 @@ spiderpage = ->
   json.description = $(".description:checked").map(->
     $(this).val()
   ).get()
-#  alert JSON.stringify json
+  json.language = $("input:radio[name=language]:checked").val() 
+  #  alert JSON.stringify json
   json
 
 sessionButton = (user) ->
@@ -205,6 +206,22 @@ $ ->
 #            visimg = visimg.next()
 #          return lastY = parseInt(touch.pageY, 10)
 #        e.preventDefault()
+  ).on("click", ".bookmark", ->
+    $(this).removeClass('bookmark')
+    $(this).addClass('rmbookmark')
+    $(this).attr('src', '/icons/bookmark.png')
+    $.ajax
+      type: "POST"
+      url: "/bookmark/" + $(this).attr("ID")
+
+  ).on("click", ".rmbookmark", ->
+    $(this).removeClass('rmbookmark')
+    $(this).addClass('bookmark')
+    $(this).attr('src','/icons/bookmark_bw.png')
+    $.ajax
+      type: "POST"
+      url: "/rmbookmark/" + $(this).attr("ID")
+  
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')
 

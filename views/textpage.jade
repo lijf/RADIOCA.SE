@@ -66,6 +66,7 @@ script(type='text/javascript')
     $("#{description}").each(function(){
       $(this).attr("checked",true);
     });
+    $("##{language}").attr("checked", true);
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {

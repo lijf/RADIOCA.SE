@@ -180,6 +180,7 @@
     json.description = $(".description:checked").map(function() {
       return $(this).val();
     }).get();
+    json.language = $("input:radio[name=language]:checked").val();
     return json;
   };
 
@@ -226,7 +227,23 @@
     $(".stack").children(":first-child").show();
     $('tbody tr').addClass('visible');
     zebrarows('tbody tr:odd td', 'odd');
-    $(document).on("focus", "#filter", function() {
+    $(document).on("click", ".bookmark", function() {
+      $(this).removeClass('bookmark');
+      $(this).addClass('rmbookmark');
+      $(this).attr('src', '/icons/bookmark.png');
+      return $.ajax({
+        type: "POST",
+        url: "/bookmark/" + $(this).attr("ID")
+      });
+    }).on("click", ".rmbookmark", function() {
+      $(this).removeClass('rmbookmark');
+      $(this).addClass('bookmark');
+      $(this).attr('src', '/icons/bookmark_bw.png');
+      return $.ajax({
+        type: "POST",
+        url: "/rmbookmark/" + $(this).attr("ID")
+      });
+    }).on("focus", "#filter", function() {
       if ($(this).val() === 'Type to filter') return $(this).val('');
     }).on("keyup", "#filter", function() {
       if (event.keyCode === 27 || $(this).val() === '') {

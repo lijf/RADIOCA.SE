@@ -8,6 +8,7 @@
         th Modalities
         th Area
         th Title
+        th
         th Creator
         th
         th
@@ -19,6 +20,8 @@
             td #{c.description}
             td 
               a(href='/case/#{c.cid}/1') #{c.title}
+            td
+              img(src='/icons/#{c.language}.png')
             td
               a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
               @#{c.creator}

@@ -45,8 +45,17 @@ html
         button#deletecase_cancel(type='button')
           | Cancel
       #boxit_dialog.dialog_box(style='display:none')
-        | Please check applicable modalities and areas
+        | Please check applicable language, modalities and areas
         br
+        br
+        br
+        form#language_form
+          input.language#se(name='language', type='radio', value='se')
+          | Swedish
+          input.language#gb(name='language', type='radio', value='gb')
+          | English
+          input.language#es(name='language', type='radio', value='es')
+          | Spanish
         br
         br
         form#modalities_form
