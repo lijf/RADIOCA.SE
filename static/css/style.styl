@@ -1,0 +1,404 @@
+input.rounded
+    -moz-border-radus 10px
+    -webkit-border-radius 10px
+    border-radius 10px
+    -moz-box-shadow 2px 2px 3px #222
+    -webkit-box-shadow 2px 2px 3px #222
+    box-shadow 2px 2px 3px #222
+    position absolute
+    top 35px
+    right 5% 
+tbody td
+    background-color #444
+    color #ccc
+tbody td.odd
+    background-color #555
+    color #ccc
+td.hovered
+    background-color lightblue
+    color #666
+.hidecase
+    position absolute
+    cursor pointer
+.showcase
+    position absolute
+    cursor pointer
+#nextpage
+    position fixed
+    right 0px
+    bottom 10px
+    z-index 10000
+#prevpage
+    position fixed
+    left -5px
+    bottom 10px
+    z-index 10000
+.language
+    margin 10px
+    white-space nowrap
+.modality
+    margin 10px    
+    white-space nowrap
+.description
+    margin 10px
+    white-space nowrap
+#modalities_form
+    font-family helvetica, arial
+#description_form
+    font-family helvetica, arial
+.control
+    cursor pointer 
+    margin 0 10px
+    height 24px
+button
+    height 21px
+    vertical-align top
+a
+    -webkit-user-select none
+    -khtml-user-select none
+    -moz-user-select none
+    -o-user-select none
+    user-select none
+#textpage
+    width 100%
+.userradio
+    float left
+    width 49%
+    position relative
+.radio
+    float left
+    width 100%
+    position relative
+.radioimagepage
+    width 50%
+#help_cancel
+    cursor pointer
+    position absolute
+    top 5px
+    right 5px
+.removeradio
+    cursor pointer
+    position absolute
+    top 5px
+    right 5px
+.moveradiodown
+    cursor pointer
+    position absolute
+    bottom 5px
+    left 5px
+.moveradioup
+    cursor pointer
+    position absolute
+    top 5px
+    left 5px
+.pageimage
+    width 30%
+    margin 1%
+    cursor pointer
+#cheatsheet
+    td,th
+        padding 5px
+#feedbackbutton
+    float left
+    clear both
+    margin-top 10px
+#locked
+    height 24px
+span#lock
+    display none
+span#open
+    display none
+span#controls
+    display none
+#disclaimer
+    clear both
+#timestamp
+    font-family helvetica arial
+    font-size 12px
+#feedbackarea
+    clear both
+    width 100%
+#feedbackarea > textarea
+    width 100%
+#colophon
+    clear both
+#topleftdiv
+    float left
+    height 25px
+    width 55%
+#title
+    margin-top 20px
+#title>.txt>.textedit
+    margin-top -2em
+#title>.txt>.mdtxt
+    text-align center
+#title>.txt>.md
+    background-image url('/images/OffGray.jpg')
+    margin 0 auto
+    text-align center
+.txt>.abutton
+    margin-bottom 0px
+.textedit
+    float right
+    margin -20px 0px 0px 0px
+    display none
+.paper
+    background-image url("/images/paper/Texture0213.jpg")
+.abutton
+    cursor pointer
+    font-size 1.2em
+#container
+    margin 0 auto
+    width 90%
+#indexpage
+    text-align center
+#userinfo
+    position absolute
+    top 25px
+    right 5%
+    z-index 1
+    padding 0 10px 10px 10px
+    border-style solid
+    border-width 0 0 1px 1px
+    border-color #aaa
+    background #333
+.session
+    font-family helvetica, arial
+    cursor pointer
+.big_logo
+    color #bca
+    font-family "Orbitron"
+    font-weight bold
+    font-size 50pt
+    margin-top 30px
+.orbitron
+    color #bca 
+    font-family "Orbitron"
+//    color #bca
+.damion
+    font-family "Damion"
+#sl
+    position fixed
+#horizon
+    top 35%
+    left 0px
+    width 100%
+    height 1px
+    overflow visible
+    display block
+    position fixed 
+.dialog_box
+    width 65%
+    position absolute
+    left 50%
+    margin-left -32%
+    top -50%
+    visibility visible
+    background #222
+    padding 8px
+    border 2px
+    border-style solid
+    border-color #aaa
+#footer
+    padding 30px 0
+    text-align center
+    clear both
+#session
+    float right
+    height 20px
+#savepage
+    height 25px
+#pageinfo
+    height 17px
+    padding 4px
+    float left
+#radios
+    float left
+    width 50%
+#imagepageradios
+    width 100%
+.selected
+    border-color #f00
+    border solid
+.stack
+    position relative
+    overflow hidden
+.stack_image
+    display none
+    top 0px
+    left 0px
+    width 100%
+    overflow hide
+.imgload
+    visibility hidden
+.caption>.md
+    background none
+    margin-top -15px
+    color #888
+.casesh1
+    text-align center
+.casesli
+    text-align center
+.deletecase
+    position absolute
+    cursor pointer
+#cases
+    line-height 150%
+    width 100%
+    float left
+    text-align center
+#texts
+    width 50%
+    float right
+    clear both
+.txt
+    background-image url("/images/paper/Texture0213.jpg")
+    color #006
+@media screen and (max-width: 450px)
+    input.rounded
+        right 0px
+    #markdown-help
+        width 100%
+    #sl
+        display none
+    #centereddiv
+        left 0
+    #container
+        width 100%
+    #session
+        top 5px
+        margin 0 auto
+    #pageinfo
+        top 15px
+        margin 0 auto
+    #radios
+        width 100%
+    #texts
+        width 100%
+    .radioimagepage
+        width 100%
+@media screen and (max-width: 585px)
+    .big_logo
+        font-size 30pt
+@media screen and (min-width: 1024px)
+    .radioimagepage
+        width 33%
+    #radios
+        width 65%
+    #texts
+        width 35%
+    #markdown-help
+        width 65%
+#readme
+    padding 5%
+#about
+    clear left
+    padding 5%
+textarea
+    width 99%
+    line-height 1.2
+    font-family monospace
+    font-size 100%
+.md
+    padding 10px 30px
+.mdtxt
+    float left
+#markdown-help
+    background-image url("/images/paper/Texture0213.jpg")
+    color #006
+    position absolute
+    width 45%
+    top 40px
+    left 5%
+#editbar
+    height 20px
+    overflow hidden
+    width 12em
+#uploadform
+    position relative
+.fileinputs
+    position relative
+.fakefile
+    position absolute
+    top -5px
+    left 0px
+    z-index 1
+.file
+    position relative
+    -moz-opacity 0
+    opacity 0
+    z-index 2
+button
+    background-color #222
+    color #aaa
+input
+    background-color #222
+    color #aaa
+.hidden
+    width 0px
+    height 0px
+    visibility hidden
+html
+    height 100%
+body
+    font-family Georgia, Palatino, serif
+    color #aaa
+    background-color #333
+    line-height 1
+    height 100%
+    background-image url('/images/OffGray.jpg')
+h1, h2
+    color #e90
+    font-weight 400
+h1, h2, h3, h4, h5, p 
+    margin-bottom 24px
+    padding 0
+h1 
+    font-size 48px
+h2 
+    font-size 36px
+    margin 24px 0 6px
+h3 
+    font-size 24px
+h4 
+    font-size 21px
+h5 
+    font-size 18px
+a 
+    color #0099ff
+    margin 0
+    padding 0
+    vertical-align baseline
+    text-decoration none
+ul, ol 
+    padding 0
+    margin 0
+li 
+    line-height 24px
+p, ul, ol 
+    font-size 16px
+    line-height 24px
+    max-width: 540px
+pre 
+    padding 0px 24px
+    max-width 800px
+    white-space pre-wrap
+code 
+    font-family Consolas, Monaco, Andale Mono, monospace
+    line-height 1.5
+    font-size 13px
+aside 
+    display block
+    float right
+    width 390px
+blockquote 
+    margin 1em 2em
+    max-width 476px
+blockquote p 
+    color #aaa
+    max-width 460px
+hr 
+    width 100%
+    text-align left
+    margin 0 auto 0 0
+    color #aaa

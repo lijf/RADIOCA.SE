@@ -27,7 +27,7 @@ app.configure ->
   app.use express.methodOverride()
   app.use express.cookieParser()
   app.use express.session(secret: "eventuallycloseduringnative")
-  app.use require("stylus").middleware(src: __dirname + "/public")
+  app.use require("stylus").middleware(src: __dirname + "/")
   app.use easyoauth(require("./keys_file"))
   app.use app.router
   app.use express.favicon(__dirname + "/public/favicon.ico")
@@ -337,4 +337,5 @@ app.post "/image/:id/:page", (req, res) ->
 
 port = process.env.PORT or 3000
 app.listen port, ->
+  console.log process.env.NODE_ENV
   console.log "Express server listening on port %d in %s mode", app.address().port, app.settings.env

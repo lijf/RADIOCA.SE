@@ -53,7 +53,7 @@
       secret: "eventuallycloseduringnative"
     }));
     app.use(require("stylus").middleware({
-      src: __dirname + "/public"
+      src: __dirname + "/"
     }));
     app.use(easyoauth(require("./keys_file")));
     app.use(app.router);
@@ -383,6 +383,7 @@
   port = process.env.PORT || 3000;
 
   app.listen(port, function() {
+    console.log(process.env.NODE_ENV);
     return console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
   });
 
