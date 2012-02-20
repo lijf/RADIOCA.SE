@@ -5,12 +5,11 @@
   table#cases
     thead
       tr 
-        th Modalities
-        th Area
-        th Title
+        th.sortable Modalities
+        th.sortable Area
+        th.sortable Title
         th
         th 
-          img#filter_bookmark(src='/static/ico/bookmark.png')
         th Creator
         th
         th
@@ -43,5 +42,5 @@ script(type='text/javascript")
   var bookmarks = [#{bookmarks}];
   //alert(bookmarks);
   for (var i = 0; i < bookmarks.length; i++){
-    $("td.bm#"+bookmarks[i]).html("<img src='/static/ico/bookmark.png'>");
+    $("td.bm#"+bookmarks[i]).html("<img src='/static/ico/bookmark.png'><div style='display:none'>#bm</div>");
   }

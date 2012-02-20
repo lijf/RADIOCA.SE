@@ -222,10 +222,42 @@
 
   $(function() {
     rendermd();
-    touchscroll();
-    $(".stack").children(":first-child").show();
-    $('tbody tr').addClass('visible');
-    zebrarows('tbody tr:odd td', 'odd');
+    $("thead th.sortable").each(function(column) {
+      $(this).click(function() {
+        var $rows, $sortHead, findSortKey, sortDirection;
+        findSortKey = function($cell) {
+          return $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase();
+        };
+        sortDirection = ($(this).is('.sorted-asc') ? -1 : 1);
+        $rows = $(this).parent().parent().parent().find('tbody tr').get();
+        $.each($rows, function(index, row) {
+          return row.sortKey = findSortKey($(row).children('td').eq(column));
+        });
+        $rows.sort(function(a, b) {
+          if (a.sortKey < b.sortKey) return -sortDirection;
+          if (a.sortKey > b.sortKey) return sortDirection;
+          return 0;
+        });
+        $.each($rows, function(index, row) {
+          $('tbody').append(row);
+          return row.sortKey = null;
+        });
+        $('th').removeClass('sorted-asc sorted-desc');
+        $sortHead = $('th').filter(':nth-child(' + (column + 1) + ')');
+        if (sortDirection === 1) {
+          $sortHead.addClass("sorted-asc");
+        } else {
+          $sortHead.addClass("sorted-desc");
+        }
+        $("td").removeClass("sorted").filter(":nth-child(" + (column + 1) + ")").addClass("sorted");
+        $(".visible td").removeClass("odd");
+        return zebrarows(".visible:even td", "odd");
+      });
+      touchscroll();
+      $(".stack").children(":first-child").show();
+      $('tbody tr').addClass('visible');
+      return zebrarows('tbody tr:odd td', 'odd');
+    });
     $(document).on("click", ".bookmark", function() {
       $(this).removeClass('bookmark');
       $(this).addClass('rmbookmark');

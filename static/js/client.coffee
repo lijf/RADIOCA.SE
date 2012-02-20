@@ -171,40 +171,50 @@ savepage = ->
 
 $ ->
   rendermd()
-  touchscroll()
-  $(".stack").children(":first-child").show()
-  $('tbody tr').addClass('visible')
-  zebrarows('tbody tr:odd td', 'odd')
-  
-  #$('tbody tr').hover(
-  #  ->$(this).find('td').addClass('hovered')
-  #  ->$(this).find('td').removeClass('hovered')
-  #)
-  
+  $("thead th.sortable").each (column) ->
+    $(this).click ->
+      findSortKey = ($cell) ->
+        $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase()
+      sortDirection = (if $(this).is('.sorted-asc') then -1 else 1)
+      
+      #step back up the tree and get the rows with data for sorting
+
+      $rows = $(this).parent().parent().parent().find('tbody tr').get()
+
+      #loop through all the rows and find
+      $.each $rows, (index, row) ->
+        row.sortKey = findSortKey($(row).children('td').eq(column))
+
+      #compare and sort the rows alphabetically
+      $rows.sort (a,b) ->
+        return -sortDirection if a.sortKey < b.sortKey
+        return sortDirection if a.sortKey > b.sortKey
+        0
+
+      #add the rows in the correct order to the bottom of the table
+      $.each $rows, (index, row) ->
+        $('tbody').append row
+        row.sortKey = null
+
+      #identify the column sort order
+      $('th').removeClass('sorted-asc sorted-desc')
+      $sortHead = $('th').filter(':nth-child(' + (column + 1) + ')')
+      (if sortDirection is 1 then $sortHead.addClass("sorted-asc") else $sortHead.addClass("sorted-desc"))
+
+      #identify the column to be sorted by
+      $("td").removeClass("sorted").filter(":nth-child(" + (column + 1) + ")").addClass "sorted"
+
+      $(".visible td").removeClass "odd"
+      zebrarows ".visible:even td", "odd"
+
+    touchscroll()
+    $(".stack").children(":first-child").show()
+    $('tbody tr').addClass('visible')
+    zebrarows('tbody tr:odd td', 'odd')
 
   $(document
   
-#  ).on("ontouchstart", ".stack > .stack_image", ->
-#      visimg = $(this)
-#
-#  ).on("ontouchmove", ".stack > .stack_image", (e) ->
-#      if e.targetTouches.length is 1
-#        samp++
-#        if samp is 3
-#          samp = 0
-#          touch = e.touches[0]
-#          if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
-#            visimg.prev().show()
-#            visimg.hide()
-#            visimg.next().hide()
-#            visimg = visimg.prev()
-#          else if visimg.next().length > 0
-#            visimg.next().show()
-#            visimg.hide()
-#            visimg.prev().hide()
-#            visimg = visimg.next()
-#          return lastY = parseInt(touch.pageY, 10)
-#        e.preventDefault()
+  
   ).on("click", ".bookmark", ->
     $(this).removeClass('bookmark')
     $(this).addClass('rmbookmark')
@@ -263,20 +273,6 @@ $ ->
       $(this).hide()
       $(this).next().hide()
     e.preventDefault()
-
-#  ).on("mousewheel_old", ".stack > .stack_image", (e) ->
-#    delta = e.originalEvent.detail
-#    if !delta
-#      delta = e.originalEvent.wheelDelta
-#    if delta > 0 and $(this).next().length > 0
-#      $(this).prev().css "display", "none"
-#      $(this).css "display", "none"
-#      $(this).next().css "display", "inline"
-#    else if delta < 0 and $(this).prev().length > 0
-#      $(this).next().css "display", "none"
-#      $(this).css "display", "none"
-#      $(this).prev().css "display", "inline"
-#    e.preventDefault()
 
   ).on("click", "#user_settings", ->
     $("#userinfo").toggle()
