@@ -171,6 +171,10 @@ savepage = ->
 
 $ ->
   rendermd()
+  touchscroll()
+  $(".stack").children(":first-child").show()
+  $('tbody tr').addClass('visible')
+  zebrarows('tbody tr:odd td', 'odd')
   $("thead th.sortable").each (column) ->
     $(this).click ->
       findSortKey = ($cell) ->
@@ -206,11 +210,6 @@ $ ->
 
       $(".visible td").removeClass "odd"
       zebrarows ".visible:even td", "odd"
-
-    touchscroll()
-    $(".stack").children(":first-child").show()
-    $('tbody tr').addClass('visible')
-    zebrarows('tbody tr:odd td', 'odd')
 
   $(document
   

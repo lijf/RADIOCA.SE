@@ -222,8 +222,12 @@
 
   $(function() {
     rendermd();
+    touchscroll();
+    $(".stack").children(":first-child").show();
+    $('tbody tr').addClass('visible');
+    zebrarows('tbody tr:odd td', 'odd');
     $("thead th.sortable").each(function(column) {
-      $(this).click(function() {
+      return $(this).click(function() {
         var $rows, $sortHead, findSortKey, sortDirection;
         findSortKey = function($cell) {
           return $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase();
@@ -253,10 +257,6 @@
         $(".visible td").removeClass("odd");
         return zebrarows(".visible:even td", "odd");
       });
-      touchscroll();
-      $(".stack").children(":first-child").show();
-      $('tbody tr').addClass('visible');
-      return zebrarows('tbody tr:odd td', 'odd');
     });
     $(document).on("click", ".bookmark", function() {
       $(this).removeClass('bookmark');
