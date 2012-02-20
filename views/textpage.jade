@@ -6,6 +6,10 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
   | &#x2002;
+  - if (bookmarked)
+    img.control.rmbookmark(ID='#{cid}', src='/icons/bookmark.png')
+  - else 
+    img.control.bookmark(ID='#{cid}', src='/icons/bookmark_bw.png')
   span#lock
     a.abutton#lock(title='Edit Page')
       span#locked
@@ -45,8 +49,7 @@ a#nextpage(href='/case/#{cid}/#{nextpage}')
   br
   br
 #markdown-help(style='display:none')
-  a.session(id='help_cancel')
-    | X
+  img.control.textedit.session(src='/icons/pencil.png')
   textarea.mdtxt(style='display:none')
     #{mdhelp}
   .md

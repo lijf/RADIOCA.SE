@@ -5,8 +5,8 @@ html
     title RADIOCA.SE - #{title}
 
     link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/static/css/reset.css')
-    link(rel='stylesheet', href='/static/css/style.css')
+    link(rel='stylesheet', href='/stylesheets/reset.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
     script(src = '/static/js/jquery-1.7.min.js')
     script(src = '/static/js/jquery-ui-1.8.16.custom.min.js')
     script(src = '/auth/client')
@@ -17,121 +17,122 @@ html
     script(src = '/static/js/client.js')
     //script(src= 'http://10.0.1.5:8124/debug.js')
   body
-    #sl
-      a(href='/')
-        img(src='/images/RADIOCA.SE_small_logo.png')
-    #container
-      #session
-        a.session(id='sign_in') Sign in with twitter
-      #userinfo.session(style='display:none')
-        a(id='sign_out') sign out
-      != body // this renders the body of an individual view
-    #horizon
-      #newpage_dialog.dialog_box(style='display:none')
-        h2.damion(style='text-align:left') Create new page
-        h4 - Choose page layout.
-        #pagetypes
-          img.pageimage#newpage_standard(src='/images/standardpage.svg', alt='Standard')
-          img.pageimage#newpage_text(src='/images/textpage.svg', alt='Textpage')
-          img.pageimage#newpage_image(src='/images/imagepage.svg', alt='Imagepage')
-        button#newpage_cancel
-          | Cancel
-      #deletecase_dialog.dialog_box(style='display:none')
-        | Do you want to delete this case?
-        br
-        br
-        button#deletecase_confirm(type='button')
-          | Delete
-        button#deletecase_cancel(type='button')
-          | Cancel
-      #boxit_dialog.dialog_box(style='display:none')
-        | Please check applicable language, modalities and areas
-        br
-        br
-        br
-        form#language_form
-          input.language#se(name='language', type='radio', value='se')
-          | Swedish
-          input.language#gb(name='language', type='radio', value='gb')
-          | English
-          input.language#es(name='language', type='radio', value='es')
-          | Spanish
-        br
-        br
-        form#modalities_form
-          input.modality#plainfilm(type='checkbox', value='#plainfilm') 
-          | Plain Film
-          input.modality#fluoro(type='checkbox', value='#fluro') 
-          | Fluoroscopy
-          input.modality#angio(type='checkbox', value='#angio') 
-          | Angiography
+    #wrap
+      #sl
+        a(href='/')
+          img(src='/images/RADIOCA.SE_small_logo.png')
+      #container
+        #session
+          a.session(id='sign_in') Sign in with twitter
+        #userinfo.session(style='display:none')
+          a(id='sign_out') sign out
+        != body // this renders the body of an individual view
+      #horizon
+        #newpage_dialog.dialog_box(style='display:none')
+          h2.damion(style='text-align:left') Create new page
+          h4 - Choose page layout.
+          #pagetypes
+            img.pageimage#newpage_standard(src='/images/standardpage.svg', alt='Standard')
+            img.pageimage#newpage_text(src='/images/textpage.svg', alt='Textpage')
+            img.pageimage#newpage_image(src='/images/imagepage.svg', alt='Imagepage')
+          button#newpage_cancel
+            | Cancel
+        #deletecase_dialog.dialog_box(style='display:none')
+          | Do you want to delete this case?
           br
-          input.modality#CT(type='checkbox', value='#CT') 
-          | CT
-          input.modality#MR(type='checkbox', value='#MR') 
-          | MR
-          input.modality#ultrasound(type='checkbox', value='#ultrasound') 
-          | Ultrasound
-          input.modality#nuclear(type='checkbox', value='#nuclear')
-          | Nuclear Medicine
-        br
-        br
-        form#description_form
-          input.description#neuro(type='checkbox', value='#neuro')
-          | Neuro
-          input.description#headNeck(type='checkbox', value='#headNeck')
-          | Head & Neck 
-          input.description#cardiothoracic(type='checkbox', value='#cardiothoracic')
-          | Cardiothoracic
           br
-          input.description#abdominal(type='checkbox', value='#abdominal')
-          | Abdominal
-          input.description#interventional(type='checkbox', value='#interventional')
-          | Interventional
-          input.description#musculoskeletal(type='checkbox', value='#musculoskeletal')
-          | Musculoskeletal
+          button#deletecase_confirm(type='button')
+            | Delete
+          button#deletecase_cancel(type='button')
+            | Cancel
+        #boxit_dialog.dialog_box(style='display:none')
+          | Please check applicable language, modalities and areas
           br
-          input.description#breast(type='checkbox', value='#breast')
-          | Breast
-          input.description#pediatric(type='checkbox', value='#pediatric')
-          | Pediatric
-          input.description#other(type='checkbox', value='#other')
-          | Other
+          br
+          br
+          form#language_form
+            input.language#se(name='language', type='radio', value='se')
+            | Swedish
+            input.language#gb(name='language', type='radio', value='gb')
+            | English
+            input.language#es(name='language', type='radio', value='es')
+            | Spanish
+          br
+          br
+          form#modalities_form
+            input.modality#plainfilm(type='checkbox', value='#plainfilm') 
+            | Plain Film
+            input.modality#fluoro(type='checkbox', value='#fluro') 
+            | Fluoroscopy
+            input.modality#angio(type='checkbox', value='#angio') 
+            | Angiography
+            br
+            input.modality#CT(type='checkbox', value='#CT') 
+            | CT
+            input.modality#MR(type='checkbox', value='#MR') 
+            | MR
+            input.modality#ultrasound(type='checkbox', value='#ultrasound') 
+            | Ultrasound
+            input.modality#nuclear(type='checkbox', value='#nuclear')
+            | Nuclear Medicine
+          br
+          br
+          form#description_form
+            input.description#neuro(type='checkbox', value='#neuro')
+            | Neuro
+            input.description#headNeck(type='checkbox', value='#headNeck')
+            | Head & Neck 
+            input.description#cardiothoracic(type='checkbox', value='#cardiothoracic')
+            | Cardiothoracic
+            br
+            input.description#abdominal(type='checkbox', value='#abdominal')
+            | Abdominal
+            input.description#interventional(type='checkbox', value='#interventional')
+            | Interventional
+            input.description#musculoskeletal(type='checkbox', value='#musculoskeletal')
+            | Musculoskeletal
+            br
+            input.description#breast(type='checkbox', value='#breast')
+            | Breast
+            input.description#pediatric(type='checkbox', value='#pediatric')
+            | Pediatric
+            input.description#other(type='checkbox', value='#other')
+            | Other
 
-      #addstack_dialog.dialog_box(style='display:none')
-        | Please choose image(s) to upload.
-        br
-        | If multiple images are uploaded together,
-        br
-        | they will be combined to a stack.
-        br
-        br
-        form#uploadform
-          .fileinputs
-            input.file(type='file', name='userfile', id='userfile', multiple='multiple')
-            .fakefile
-              input
-              button
-                | Browse
-          input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
-          button(id='addstack_cancel')
-            | cancel
-      #removeradio_dialog.dialog_box(style='display:none')
-        | Do you want to remove the selected stack/radio from this page?
-        br
-        br
-        button#removeradio_confirm(type='button')
-          | Remove radio
-        button#removeradio_cancel(type='button')
-          | Cancel
-      #deleteradio_dialog.dialog_box(style='display:none')
-        | Do you want to delete the selected stack/radio from your collection?
-        br
-        br
-        button#deleteradio_confirm(type='button')
-          | Delete
-        button#deleteradio_cancel(type='button')
-          | Cancel
+        #addstack_dialog.dialog_box(style='display:none')
+          | Please choose image(s) to upload.
+          br
+          | If multiple images are uploaded together,
+          br
+          | they will be combined to a stack.
+          br
+          br
+          form#uploadform
+            .fileinputs
+              input.file(type='file', name='userfile', id='userfile', multiple='multiple')
+              .fakefile
+                input
+                button
+                  | Browse
+            input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
+            button(id='addstack_cancel')
+              | cancel
+        #removeradio_dialog.dialog_box(style='display:none')
+          | Do you want to remove the selected stack/radio from this page?
+          br
+          br
+          button#removeradio_confirm(type='button')
+            | Remove radio
+          button#removeradio_cancel(type='button')
+            | Cancel
+        #deleteradio_dialog.dialog_box(style='display:none')
+          | Do you want to delete the selected stack/radio from your collection?
+          br
+          br
+          button#deleteradio_confirm(type='button')
+            | Delete
+          button#deleteradio_cancel(type='button')
+            | Cancel
     #footer
       a(href='/')
         | Home

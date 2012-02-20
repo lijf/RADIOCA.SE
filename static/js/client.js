@@ -82,7 +82,6 @@
 
   filter2 = function(selector, query) {
     query = $.trim(query);
-    query = query.replace(/\ /gi, '|');
     return $(selector).each(function() {
       if ($(this).text().search(new RegExp(query, "i")) < 0) {
         return $(this).hide().removeClass('visible');
@@ -245,12 +244,18 @@
       });
     }).on("focus", "#filter", function() {
       if ($(this).val() === 'Type to filter') return $(this).val('');
-    }).on("keyup", "#filter", function() {
+    }).on("keyup", "#filter", function(event) {
+      var querys;
       if (event.keyCode === 27 || $(this).val() === '') {
         $(this).val('');
         return $('tbody tr').removeClass('visible').show().addClass('visible');
       } else {
-        return filter2('tbody tr', $(this).val());
+        $('tbody tr').addClass('visible');
+        querys = $(this).val().split("\ ");
+        console.log(querys);
+        return querys.forEach(function(query) {
+          return filter2('tbody tr.visible', query);
+        });
       }
     }).on("click", ".textedit", function() {
       var src;

@@ -1,3 +1,7 @@
+#wrap
+    min-height 100%
+#markdown-help .textedit
+    margin 0
 input.rounded
     -moz-border-radus 10px
     -webkit-border-radius 10px
@@ -11,6 +15,7 @@ input.rounded
 tbody td
     background-color #444
     color #ccc
+    vertical-align middle
 tbody td.odd
     background-color #555
     color #ccc
@@ -18,11 +23,11 @@ td.hovered
     background-color lightblue
     color #666
 .hidecase
-    position absolute
     cursor pointer
+    vertical-align middle
 .showcase
-    position absolute
     cursor pointer
+    vertical-align middle
 #nextpage
     position fixed
     right 0px
@@ -150,6 +155,8 @@ span#controls
 #container
     margin 0 auto
     width 90%
+    overflow auto
+    padding-bottom 30px
 #indexpage
     text-align center
 #userinfo
@@ -200,9 +207,12 @@ span#controls
     border-style solid
     border-color #aaa
 #footer
-    padding 30px 0
+    position relative
+    margin-top -30px
+    height 30px
     text-align center
     clear both
+    width 100% 
 #session
     float right
     height 20px
@@ -240,8 +250,8 @@ span#controls
 .casesli
     text-align center
 .deletecase
-    position absolute
     cursor pointer
+    vertical-align middle
 #cases
     line-height 150%
     width 100%
@@ -310,6 +320,7 @@ textarea
     width 45%
     top 40px
     left 5%
+    z-index 10000
 #editbar
     height 20px
     overflow hidden

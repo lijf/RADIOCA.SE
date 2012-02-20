@@ -53,7 +53,7 @@
       secret: "eventuallycloseduringnative"
     }));
     app.use(require("stylus").middleware({
-      src: __dirname + "/"
+      src: __dirname + "/public/"
     }));
     app.use(easyoauth(require("./keys_file")));
     app.use(app.router);
@@ -85,6 +85,7 @@
 
   app.get("/", function(req, res) {
     return res.render("index", {
+      layout: false,
       title: "Home",
       signed_in: req.isAuthenticated(),
       user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
@@ -174,19 +175,23 @@
       var sendcases;
       if (err || !cases[0]) res.send(444);
       sendcases = [];
-      return cases.forEach(function(theCase, iteration) {
-        return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
-          return db.hgetall("case:" + theCase, function(err, sendcase) {
-            sendcases[iteration] = sendcase;
-            if (!cases[iteration + 1]) {
-              console.log("rendering cases");
-              return res.render("cases", {
-                title: "Cases",
-                signed_in: req.isAuthenticated(),
-                user: req.getAuthDetails().user.username,
-                cases: sendcases
-              });
-            }
+      return db.smembers("bookmarks:" + req.getAuthDetails().user_id, function(err, bookmarks) {
+        return cases.forEach(function(theCase, iteration) {
+          return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
+            return db.hgetall("case:" + theCase, function(err, sendcase) {
+              sendcase.firstpage = firstpage;
+              sendcases[iteration] = sendcase;
+              if (!cases[iteration + 1]) {
+                console.log("rendering cases");
+                return res.render("cases", {
+                  title: "Cases",
+                  signed_in: req.isAuthenticated(),
+                  user: req.getAuthDetails().user.username,
+                  cases: sendcases,
+                  bookmarks: bookmarks
+                });
+              }
+            });
           });
         });
       });
@@ -220,12 +225,14 @@
 
   app.post("/bookmark/:id", function(req, res) {
     if (!req.isAuthenticated()) return res.send(444);
-    return db.sadd("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
+    db.sadd("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
+    return db.sadd("case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id);
   });
 
   app.post("/rmbookmark/:id", function(req, res) {
     if (!req.isAuthenticated()) return res.send(444);
-    return db.srem("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
+    db.srem("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
+    return db.srem("case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id);
   });
 
   app.post("/case/:id/:page/newpage", function(req, res) {

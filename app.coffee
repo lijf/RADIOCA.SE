@@ -27,7 +27,7 @@ app.configure ->
   app.use express.methodOverride()
   app.use express.cookieParser()
   app.use express.session(secret: "eventuallycloseduringnative")
-  app.use require("stylus").middleware(src: __dirname + "/")
+  app.use require("stylus").middleware(src: __dirname + "/public/")
   app.use easyoauth(require("./keys_file"))
   app.use app.router
   app.use express.favicon(__dirname + "/public/favicon.ico")
@@ -53,6 +53,7 @@ db.on "error", (err) ->
 
 app.get "/", (req, res) ->
   res.render "index",
+    layout: false
     title: "Home"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
@@ -123,17 +124,20 @@ app.get "/cases/:start/:finish", (req, res) ->
   db.zrange "listed", start, end, (err, cases) ->
     res.send 444  if err or not cases[0]
     sendcases = []
-    cases.forEach (theCase, iteration) ->
-      db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
-        db.hgetall "case:" + theCase, (err, sendcase) ->
-          sendcases[iteration] = sendcase
-          unless cases[iteration + 1]
-            console.log "rendering cases"
-            res.render "cases",
-              title: "Cases"
-              signed_in: req.isAuthenticated()
-              user: req.getAuthDetails().user.username
-              cases: sendcases
+    db.smembers "bookmarks:" + req.getAuthDetails().user_id, (err, bookmarks) ->
+      cases.forEach (theCase, iteration) ->
+        db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
+          db.hgetall "case:" + theCase, (err, sendcase) ->
+            sendcase.firstpage = firstpage
+            sendcases[iteration] = sendcase
+            unless cases[iteration + 1]
+              console.log "rendering cases"
+              res.render "cases",
+                title: "Cases"
+                signed_in: req.isAuthenticated()
+                user: req.getAuthDetails().user.username
+                cases: sendcases
+                bookmarks: bookmarks
 
 app.get "/case/:id/:page", (req, res) ->
   return res.redirect "back" unless req.isAuthenticated()
@@ -157,10 +161,12 @@ app.get "/case/:id/:page/feedback", (req, res) ->
 app.post "/bookmark/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   db.sadd "bookmarks:" + req.getAuthDetails().user_id, req.params.id
+  db.sadd "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id
 
 app.post "/rmbookmark/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   db.srem "bookmarks:" + req.getAuthDetails().user_id, req.params.id
+  db.srem "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id
 
 app.post "/case/:id/:page/newpage", (req, res) ->
   console.log "newpage triggered"

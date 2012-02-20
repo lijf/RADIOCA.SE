@@ -5,7 +5,7 @@ redis = require("redis")
 db = redis.createClient()
 
 render = (req, res, theCase, editor) ->
-  console.dir theCase
+  #console.dir theCase
   #console.log theCase.pagetype
   res.render theCase.pagetype,
     title: theCase.title or " - untitled"

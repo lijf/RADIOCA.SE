@@ -12,7 +12,6 @@
   db = redis.createClient();
 
   render = function(req, res, theCase, editor) {
-    console.dir(theCase);
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
       radios: theCase.radios || "",

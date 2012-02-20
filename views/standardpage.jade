@@ -66,10 +66,10 @@ a#nextpage(href='/case/#{cid}/#{nextpage}')
       br
   img.control#addstack(style='display:none', src='/icons/plus.png')
   #markdown-help(style='display:none')
-    img#help_cancel(src='/icons/cross.png')
     textarea.mdtxt(style='display:none')
       #{mdhelp}
     .md
+    img.control.textedit.session(src='/icons/pencil.png')
 img.control#feedbackbutton(src='/icons/balloon.png')
 #feedbackarea(style='display:none')
   #feedbacktext
