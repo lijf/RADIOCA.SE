@@ -300,18 +300,18 @@
       return event.preventDefault();
     }).on("mousewheel", ".stack > .stack_image", function(e) {
       var delta;
+      e.preventDefault();
       delta = e.originalEvent.detail;
       if (!delta) delta = e.originalEvent.wheelDelta;
       if (delta > 0 && $(this).next().length > 0) {
         $(this).next().show();
         $(this).hide();
-        $(this).prev().hide();
+        return $(this).prev().hide();
       } else if (delta < 0 && $(this).prev().length > 0) {
         $(this).prev().show();
         $(this).hide();
-        $(this).next().hide();
+        return $(this).next().hide();
       }
-      return e.preventDefault();
     }).on("click", "#user_settings", function() {
       return $("#userinfo").toggle();
     }).on("click", "#sign_in", function() {
@@ -502,6 +502,7 @@
     }).on("click", "#deletecase_confirm", function() {
       var targeturl;
       targeturl = "/case/" + $(".selected").attr("ID");
+      alert(targeturl);
       return $.ajax({
         url: targeturl,
         type: "DELETE",

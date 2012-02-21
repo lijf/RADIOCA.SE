@@ -260,6 +260,7 @@ $ ->
     event.preventDefault()
 
   ).on("mousewheel", ".stack > .stack_image", (e) ->
+    e.preventDefault()
     delta = e.originalEvent.detail
     if !delta
       delta = e.originalEvent.wheelDelta
@@ -271,7 +272,6 @@ $ ->
       $(this).prev().show()
       $(this).hide()
       $(this).next().hide()
-    e.preventDefault()
 
   ).on("click", "#user_settings", ->
     $("#userinfo").toggle()
@@ -466,6 +466,7 @@ $ ->
 
   ).on("click", "#deletecase_confirm", ->
     targeturl = "/case/" + $(".selected").attr("ID")
+    alert targeturl
     $.ajax
       url: targeturl
       type: "DELETE"
