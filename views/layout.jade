@@ -19,13 +19,14 @@ html
   body
     #wrap
       #sl
-        a(href='/')
+        a(href='/cases/0/-1')
           img(src='/images/RADIOCA.SE_small_logo.png')
+          //img#db(src='/static/ico/server.png')
       #container
-        #userinfo.session(style='display:none')
-          a(id='sign_out') sign out
-        #session
-          a.session(id='sign_in') Sign in with twitter
+        #usercontrols
+          a#sign_in Sign in with twitter
+          #userinfo(style='display:none')
+            a(id='sign_out') sign out
         != body // this renders the body of an individual view
       #horizon
         #newpage_dialog.dialog_box(style='display:none')
@@ -149,6 +150,6 @@ script(type='text/javascript')
   $(function(){
     var user = '#{user}';
     if(#{signed_in}){
-      $('#session').html('<a class="session" id="user_settings">#{user} ▼ </a>');
+      $('#sign_in').attr('id',"user_settings").html('\u25c4 #{user}');
     }
   });

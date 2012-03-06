@@ -1,10 +1,25 @@
+#newcase > .control
+    margin 10px
+.caseListTitle
+    margin-bottom 0
+.invisible
+    display none
+#db
+    position fixed
+    left -1px
+    top 127px
+#user_settings
+    float right 
+#usercontrols
+    float right
+    padding-top 14px
 #wrap
     min-height 100%
 #markdown-help .textedit
     margin 0
 input#filter
     position absolute
-    top 35px
+    top 39px
     right 5% 
 input.rounded
     -moz-border-radus 10px
@@ -25,16 +40,18 @@ td.hovered
     color #666
 th
     line-height 250%
+    font-family "Orbitron" 
 th.sortable
-    color #ccc
     cursor pointer
 th.sortable:hover
     color white
 th.sorted-asc 
+    color white
     background-image url("/static/ico/control-270.png")
     background-repeat no-repeat
     background-position 50% 100%
 th.sorted-desc
+    color white
     background-image url("/static/ico/control-090.png")
     background-repeat no-repeat
     background-position 50% 100%
@@ -80,6 +97,7 @@ a
     -moz-user-select none
     -o-user-select none
     user-select none
+    cursor pointer
 #textpage
     width 100%
 .userradio
@@ -175,15 +193,7 @@ span#controls
 #indexpage
     text-align center
 #userinfo
-    position absolute
-    top 25px
-    right 5%
-    z-index 1
-    padding 0 10px 10px 10px
-    border-style solid
-    border-width 0 0 1px 1px
-    border-color #aaa
-    background #333
+    float left
 .session
     font-family helvetica, arial
     cursor pointer
@@ -281,11 +291,21 @@ span#controls
     background-image url("/images/paper/Texture0213.jpg")
     color #006
 @media screen and (max-width: 450px)
+    #caseListTitle
+        margin-top -15px
+        margin-bottom 15px
+    #newcase
+        margin 10px 
+    #db
+        display none
+    .caseListTitle
+        margin-top -10px
     input#filter
         position absolute
-        top 60px
+        left 0px
+        top 55px
         right 50% 
-        margin-right -65px
+        margin-right 70px
     #markdown-help
         width 100%
     #sl
@@ -306,6 +326,19 @@ span#controls
         width 100%
     .radioimagepage
         width 100%
+    #horizon
+        position absolute
+    .dialog_box
+        font-size 10pt
+        width 100%
+        margin 0
+        left 0
+    #controls
+        position absolute
+        top 35px
+        left 0px
+    #title
+        margin-top 35px
 @media screen and (max-width: 585px)
     .big_logo
         font-size 30pt
@@ -371,7 +404,8 @@ input
 html
     height 100%
 body
-    font-family Georgia, Palatino, serif
+    font-family Helvetica, Arial
+    //font-family Georgia, Palatino, serif
     color #aaa
     background-color #333
     line-height 1

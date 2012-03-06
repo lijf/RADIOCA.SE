@@ -85,7 +85,6 @@
 
   app.get("/", function(req, res) {
     return res.render("index", {
-      layout: false,
       title: "Home",
       signed_in: req.isAuthenticated(),
       user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
@@ -168,7 +167,7 @@
 
   app.get("/cases/:start/:finish", function(req, res) {
     var end, start;
-    if (!req.isAuthenticated()) return res.redirect("back");
+    if (!req.isAuthenticated()) return res.redirect("/");
     start = parseInt(req.params.start, 10);
     end = parseInt(req.params.finish, 10);
     return db.zrange("listed", start, end, function(err, cases) {
@@ -176,21 +175,24 @@
       if (err || !cases[0]) res.send(444);
       sendcases = [];
       return db.smembers("bookmarks:" + req.getAuthDetails().user_id, function(err, bookmarks) {
-        return cases.forEach(function(theCase, iteration) {
-          return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
-            return db.hgetall("case:" + theCase, function(err, sendcase) {
-              sendcase.firstpage = firstpage;
-              sendcases[iteration] = sendcase;
-              if (!cases[iteration + 1]) {
-                console.log("rendering cases");
-                return res.render("cases", {
-                  title: "Cases",
-                  signed_in: req.isAuthenticated(),
-                  user: req.getAuthDetails().user.username,
-                  cases: sendcases,
-                  bookmarks: bookmarks
-                });
-              }
+        return db.smembers("completed:" + req.getAuthDetails().user_id, function(err, completed) {
+          return cases.forEach(function(theCase, iteration) {
+            return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
+              return db.hgetall("case:" + theCase, function(err, sendcase) {
+                sendcase.firstpage = firstpage;
+                sendcases[iteration] = sendcase;
+                if (!cases[iteration + 1]) {
+                  console.log("rendering cases");
+                  return res.render("cases", {
+                    title: "Cases",
+                    signed_in: req.isAuthenticated(),
+                    user: req.getAuthDetails().user.username,
+                    cases: sendcases,
+                    bookmarks: bookmarks,
+                    completed: completed
+                  });
+                }
+              });
             });
           });
         });
@@ -199,7 +201,7 @@
   });
 
   app.get("/case/:id/:page", function(req, res) {
-    if (!req.isAuthenticated()) return res.redirect("back");
+    if (!req.isAuthenticated()) return res.redirect("/");
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(error, theCase) {
         if (error || !theCase.cid) return res.redirect("back");
@@ -221,6 +223,18 @@
         object: pagefeedback
       });
     });
+  });
+
+  app.post("/completed/:id", function(req, res) {
+    if (!req.isAuthenticated()) return res.send(444);
+    db.sadd("completed:" + req.getAuthDetails().user_id, req.params.id);
+    return db.sadd("case:" + req.params.id + ":completed", req.getAuthDetails().user_id);
+  });
+
+  app.post("/rmcompleted/:id", function(req, res) {
+    if (!req.isAuthenticated()) return res.send(444);
+    db.srem("completed:" + req.getAuthDetails().user_id, req.params.id);
+    return db.srem("case:" + req.params.id + ":completed", req.getAuthDetails().user_id);
   });
 
   app.post("/bookmark/:id", function(req, res) {

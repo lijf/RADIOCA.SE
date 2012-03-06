@@ -23,6 +23,7 @@ render = (req, res, theCase, editor) ->
     prevpage: theCase.prevpage
     nextpage: theCase.nextpage
     bookmarked: theCase.bookmarked
+    completed: theCase.completed
     page: req.params.page
     editor: editor
     private: theCase.private or 0
@@ -42,24 +43,27 @@ rendercase = (req, res, theCase, editor) ->
       db.sismember "bookmarks:" + req.getAuthDetails().user_id, req.params.id, (err, bookmarked) ->
         unless err
           theCase.bookmarked = bookmarked
-        db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
-          return render(req, res, theCase, editor)  if radioIDs.length < 1
-          theCase.radios = []
-          radioIDs.forEach (radioID, ID) ->
-            db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
-              theCase.radios[ID] = []
-              theCase.radios[ID].ID = radioID
-              theCase.radios[ID].caption = caption  if caption
-              db.lrange "radio:" + radioID, 0, -1, (err, images) ->
-                theCase.radios[ID].images = []
-                images.forEach (image, imgID) ->
-                  theCase.radios[ID].images[imgID] = image
-                theCase.feedback = []
-                db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
-                  feedback.forEach (fb, fbID) ->
-                    theCase.feedback[fbID] = fb
-                  #console.dir theCase
-                  render req, res, theCase, editor  unless radioIDs[ID + 1]
+        db.sismember "completed:" + req.getAuthDetails().user_id, req.params.id, (err, completed) ->
+          unless err
+            theCase.completed = completed
+          db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
+            return render(req, res, theCase, editor)  if radioIDs.length < 1
+            theCase.radios = []
+            radioIDs.forEach (radioID, ID) ->
+              db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
+                theCase.radios[ID] = []
+                theCase.radios[ID].ID = radioID
+                theCase.radios[ID].caption = caption  if caption
+                db.lrange "radio:" + radioID, 0, -1, (err, images) ->
+                  theCase.radios[ID].images = []
+                  images.forEach (image, imgID) ->
+                    theCase.radios[ID].images[imgID] = image
+                  theCase.feedback = []
+                  db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+                    feedback.forEach (fb, fbID) ->
+                      theCase.feedback[fbID] = fb
+                    #console.dir theCase
+                    render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->

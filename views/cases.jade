@@ -1,46 +1,62 @@
 #topleftdiv
 #cases
-  h1.damion Cases
+  h1.damion.caseListTitle Cases
   input.rounded(type='text', name='filter', value='Type to filter', id='filter')
+  a#newcase(href='/newcase')
+    img.control(src='/icons/plus.png')
   table#cases
     thead
       tr 
+        //th.sortable Last Edit
         th.sortable Modalities
         th.sortable Area
         th.sortable Title
-        th
+        th.invisible Creator
         th 
-        th Creator
+        th
+        th
         th
         th
     tbody
       - each c in cases
         - if (c.hidden == 'false' || c.creator == user || user == 'radioca1se')
           tr(ID="#{c.cid}") 
+            //td.lastEdit(style='display:none') #{c.lastEdit}
             td #{c.modalities} 
             td #{c.description}
             td 
               a(href='/case/#{c.cid}/#{c.firstpage}') #{c.title}
-            td
-              img(src='/icons/#{c.language}.png')
-            td.bm(ID='#{c.cid}', style='width:24px')
-            td
-              a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
+            td.invisible
+              //a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
               @#{c.creator}
-            td(style='width:24px')
-              - if (c.creator == user) 
-                img.deletecase(ID='#{c.cid}', src='/icons/minus.png')
             td(style='width:24px')
               - if (c.creator == user || user == 'radioca1se') 
                 - if (c.hidden=='true')
                   img.showcase(ID='#{c.cid}', src='/icons/eye-prohibition.png')
                 - else
                   img.hidecase(ID='#{c.cid}', src='/icons/eye.png')
-  a(href='/newcase')
-    img.control(src='/icons/plus.png', style='margin-top:30px')
+            td
+              img(src='/icons/#{c.language}.png')
+              .hidden ##{c.language}
+            td(ID='#{c.cid}bm')
+            td(ID='#{c.cid}cc')
+            td(style='width:24px')
+              - if (c.creator == user) 
+                img.deletecase(ID='#{c.cid}', src='/icons/minus.png')
 script(type='text/javascript")
   var bookmarks = [#{bookmarks}];
-  //alert(bookmarks);
+  var completed = [#{completed}];
+  for (var i = 0; i < completed.length; i++){
+    $("#"+completed[i]+"cc").html("<img src='/static/ico/ui-color-picker-tick.png'><div style='display:none'>#cc</div>"); 
+    }
   for (var i = 0; i < bookmarks.length; i++){
-    $("td.bm#"+bookmarks[i]).html("<img src='/static/ico/bookmark.png'><div style='display:none'>#bm</div>");
+  //alert(bookmarks[i]);
+    $("#"+bookmarks[i]+"bm").html("<img src='/static/ico/star-small.png'><div style='display:none'>#fav</div>");
   }
+  //$(".lastEdit").each(function(){
+  //  var lastEdit = new Date(parseInt($(this).html(),10));
+  //  var year = lastEdit.getFullYear();
+  //  var month = lastEdit.getMonth() + 1;
+  //  var day = lastEdit.getDay();
+  //  $(this).html(year + "/" + month + "/" + day).show();
+  //  });

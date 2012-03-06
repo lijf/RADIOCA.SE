@@ -8,10 +8,14 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
     @#{creator}
   | &#x2002;
+  // if (completed)
+  //  img.control.rmcompleted(ID='#{cid}', src='/static/ico/ui-color-picker-tick.png')
+  // else
+  //  img.control.completed(ID='#{cid}', src='/static/ico/ui-color-picker.png')
   - if (bookmarked)
-    img.control.rmbookmark(ID='#{cid}', src='/icons/bookmark.png')
+    img.control.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
   - else 
-    img.control.bookmark(ID='#{cid}', src='/icons/bookmark_bw.png')
+    img.control.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
   span#lock
     a.abutton#lock(title='Edit Page')
       span#locked

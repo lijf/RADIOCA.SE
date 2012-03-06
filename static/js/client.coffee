@@ -138,7 +138,7 @@ spiderpage = ->
   json.description = $(".description:checked").map(->
     $(this).val()
   ).get()
-  json.language = $("input:radio[name=language]:checked").val() 
+  json.language = $("input:radio[name=language]:checked").val()
   #  alert JSON.stringify json
   json
 
@@ -152,8 +152,7 @@ authcallback = (data) ->
     url: "/signed_in"
     statusCode:
       200: ->
-        $("#session").html "<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>"
-        #$("#feedbackbutton").attr("id", "editbutton").html "Edit"
+        $("#sign_in").attr('id','user_settings').html " \u25c4 " + data.user.username
       403: (data) ->
         alert "not allowed - if you feel that this is an error, please write to info@radioca.se"
 
@@ -214,10 +213,26 @@ $ ->
   $(document
   
   
+  ).on("click", ".completed", ->
+    $(this).removeClass('completed')
+    $(this).addClass('rmcompleted')
+    $(this).attr('src', '/static/ico/ui-color-picker.png')
+    $.ajax
+      type: "POST"
+      url: "/completed/" + $(this).attr("ID")
+
+  ).on("click", ".rmcompleted", ->
+    $(this).removeClass('rmcompleted')
+    $(this).addClass('completed')
+    $(this).attr('src', '/static/ico/ui-color-picker-tick.png')
+    $.ajax
+      type: "POST"
+      url: "/rmcompleted/" + $(this).attr("ID")
+    
   ).on("click", ".bookmark", ->
     $(this).removeClass('bookmark')
     $(this).addClass('rmbookmark')
-    $(this).attr('src', '/icons/bookmark.png')
+    $(this).attr('src', '/static/ico/star.png')
     $.ajax
       type: "POST"
       url: "/bookmark/" + $(this).attr("ID")
@@ -225,7 +240,7 @@ $ ->
   ).on("click", ".rmbookmark", ->
     $(this).removeClass('rmbookmark')
     $(this).addClass('bookmark')
-    $(this).attr('src','/icons/bookmark_bw.png')
+    $(this).attr('src','/static/ico/star-empty.png')
     $.ajax
       type: "POST"
       url: "/rmbookmark/" + $(this).attr("ID")
@@ -245,7 +260,7 @@ $ ->
       #$('tbody tr').removeClass('visible').show().addClass('visible')
       $('tbody tr').addClass('visible')
       querys = $(this).val().split("\ ")
-      console.log querys
+      #console.log querys
       querys.forEach (query) ->
         filter2('tbody tr.visible', query )
 
@@ -274,10 +289,10 @@ $ ->
       $(this).next().hide()
 
   ).on("click", "#user_settings", ->
-    $("#userinfo").toggle()
+    $("#userinfo").toggle("slide", {direction: "right"}, 300)
 
   ).on("click", "#sign_in", ->
-    openEasyOAuthBox "twitter", authcallback
+    (openEasyOAuthBox "twitter", authcallback)
 
   ).on("click", "#sign_out", ->
     window.open "http://twitter.com/#!/logout"

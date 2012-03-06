@@ -1,66 +1,19 @@
-!!!5
-html
-  head
-    meta(name='viewport', content='initial-scale=1.0, width=device-width')
-    title RADIOCA.SE - #{title}
+#indexpage
+  br
+  .big_logo RADIOCA.SE
+  br
+  br
+  img(src='/static/img/OldRadio_3_320.png', style='width: 320px')
 
-    link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/stylesheets/reset.css')
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    script(src = '/static/js/jquery-1.7.min.js')
-    //script(src = '/static/js/jquery-ui-1.8.16.custom.min.js')
-    script(src = '/auth/client')
-    script(src = 'http://platform.twitter.com/widgets.js')
-    //script(src = '/static/js/jquery.mousewheel.min.js')
-    script(src = '/static/js/Markdown.Converter.js')
-    script(src = '/static/js/Markdown.Sanitizer.js')
-    script(src = '/static/js/client.js')
-    //script(src= 'http://10.0.1.5:8124/debug.js')
-  body
-    #wrap
-      #sl
-        a(href='/')
-          img(src='/images/RADIOCA.SE_small_logo.png')
-      #container
-        #session
-          a.session(id='sign_in') Sign in with twitter
-        #userinfo.session(style='display:none')
-          a(id='sign_out') sign out
-        #indexpage
-          br
-          .big_logo RADIOCA.SE
-          br
-          br
-          img(src='/static/img/OldRadio_3_320.png', style='width: 320px')
+  h1.damion -Welcome
 
-          h1.damion -Welcome
+  br
 
-          br
-
-          a(href='/cases/0/-1') List Cases
-          |  -
-          a(href='/newcase') Create Case
-        script(type='text/javascript')
-          $(function(){
-            // Hides small logo
-            $('#sl').hide();
-          });
-    #footer
-      a(href='/')
-        | Home
-      | &#x2002;
-      a(href='/cases/0/-1')
-        | Cases
-      | &#x2002;
-      a(href='/stat/about')
-        | About
-      | &#x2002;
-      a(href='mailto:info@radioca.se')
-        | Contact
+  a(href='/cases/0/-1') List Cases
+  |  -
+  a(href='/newcase') Create Case
 script(type='text/javascript')
   $(function(){
-    var user = '#{user}';
-    if(#{signed_in}){
-      $('#session').html('<a class="session" id="user_settings">#{user} ▼ </a>');
-    }
+    // Hides small logo
+    $('#sl').hide();
   });

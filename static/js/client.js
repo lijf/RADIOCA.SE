@@ -194,7 +194,7 @@
       url: "/signed_in",
       statusCode: {
         200: function() {
-          return $("#session").html("<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>");
+          return $("#sign_in").attr('id', 'user_settings').html(" \u25c4 " + data.user.username);
         },
         403: function(data) {
           return alert("not allowed - if you feel that this is an error, please write to info@radioca.se");
@@ -258,10 +258,26 @@
         return zebrarows(".visible:even td", "odd");
       });
     });
-    $(document).on("click", ".bookmark", function() {
+    $(document).on("click", ".completed", function() {
+      $(this).removeClass('completed');
+      $(this).addClass('rmcompleted');
+      $(this).attr('src', '/static/ico/ui-color-picker.png');
+      return $.ajax({
+        type: "POST",
+        url: "/completed/" + $(this).attr("ID")
+      });
+    }).on("click", ".rmcompleted", function() {
+      $(this).removeClass('rmcompleted');
+      $(this).addClass('completed');
+      $(this).attr('src', '/static/ico/ui-color-picker-tick.png');
+      return $.ajax({
+        type: "POST",
+        url: "/rmcompleted/" + $(this).attr("ID")
+      });
+    }).on("click", ".bookmark", function() {
       $(this).removeClass('bookmark');
       $(this).addClass('rmbookmark');
-      $(this).attr('src', '/icons/bookmark.png');
+      $(this).attr('src', '/static/ico/star.png');
       return $.ajax({
         type: "POST",
         url: "/bookmark/" + $(this).attr("ID")
@@ -269,7 +285,7 @@
     }).on("click", ".rmbookmark", function() {
       $(this).removeClass('rmbookmark');
       $(this).addClass('bookmark');
-      $(this).attr('src', '/icons/bookmark_bw.png');
+      $(this).attr('src', '/static/ico/star-empty.png');
       return $.ajax({
         type: "POST",
         url: "/rmbookmark/" + $(this).attr("ID")
@@ -284,7 +300,6 @@
       } else {
         $('tbody tr').addClass('visible');
         querys = $(this).val().split("\ ");
-        console.log(querys);
         return querys.forEach(function(query) {
           return filter2('tbody tr.visible', query);
         });
@@ -313,7 +328,9 @@
         return $(this).next().hide();
       }
     }).on("click", "#user_settings", function() {
-      return $("#userinfo").toggle();
+      return $("#userinfo").toggle("slide", {
+        direction: "right"
+      }, 300);
     }).on("click", "#sign_in", function() {
       return openEasyOAuthBox("twitter", authcallback);
     }).on("click", "#sign_out", function() {

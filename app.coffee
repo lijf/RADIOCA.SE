@@ -53,7 +53,6 @@ db.on "error", (err) ->
 
 app.get "/", (req, res) ->
   res.render "index",
-    layout: false
     title: "Home"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
@@ -118,29 +117,31 @@ app.post "/newcase", (req, res) ->
         res.send "/case/" + cid + "/1", 200
 
 app.get "/cases/:start/:finish", (req, res) ->
-  return res.redirect "back" unless req.isAuthenticated()
+  return res.redirect "/" unless req.isAuthenticated()
   start = parseInt(req.params.start, 10)
   end = parseInt(req.params.finish, 10)
   db.zrange "listed", start, end, (err, cases) ->
     res.send 444  if err or not cases[0]
     sendcases = []
     db.smembers "bookmarks:" + req.getAuthDetails().user_id, (err, bookmarks) ->
-      cases.forEach (theCase, iteration) ->
-        db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
-          db.hgetall "case:" + theCase, (err, sendcase) ->
-            sendcase.firstpage = firstpage
-            sendcases[iteration] = sendcase
-            unless cases[iteration + 1]
-              console.log "rendering cases"
-              res.render "cases",
-                title: "Cases"
-                signed_in: req.isAuthenticated()
-                user: req.getAuthDetails().user.username
-                cases: sendcases
-                bookmarks: bookmarks
+      db.smembers "completed:" + req.getAuthDetails().user_id, (err, completed) ->
+        cases.forEach (theCase, iteration) ->
+          db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
+            db.hgetall "case:" + theCase, (err, sendcase) ->
+              sendcase.firstpage = firstpage
+              sendcases[iteration] = sendcase
+              unless cases[iteration + 1]
+                console.log "rendering cases"
+                res.render "cases",
+                  title: "Cases"
+                  signed_in: req.isAuthenticated()
+                  user: req.getAuthDetails().user.username
+                  cases: sendcases
+                  bookmarks: bookmarks
+                  completed: completed
 
 app.get "/case/:id/:page", (req, res) ->
-  return res.redirect "back" unless req.isAuthenticated()
+  return res.redirect "/" unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (error, theCase) ->
       #console.dir theCase
@@ -157,6 +158,16 @@ app.get "/case/:id/:page/feedback", (req, res) ->
       pagefeedback[fbID] = JSON.parse fb
     res.partial "feedback",
     object: pagefeedback
+
+app.post "/completed/:id", (req, res) ->
+  return res.send 444 unless req.isAuthenticated()
+  db.sadd "completed:" + req.getAuthDetails().user_id, req.params.id
+  db.sadd "case:" + req.params.id + ":completed", req.getAuthDetails().user_id
+
+app.post "/rmcompleted/:id", (req, res) ->
+  return res.send 444 unless req.isAuthenticated()
+  db.srem "completed:" + req.getAuthDetails().user_id, req.params.id
+  db.srem "case:" + req.params.id + ":completed", req.getAuthDetails().user_id
 
 app.post "/bookmark/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
