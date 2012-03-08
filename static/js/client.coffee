@@ -6,6 +6,21 @@ visimg = $(".stack_image")
 change_url = (url) ->
   document.location = url
 
+maximizeradio = (radio) ->
+  radio.clone(true).appendTo('#maximized')
+  $('#maximized>.radio').removeClass("radioimagepage")
+  $('#maximized').show()
+  touchscroll()
+  $('#footer').hide()
+  $('#maximized>.radio>.maximizeradio').hide()
+  $('#maximized>.radio>.minimizeradio').show()
+  window.scrollTo(0,0)
+
+minimizeradio = (radio) ->
+  radio.remove()
+  $('#maximized').hide()
+  $('#footer').show()
+
 newpage  = (type) ->
   json = {}
   json.title = getTitle()
@@ -153,6 +168,7 @@ authcallback = (data) ->
     statusCode:
       200: ->
         $("#sign_in").attr('id','user_settings').html " \u25c4 " + data.user.username
+        window.location.pathname = '/cases/0/-1'
       403: (data) ->
         alert "not allowed - if you feel that this is an error, please write to info@radioca.se"
 
@@ -212,7 +228,15 @@ $ ->
 
   $(document
   
+  ).on("dblclick", ".radio", ->
+    if ($("#maximized").is(":visible")) then minimizeradio($(this)) else maximizeradio($(this))
   
+  ).on("click", ".maximizeradio", ->
+    maximizeradio($(this).parent())
+    
+  ).on("click", ".minimizeradio", ->
+    minimizeradio($(this).parent())
+
   ).on("click", ".completed", ->
     $(this).removeClass('completed')
     $(this).addClass('rmcompleted')
@@ -481,7 +505,6 @@ $ ->
 
   ).on("click", "#deletecase_confirm", ->
     targeturl = "/case/" + $(".selected").attr("ID")
-    alert targeturl
     $.ajax
       url: targeturl
       type: "DELETE"

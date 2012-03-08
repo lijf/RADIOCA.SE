@@ -1,5 +1,5 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, filter2, getTitle, getfeedback, lastY, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
+  var authcallback, change_url, converter, editfunctions, filter2, getTitle, getfeedback, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
 
   lastY = 0;
 
@@ -9,6 +9,23 @@
 
   change_url = function(url) {
     return document.location = url;
+  };
+
+  maximizeradio = function(radio) {
+    radio.clone(true).appendTo('#maximized');
+    $('#maximized>.radio').removeClass("radioimagepage");
+    $('#maximized').show();
+    touchscroll();
+    $('#footer').hide();
+    $('#maximized>.radio>.maximizeradio').hide();
+    $('#maximized>.radio>.minimizeradio').show();
+    return window.scrollTo(0, 0);
+  };
+
+  minimizeradio = function(radio) {
+    radio.remove();
+    $('#maximized').hide();
+    return $('#footer').show();
   };
 
   newpage = function(type) {
@@ -194,7 +211,8 @@
       url: "/signed_in",
       statusCode: {
         200: function() {
-          return $("#sign_in").attr('id', 'user_settings').html(" \u25c4 " + data.user.username);
+          $("#sign_in").attr('id', 'user_settings').html(" \u25c4 " + data.user.username);
+          return window.location.pathname = '/cases/0/-1';
         },
         403: function(data) {
           return alert("not allowed - if you feel that this is an error, please write to info@radioca.se");
@@ -258,7 +276,17 @@
         return zebrarows(".visible:even td", "odd");
       });
     });
-    $(document).on("click", ".completed", function() {
+    $(document).on("dblclick", ".radio", function() {
+      if ($("#maximized").is(":visible")) {
+        return minimizeradio($(this));
+      } else {
+        return maximizeradio($(this));
+      }
+    }).on("click", ".maximizeradio", function() {
+      return maximizeradio($(this).parent());
+    }).on("click", ".minimizeradio", function() {
+      return minimizeradio($(this).parent());
+    }).on("click", ".completed", function() {
       $(this).removeClass('completed');
       $(this).addClass('rmcompleted');
       $(this).attr('src', '/static/ico/ui-color-picker.png');
@@ -519,7 +547,6 @@
     }).on("click", "#deletecase_confirm", function() {
       var targeturl;
       targeturl = "/case/" + $(".selected").attr("ID");
-      alert(targeturl);
       return $.ajax({
         url: targeturl,
         type: "DELETE",

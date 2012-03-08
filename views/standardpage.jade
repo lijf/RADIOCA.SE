@@ -62,6 +62,8 @@ a#nextpage(href='/case/#{cid}/#{nextpage}')
           - each i in r.images
             img.stack_image(src='#{i}')
       img.control.removeradio(style='display:none', src='/icons/cross.png')
+      //img.control.maximizeradio(src='/static/ico/arrow-315.png')
+      //img.control.minimizeradio(src='/static/ico/arrow-135.png', style='display:none')
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
