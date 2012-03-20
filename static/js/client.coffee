@@ -105,14 +105,12 @@ touchscroll = ->
           samp = 0
           touch = e.touches[0]
           if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
+            visimg.hide()
             visimg.prev().show()
-            visimg.next().hide()
-            visimg.hide()
             visimg = visimg.prev()
-          else if visimg.next().length > 0
-            visimg.next().show()
-            visimg.prev().hide()
+          else if parseInt(touch.pageY, 10) < lastY and visimg.next().length > 0
             visimg.hide()
+            visimg.next().show()
             visimg = visimg.next()
           return lastY = parseInt(touch.pageY, 10)
         e.preventDefault()
@@ -231,6 +229,12 @@ $ ->
   ).on("dblclick", ".radio", ->
     if ($("#maximized").is(":visible")) then minimizeradio($(this)) else maximizeradio($(this))
   
+  ).on("click", "#newcase", ->
+    $('#newcase_dialog').toggle()
+
+  ).on("click", "#newcase_cancel", ->
+    $('#newcase_dialog').hide()
+
   ).on("click", ".maximizeradio", ->
     maximizeradio($(this).parent())
     
@@ -244,6 +248,10 @@ $ ->
     $.ajax
       type: "POST"
       url: "/completed/" + $(this).attr("ID")
+
+  ).on("click", ".Cancel", ->
+    $(this).parent().hide()
+    $('.selected').removeClass('selected')
 
   ).on("click", ".rmcompleted", ->
     $(this).removeClass('rmcompleted')
@@ -268,7 +276,7 @@ $ ->
     $.ajax
       type: "POST"
       url: "/rmbookmark/" + $(this).attr("ID")
-  
+
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')
 
@@ -297,8 +305,31 @@ $ ->
 
   ).on("blur", ".mdtxt", ->
     event.preventDefault()
+  
+  ).on("mousewheel", ".stack", (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    image = $(this).find('.stack_image:visible')
+    delta = e.originalEvent.wheelDelta
+    if !delta
+      delta = e.originalEvent.detail
+    if delta > 0 and image.next().length > 0
+      image.next().show()
+      image.hide()
+    else if delta < 0 and image.prev().length > 0
+      image.prev().show()
+      image.hide()
 
-  ).on("mousewheel", ".stack > .stack_image", (e) ->
+  ).on("mousewheel", ".stackOLD", (e, delta) ->
+    e.preventDefault()
+    image = $(this).find('.stack_image')
+    alert image.src
+    if (delta > 0)
+      image.css 'top', parseInt (image.css 'top') + 40
+    else
+      image.css 'top', parseInt (image.css 'top') - 40
+
+  ).on("mousewheel", ".stackOLD > .stack_image", (e) ->
     e.preventDefault()
     delta = e.originalEvent.detail
     if !delta
@@ -327,7 +358,7 @@ $ ->
           window.location.href = '/'
           #$("#session").html "<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>"
 
-    $("#userinfo").hide()
+      $("#userinfo").hide()
 
   ).on("click", "#boxit", ->
     $("#boxit_dialog").toggle()
@@ -346,19 +377,6 @@ $ ->
 
   ).on("click", "#newpage_text", ->
     newpage("textpage")
-
-  ).on("click", "#newcase", ->
-    json = {}
-    json.title = "Untitled"
-    $.ajax
-      url: "/newcase"
-      type: "POST"
-      data: json
-      statusCode:
-        403: ->
-          alert "Forbidden - are you logged in?"
-        200: (url) ->
-          document.location = url
 
   ).on("click", "#casestandardpage", ->
     newcase("standardpage")

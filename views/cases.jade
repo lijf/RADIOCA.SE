@@ -2,8 +2,7 @@
 #cases
   h1.damion.caseListTitle Cases
   input.rounded(type='text', name='filter', value='Type to filter', id='filter')
-  a#newcase(href='/newcase')
-    img.control(src='/icons/plus.png')
+  img.control#newcase(src='/icons/plus.png')
   table#cases
     thead
       tr 
@@ -35,9 +34,9 @@
                   img.showcase(ID='#{c.cid}', src='/icons/eye-prohibition.png')
                 - else
                   img.hidecase(ID='#{c.cid}', src='/icons/eye.png')
-            td
-              img(src='/icons/#{c.language}.png')
-              .hidden ##{c.language}
+            //td
+            //  img(src='/icons/#{c.language}.png')
+            //  .hidden ##{c.language}
             td(ID='#{c.cid}bm')
             td(ID='#{c.cid}cc')
             td(style='width:24px')

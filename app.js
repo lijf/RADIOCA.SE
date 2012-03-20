@@ -84,11 +84,11 @@
   });
 
   app.get("/", function(req, res) {
-    return res.render("index", {
-      title: "Home",
-      signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
-    });
+    if (req.isAuthenticated()) {
+      return res.redirect("/cases/0/-1");
+    } else {
+      return requestHandlers.renderRoot(req, res);
+    }
   });
 
   app.get("/signed_in", function(req, res) {
@@ -166,6 +166,14 @@
   });
 
   app.get("/cases/:start/:finish", function(req, res) {
+    var end, start;
+    if (!req.isAuthenticated()) return res.redirect("/");
+    start = parseInt(req.params.start, 10);
+    end = parseInt(req.params.finish, 10);
+    return requestHandlers.rendercases(req, res, start, end);
+  });
+
+  app.get("/casesold/:start/:finish", function(req, res) {
     var end, start;
     if (!req.isAuthenticated()) return res.redirect("/");
     start = parseInt(req.params.start, 10);

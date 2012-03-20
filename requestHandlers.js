@@ -1,5 +1,5 @@
 (function() {
-  var cleanupCases, db, deleteCase, deleteCaseID, deletePage, deletePage2, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeRadio2, render, rendercase, url;
+  var cleanupCases, db, deleteCase, deleteCaseID, deletePage, deletePage2, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeRadio2, render, renderRoot, rendercase, rendercases, url;
 
   formidable = require("formidable");
 
@@ -10,6 +10,45 @@
   redis = require("redis");
 
   db = redis.createClient();
+
+  renderRoot = function(req, res) {
+    return res.render("index", {
+      title: "Home",
+      signed_in: req.isAuthenticated(),
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+    });
+  };
+
+  rendercases = function(req, res, start, end) {
+    return db.zrange("listed", start, end, function(err, cases) {
+      var sendcases;
+      if (err || !cases[0]) res.send(444);
+      sendcases = [];
+      return db.smembers("bookmarks:" + req.getAuthDetails().user_id, function(err, bookmarks) {
+        return db.smembers("completed:" + req.getAuthDetails().user_id, function(err, completed) {
+          return cases.forEach(function(theCase, iteration) {
+            return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
+              return db.hgetall("case:" + theCase, function(err, sendcase) {
+                sendcase.firstpage = firstpage;
+                sendcases[iteration] = sendcase;
+                if (!cases[iteration + 1]) {
+                  console.log("rendering cases");
+                  return res.render("cases", {
+                    title: "Cases",
+                    signed_in: req.isAuthenticated(),
+                    user: req.getAuthDetails().user.username,
+                    cases: sendcases,
+                    bookmarks: bookmarks,
+                    completed: completed
+                  });
+                }
+              });
+            });
+          });
+        });
+      });
+    });
+  };
 
   render = function(req, res, theCase, editor) {
     return res.render(theCase.pagetype, {
@@ -278,5 +317,9 @@
   exports.postImage = postImage;
 
   exports.cleanupCases = cleanupCases;
+
+  exports.rendercases = rendercases;
+
+  exports.renderRoot = renderRoot;
 
 }).call(this);

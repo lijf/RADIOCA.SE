@@ -4,6 +4,33 @@ form = require("connect-form")
 redis = require("redis")
 db = redis.createClient()
 
+renderRoot = (req, res) ->
+  res.render "index",
+    title: "Home"
+    signed_in: req.isAuthenticated()
+    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+
+rendercases = (req, res, start, end) ->
+  db.zrange "listed", start, end, (err, cases) ->
+    res.send 444 if err or not cases[0]
+    sendcases = []
+    db.smembers "bookmarks:" + req.getAuthDetails().user_id, (err, bookmarks) ->
+      db.smembers "completed:" + req.getAuthDetails().user_id, (err, completed) ->
+        cases.forEach (theCase, iteration) ->
+          db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
+            db.hgetall "case:" + theCase, (err, sendcase) ->
+              sendcase.firstpage = firstpage
+              sendcases[iteration] = sendcase
+              unless cases[iteration + 1]
+                console.log "rendering cases"
+                res.render "cases",
+                  title: "Cases"
+                  signed_in: req.isAuthenticated()
+                  user: req.getAuthDetails().user.username
+                  cases: sendcases
+                  bookmarks: bookmarks
+                  completed: completed
+
 render = (req, res, theCase, editor) ->
   #console.dir theCase
   #console.log theCase.pagetype
@@ -207,3 +234,5 @@ exports.newpage = newpage
 exports.postImage2 = postImage2
 exports.postImage = postImage
 exports.cleanupCases = cleanupCases
+exports.rendercases = rendercases
+exports.renderRoot = renderRoot

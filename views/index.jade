@@ -6,14 +6,13 @@
   img(src='/static/img/OldRadio_3_320.png', style='width: 320px')
 
   h1.damion -Welcome
-
+  //a#sign_in Sign in with twitter
+  a#sign_in
+    img(src='/static/img/sign-in-with-twitter-d.png')
   br
-
-  a(href='/cases/0/-1') List Cases
-  |  -
-  a(href='/newcase') Create Case
 script(type='text/javascript')
   $(function(){
     // Hides small logo
     $('#sl').hide();
-  });
+    $('#usercontrols').hide();
+    });

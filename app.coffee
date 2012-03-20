@@ -52,10 +52,8 @@ db.on "error", (err) ->
   console.log "Redis Error " + err
 
 app.get "/", (req, res) ->
-  res.render "index",
-    title: "Home"
-    signed_in: req.isAuthenticated()
-    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+  if req.isAuthenticated() then res.redirect "/cases/0/-1"
+  else requestHandlers.renderRoot req, res
 
 app.get "/signed_in", (req, res) ->
   uid = req.getAuthDetails().user.user_id
@@ -117,6 +115,12 @@ app.post "/newcase", (req, res) ->
         res.send "/case/" + cid + "/1", 200
 
 app.get "/cases/:start/:finish", (req, res) ->
+  return res.redirect "/" unless req.isAuthenticated()
+  start = parseInt(req.params.start, 10)
+  end = parseInt(req.params.finish, 10)
+  requestHandlers.rendercases req, res, start, end
+
+app.get "/casesold/:start/:finish", (req, res) ->
   return res.redirect "/" unless req.isAuthenticated()
   start = parseInt(req.params.start, 10)
   end = parseInt(req.params.finish, 10)
