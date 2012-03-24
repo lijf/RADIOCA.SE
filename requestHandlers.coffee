@@ -2,7 +2,7 @@ formidable = require("formidable")
 url = require("url")
 form = require("connect-form")
 redis = require("redis")
-db = redis.createClient()
+db = redis.createClient(6666)
 
 renderRoot = (req, res) ->
   res.render "index",

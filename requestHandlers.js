@@ -9,7 +9,7 @@
 
   redis = require("redis");
 
-  db = redis.createClient();
+  db = redis.createClient(6666);
 
   renderRoot = function(req, res) {
     return res.render("index", {

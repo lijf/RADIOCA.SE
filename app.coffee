@@ -17,7 +17,8 @@ requestHandlers = require("./requestHandlers")
 sys = require("sys")
 util = require("util")
 redis = require("redis")
-db = redis.createClient()
+#db = redis.createClient()
+db = redis.createClient(6666)
 easyoauth = require("easy-oauth")
 app = module.exports = express.createServer()
 app.configure ->
@@ -87,6 +88,10 @@ app.get "/stat/:pagename", (req, res) -> # this may be to much of a 'catch all'
 
 app.get "/newcase", (req, res) ->
   return res.redirect "/" unless req.isAuthenticated()
+  #send a 403? (denied) unless user is in list of users permitted to create cases.
+  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+  #  if editor
+  #    requestHandlers.postNewpage req, res
   res.render "newcase",
     title: "Create new case"
     signed_in: req.isAuthenticated()
@@ -94,6 +99,10 @@ app.get "/newcase", (req, res) ->
 
 app.post "/newcase", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  #send a 403? (denied) unless user is in list of users permitted to create cases.
+  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+  #  if editor
+  #    requestHandlers.postNewpage req, res
   data = req.body
   data.creator = req.getAuthDetails().user.username
   data.texts = [""]
@@ -165,11 +174,19 @@ app.get "/case/:id/:page/feedback", (req, res) ->
 
 app.post "/completed/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
+  #send a 403? (denied) unless user is in list of users permitted to create cases.
+  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+  #  if editor
+  #    requestHandlers.postNewpage req, res
   db.sadd "completed:" + req.getAuthDetails().user_id, req.params.id
   db.sadd "case:" + req.params.id + ":completed", req.getAuthDetails().user_id
 
 app.post "/rmcompleted/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
+  #send a 403? (denied) unless user is in list of users permitted to create cases.
+  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+  #  if editor
+  #    requestHandlers.postNewpage req, res
   db.srem "completed:" + req.getAuthDetails().user_id, req.params.id
   db.srem "case:" + req.params.id + ":completed", req.getAuthDetails().user_id
 
@@ -192,6 +209,10 @@ app.post "/case/:id/:page/newpage", (req, res) ->
 app.post "/case/:id/:page/feedback", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   storefeedback = {}
+  #send a 403? (denied) unless user is in list of users permitted to create cases.
+  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+  #  if editor
+  #    requestHandlers.postNewpage req, res
   storefeedback.feedback = req.body.feedback
   storefeedback.uid = req.getAuthDetails().user.user_id
   storefeedback.user = req.getAuthDetails().user.username
@@ -264,32 +285,10 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
     if editor
       db.del "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption"
       db.lrem "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, req.params.radio
-#      db.srem "image:" + req.params.radio, req.params.id
+      #      db.srem "image:" + req.params.radio, req.params.id
       db.del "radio:" + req.params.radio
       db.lpush "removedRadios", req.params.radio
       res.send "OK", 200
-
-#app.get "/radios/:user", (req, res) ->
-#  return res.redirect("/")  unless req.isAuthenticated()
-#  unless not req.getAuthDetails().user.username is req.params.user
-#    sendradios = []
-#    db.lrange "user:" + req.params.user + ":radios", 0, -1, (err, radios) ->
-#      radios.forEach (radio, id) ->
-#        #console.log radio
-#        sendradios[id] = {}
-#        sendradios[id].ID = radio
-#        db.lrange "radio:" + radio, 0, -1, (err, images) ->
-#          sendradios[id].images = []
-#          images.forEach (image, imgID) ->
-#            sendradios[id].images[imgID] = image
-#
-#          unless radios[id + 1]
-#            #console.dir sendradios
-#            res.render "userradios",
-#              title: "Radios - " + req.params.user
-#              user: req.getAuthDetails().user.username
-#              signed_in: req.isAuthenticated()
-#              radios: sendradios
 
 app.get "/radio/:id", (req, res) ->
   return res.redirect("/")  unless req.isAuthenticated()
@@ -318,45 +317,7 @@ app.post "/image/:id/:page", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   requestHandlers.postImage2 req, res, db
 
-#app.delete "/image/:id", (req, res) ->
-#  console.log "DELETE /image/" + req.params.id + " called"
-#  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
-#  db.sismember "radio:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
-#    if owner
-#      db.smembers "image:" + req.params.id, (err, pages) ->
-#        console.log pages
-#        return res.send "radio still connected to page", 403 unless pages.length == 0
-#        db.del "radio:" + req.params.id
-#        db.del "image:" + req.params.id
-#        db.del "image:" + req.params.id + ":users"
-#        db.lrem "user:" + req.getAuthDetails().user.username + ":radios", 0, req.params.id
-#        db.sadd "deleted_radios", req.params.id
-#        res.send "OK, radio removed", 200
-
-
-#app.post "/image/:id/:page/old", (req, res) ->
-#  console.log "POST /image/ called"
-#  d = new Date().getTime().toString()
-#  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
-#  console.dir req.body
-#  i = 0
-#  req.body.userfile.forEach (file, fid) ->
-#    if file.type = "image/jpeg"
-#      filename = "/img/" + d + "." + i + ".jpg"
-#      console.log file.name
-#      fs.rename file.path, __dirname + filename
-#      db.rpush "radio:" + d, filename
-#      console.log filename, i
-#      i++
-#  db.sadd "image:" + d, req.params.id
-#  db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
-#  db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
-#  db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "caption"
-#  res.send d, 200
-#  console.log "-> upload done"
-#  requestHandlers.postImage2 req, res, db
-
-port = process.env.PORT or 3000
+port = process.env.PORT or 3333
 app.listen port, ->
   console.log process.env.NODE_ENV
   console.log "Express server listening on port %d in %s mode", app.address().port, app.settings.env

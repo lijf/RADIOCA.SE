@@ -47,7 +47,7 @@ a#nextpage(href='/case/#{cid}/#{nextpage}')
 #imagepageradios
   - each r in radios
     .radio.radioimagepage(id='#{r.ID}')
-      .stack
+      .stack(tabindex='-1')
         - each i in r.images
           img.stack_image(src='#{i}')
       .caption

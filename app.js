@@ -37,7 +37,7 @@
 
   redis = require("redis");
 
-  db = redis.createClient();
+  db = redis.createClient(6666);
 
   easyoauth = require("easy-oauth");
 
@@ -409,7 +409,7 @@
     return requestHandlers.postImage2(req, res, db);
   });
 
-  port = process.env.PORT || 3000;
+  port = process.env.PORT || 3333;
 
   app.listen(port, function() {
     console.log(process.env.NODE_ENV);
