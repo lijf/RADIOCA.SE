@@ -1,6 +1,7 @@
 username = (req, res) ->
   (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
 
+
 express = require("express")
 formidable = require("formidable")
 exec = require("child_process").exec
