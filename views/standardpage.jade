@@ -57,16 +57,16 @@ a#nextpage(href='/case/#{cid}/#{nextpage}')
         - if (r.images)
           - each i in r.images
             img.stack_image(src='#{i}')
-      img.control.removeradio(style='display:none', src='/icons/cross.png')
+      img.control.removeradio(style='display:none', src='/static/ico/cross.png')
       //img.control.maximizeradio(src='/static/ico/arrow-315.png')
       //img.control.minimizeradio(src='/static/ico/arrow-135.png', style='display:none')
       .caption
         textarea.mdtxt(style='display:none')
           #{r.caption}
         .md
-        img.control.textedit(src='/icons/pencil.png')
+        img.control.textedit(src='/static/ico/pencil.png')
       br
-  img.control#addstack(style='display:none', src='/icons/plus.png')
+  img.control#addstack(style='display:none', src='/static/ico/plus.png')
   #markdown-help(style='display:none')
     img.control.textedit.session(src='/static/ico/pencil.png', style='position:absolute;top:8px;right:8px')
     img.control.Cancel(src='/static/ico/cross-circle.png', style='right:-24px')
