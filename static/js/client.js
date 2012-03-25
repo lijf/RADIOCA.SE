@@ -310,14 +310,16 @@
         url: "/rmcompleted/" + $(this).attr("ID")
       });
     }).on("click", ".bookmark", function() {
+      var star;
+      star = $(this);
       return $.ajax({
         type: "POST",
         url: "/bookmark/" + $(this).attr("ID"),
         statusCode: {
           200: function() {
-            $(this).removeClass('bookmark');
-            $(this).addClass('rmbookmark');
-            return $(this).attr('src', '/static/ico/star.png');
+            star.removeClass('bookmark');
+            star.addClass('rmbookmark');
+            return star.attr('src', '/static/ico/star.png');
           },
           444: function() {
             return alert("Error, are you logged in?");
@@ -325,14 +327,16 @@
         }
       });
     }).on("click", ".rmbookmark", function() {
+      var star;
+      star = $(this);
       return $.ajax({
         type: "POST",
         url: "/rmbookmark/" + $(this).attr("ID"),
         statusCode: {
           200: function() {
-            $(this).removeClass('rmbookmark');
-            $(this).addClass('bookmark');
-            return $(this).attr('src', '/static/ico/star-empty.png');
+            star.removeClass('rmbookmark');
+            star.addClass('bookmark');
+            return star.attr('src', '/static/ico/star-empty.png');
           },
           444: function() {
             return alert("Error, are you logged in?");

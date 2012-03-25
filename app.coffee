@@ -148,11 +148,13 @@ app.post "/bookmark/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   db.sadd "bookmarks:" + req.getAuthDetails().user_id, req.params.id
   db.sadd "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id
+  res.send 200
 
 app.post "/rmbookmark/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   db.srem "bookmarks:" + req.getAuthDetails().user_id, req.params.id
   db.srem "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id
+  res.send 200
 
 app.post "/case/:id/:page/newpage", (req, res) ->
   console.log "newpage triggered"

@@ -199,13 +199,15 @@
   app.post("/bookmark/:id", function(req, res) {
     if (!req.isAuthenticated()) return res.send(444);
     db.sadd("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
-    return db.sadd("case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id);
+    db.sadd("case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id);
+    return res.send(200);
   });
 
   app.post("/rmbookmark/:id", function(req, res) {
     if (!req.isAuthenticated()) return res.send(444);
     db.srem("bookmarks:" + req.getAuthDetails().user_id, req.params.id);
-    return db.srem("case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id);
+    db.srem("case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id);
+    return res.send(200);
   });
 
   app.post("/case/:id/:page/newpage", function(req, res) {

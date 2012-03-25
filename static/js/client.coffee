@@ -264,26 +264,28 @@ $ ->
       url: "/rmcompleted/" + $(this).attr("ID")
     
   ).on("click", ".bookmark", ->
+    star = $(this)
     $.ajax
       type: "POST"
       url: "/bookmark/" + $(this).attr("ID")
       statusCode:
         200: ->
-          $(this).removeClass('bookmark')
-          $(this).addClass('rmbookmark')
-          $(this).attr('src', '/static/ico/star.png')
+          star.removeClass('bookmark')
+          star.addClass('rmbookmark')
+          star.attr('src', '/static/ico/star.png')
         444: ->
           alert "Error, are you logged in?"
 
   ).on("click", ".rmbookmark", ->
+    star = $(this)
     $.ajax
       type: "POST"
       url: "/rmbookmark/" + $(this).attr("ID")
       statusCode:
         200: ->
-          $(this).removeClass('rmbookmark')
-          $(this).addClass('bookmark')
-          $(this).attr('src','/static/ico/star-empty.png')
+          star.removeClass('rmbookmark')
+          star.addClass('bookmark')
+          star.attr('src','/static/ico/star-empty.png')
         444: ->
           alert "Error, are you logged in?"
           
