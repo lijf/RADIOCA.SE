@@ -1,6 +1,6 @@
 #topleftdiv
 #cases
-  img.control#newcase(src='/icons/plus.png')
+  img.control#newcase(src='/static/ico/plus.png')
   h1.damion.caseListTitle Cases
   input.rounded(type='text', name='filter', value='Type to filter', id='filter')
   table#cases
@@ -30,15 +30,15 @@
             td.eye(style='width:24px')
               - if (c.creator == user || user == 'radioca1se') 
                 - if (c.hidden=='true')
-                  img.showcase(ID='#{c.cid}', src='/icons/eye-prohibition.png')
+                  img.showcase(ID='#{c.cid}', src='/static/ico/eye-prohibition.png')
                 - else
-                  img.hidecase(ID='#{c.cid}', src='/icons/eye.png')
+                  img.hidecase(ID='#{c.cid}', src='/static/ico/eye.png')
             td.invisible ##{c.language}
             td.invisible(ID='#{c.cid}bm')
             td.invisible(ID='#{c.cid}cc')
             td.invisible(style='width:24px')
               - if (c.creator == user) 
-                img.deletecase(ID='#{c.cid}', src='/icons/minus.png')
+                img.deletecase(ID='#{c.cid}', src='/static/ico/minus.png')
 script(type='text/javascript")
   var bookmarks = [#{bookmarks}];
   var completed = [#{completed}];
