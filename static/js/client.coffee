@@ -56,9 +56,11 @@ newcase = (type) ->
     data: json
     statusCode:
       403: ->
-        alert "Forbidden - are you logged in?"
+        alert "Forbidden - if you want to add cases please write to info@radioca.se"
       200: (url) ->
         document.location = url
+      500: ->
+        alert "Error - Please log in"
 
 editfunctions = ->
   $('#locked').toggle()
@@ -165,8 +167,8 @@ authcallback = (data) ->
     url: "/signed_in"
     statusCode:
       200: ->
-        $("#sign_in").attr('id','user_settings').html " \u25c4 " + data.user.username
-        window.location.pathname = '/cases/0/-1'
+        #$("#sign_in").attr('id','user_settings').html " \u25c4 " + data.user.username
+        window.location.pathname = window.location.pathname
       403: (data) ->
         alert "not allowed - if you feel that this is an error, please write to info@radioca.se"
 
@@ -262,20 +264,29 @@ $ ->
       url: "/rmcompleted/" + $(this).attr("ID")
     
   ).on("click", ".bookmark", ->
-    $(this).removeClass('bookmark')
-    $(this).addClass('rmbookmark')
-    $(this).attr('src', '/static/ico/star.png')
     $.ajax
       type: "POST"
       url: "/bookmark/" + $(this).attr("ID")
+      statusCode:
+        200: ->
+          $(this).removeClass('bookmark')
+          $(this).addClass('rmbookmark')
+          $(this).attr('src', '/static/ico/star.png')
+        444: ->
+          alert "Error, are you logged in?"
 
   ).on("click", ".rmbookmark", ->
-    $(this).removeClass('rmbookmark')
-    $(this).addClass('bookmark')
-    $(this).attr('src','/static/ico/star-empty.png')
     $.ajax
       type: "POST"
       url: "/rmbookmark/" + $(this).attr("ID")
+      statusCode:
+        200: ->
+          $(this).removeClass('rmbookmark')
+          $(this).addClass('bookmark')
+          $(this).attr('src','/static/ico/star-empty.png')
+        444: ->
+          alert "Error, are you logged in?"
+          
 
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')
@@ -354,9 +365,9 @@ $ ->
     $.ajax
       url: "/sign_out"
       statusCode:
-        200: (data) ->
-          window.location.href = '/'
-          #$("#session").html "<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>"
+        200: ->
+          $("#usercontrols").html "<a class=\"session\" id=\"sign_in\"><img src=\"/static/img/sign-in-with-twitter-d.png\"></a>"
+          window.location.href = window.location.href
 
       $("#userinfo").hide()
 
@@ -436,6 +447,8 @@ $ ->
           getfeedback()
         403: ->
           alert "Forbidden, maybe your session timed out?"
+        444: ->
+          alert "Error, maybe you're not logged in?"
 
   ).on("click", "#help", ->
     $("#markdown-help").toggle()

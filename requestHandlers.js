@@ -20,12 +20,18 @@
   };
 
   rendercases = function(req, res, start, end) {
+    var userid;
+    if (req.isAuthenticated()) {
+      userid = req.getAuthDetails().user_id;
+    } else {
+      userid = "0";
+    }
     return db.zrange("listed", start, end, function(err, cases) {
       var sendcases;
       if (err || !cases[0]) res.send(444);
       sendcases = [];
-      return db.smembers("bookmarks:" + req.getAuthDetails().user_id, function(err, bookmarks) {
-        return db.smembers("completed:" + req.getAuthDetails().user_id, function(err, completed) {
+      return db.smembers("bookmarks:" + userid, function(err, bookmarks) {
+        return db.smembers("completed:" + userid, function(err, completed) {
           return cases.forEach(function(theCase, iteration) {
             return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
               return db.hgetall("case:" + theCase, function(err, sendcase) {
@@ -36,7 +42,7 @@
                   return res.render("cases", {
                     title: "Cases",
                     signed_in: req.isAuthenticated(),
-                    user: req.getAuthDetails().user.username,
+                    user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
                     cases: sendcases,
                     bookmarks: bookmarks,
                     completed: completed
@@ -59,7 +65,7 @@
       created: theCase.created,
       mdhelp: theCase.mdhelp,
       signed_in: req.isAuthenticated(),
-      user: req.getAuthDetails().user.username,
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
       cid: req.params.id,
       modalities: theCase.modalities || "",
       description: theCase.description || "",
@@ -78,18 +84,26 @@
 
   rendercase = function(req, res, theCase, editor) {
     return db.get("markdown-help", function(err, data) {
+      var userid, username;
+      if (req.isAuthenticated()) {
+        username = req.getAuthDetails().username;
+        userid = req.getAuthDetails().user_id;
+      } else {
+        username = "";
+        userid = "0";
+      }
       theCase.mdhelp = JSON.parse(data);
       return db.hgetall("case:" + req.params.id, function(err, casedata) {
         if (!(err || !casedata)) {
           theCase.modalities = casedata.modalities;
           theCase.description = casedata.description;
         }
-        if (casedata.hidden === 'true' && !editor && req.getAuthDetails().username !== 'radioca1se') {
+        if (casedata.hidden === 'true' && !editor && username !== 'radioca1se') {
           res.redirect('/');
         }
-        return db.sismember("bookmarks:" + req.getAuthDetails().user_id, req.params.id, function(err, bookmarked) {
+        return db.sismember("bookmarks:" + userid, req.params.id, function(err, bookmarked) {
           if (!err) theCase.bookmarked = bookmarked;
-          return db.sismember("completed:" + req.getAuthDetails().user_id, req.params.id, function(err, completed) {
+          return db.sismember("completed:" + userid, req.params.id, function(err, completed) {
             if (!err) theCase.completed = completed;
             return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
               if (radioIDs.length < 1) return render(req, res, theCase, editor);

@@ -1,12 +1,6 @@
 username = (req, res) ->
   (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
 
-loadUser = (req, res, next) ->
-  unless req.isAuthenticated()
-    res.redirect "back"
-  else
-    next()
-
 express = require("express")
 formidable = require("formidable")
 exec = require("child_process").exec
@@ -63,22 +57,18 @@ app.get "/signed_in", (req, res) ->
   userdata.username = userdata.user.username
   db.sismember "users", uid, (err, registered) ->
     if registered
-      db.hmset "user:" + uid, userdata, (err, data) ->
+      db.hmset "user:" + uid, userdata
+      db.set "user:" + userdata.username, uid
       res.send "OK", 200
     else
-      db.sismember "invitees", req.getAuthDetails().user.username, (err, invited) ->
-        if invited
-          db.sadd "users", uid
-          db.hmset "user:" + uid, userdata, (err, data) ->
-
-          res.send "new user, first login", 200
-        else
-          req.logout()
-          res.send "not allowed", 403
+      db.sadd "users", uid
+      db.hmset "user:" + uid, userdata
+      db.set "user:" + userdata.username, uid
+      res.send "OK, new user", 200
 
 app.get "/sign_out", (req, res) ->
   req.logout()
-  res.send "<button id=\"twitbutt\">Sign in with twitter</button>"
+  res.send "OK", 200
 
 app.get "/stat/:pagename", (req, res) -> # this may be to much of a 'catch all'
   res.render req.params.pagename,
@@ -86,85 +76,48 @@ app.get "/stat/:pagename", (req, res) -> # this may be to much of a 'catch all'
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
 
-app.get "/newcase", (req, res) ->
-  return res.redirect "/" unless req.isAuthenticated()
-  #send a 403? (denied) unless user is in list of users permitted to create cases.
-  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-  #  if editor
-  #    requestHandlers.postNewpage req, res
-  res.render "newcase",
-    title: "Create new case"
-    signed_in: req.isAuthenticated()
-    user: req.getAuthDetails().user.username
-
 app.post "/newcase", (req, res) ->
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
-  #send a 403? (denied) unless user is in list of users permitted to create cases.
-  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-  #  if editor
-  #    requestHandlers.postNewpage req, res
-  data = req.body
-  data.creator = req.getAuthDetails().user.username
-  data.texts = [""]
-  data.created = new Date().getTime()
-  data.lastEdit = data.created
-  data.listed = "true"
-  data.nextpage = "0"
-  data.prevpage = "0"
-  db.incr "numberOfCases", (err, cid) ->
-    data.cid = cid
-    db.incr "case:" + cid + ":pages"
-    db.zadd "casesLastEdit", data.lastEdit, cid
-    db.zadd "listed", data.created, cid  if data.listed is "true"
-    db.zadd "cases:" + data.creator, data.created, cid
-    db.set "case:" + cid + ":firstpage", "1"
-    db.hmset "case:" + cid + ":page:1", data, (err, data) ->
-      db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
-        console.log "created case: " + cid
-        res.send "/case/" + cid + "/1", 200
+  db.sismember "userCanAdd", req.getAuthDetails().user.user_id, (err, canAdd) ->
+    return res.send "FORBIDDEN", 403 unless canAdd
+    if canAdd
+      data = req.body
+      data.creator = req.getAuthDetails().user.username
+      data.texts = [""]
+      data.created = new Date().getTime()
+      data.lastEdit = data.created
+      data.listed = "true"
+      data.nextpage = "0"
+      data.prevpage = "0"
+      db.incr "numberOfCases", (err, cid) ->
+        data.cid = cid
+        db.incr "case:" + cid + ":pages"
+        db.zadd "casesLastEdit", data.lastEdit, cid
+        db.zadd "listed", data.created, cid  if data.listed is "true"
+        db.zadd "cases:" + data.creator, data.created, cid
+        db.set "case:" + cid + ":firstpage", "1"
+        db.hmset "case:" + cid + ":page:1", data, (err, data) ->
+          db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
+            console.log "created case: " + cid
+            res.send "/case/" + cid + "/1", 200
 
 app.get "/cases/:start/:finish", (req, res) ->
-  return res.redirect "/" unless req.isAuthenticated()
   start = parseInt(req.params.start, 10)
   end = parseInt(req.params.finish, 10)
   requestHandlers.rendercases req, res, start, end
 
-app.get "/casesold/:start/:finish", (req, res) ->
-  return res.redirect "/" unless req.isAuthenticated()
-  start = parseInt(req.params.start, 10)
-  end = parseInt(req.params.finish, 10)
-  db.zrange "listed", start, end, (err, cases) ->
-    res.send 444  if err or not cases[0]
-    sendcases = []
-    db.smembers "bookmarks:" + req.getAuthDetails().user_id, (err, bookmarks) ->
-      db.smembers "completed:" + req.getAuthDetails().user_id, (err, completed) ->
-        cases.forEach (theCase, iteration) ->
-          db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
-            db.hgetall "case:" + theCase, (err, sendcase) ->
-              sendcase.firstpage = firstpage
-              sendcases[iteration] = sendcase
-              unless cases[iteration + 1]
-                console.log "rendering cases"
-                res.render "cases",
-                  title: "Cases"
-                  signed_in: req.isAuthenticated()
-                  user: req.getAuthDetails().user.username
-                  cases: sendcases
-                  bookmarks: bookmarks
-                  completed: completed
-
 app.get "/case/:id/:page", (req, res) ->
-  return res.redirect "/" unless req.isAuthenticated()
-  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+  if req.isAuthenticated()
+    userid = req.getAuthDetails().user.user_id
+  else
+    userid = '0'
+  console.log userid
+  db.sismember "case:" + req.params.id + ":users", userid, (err, editor) ->
     db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (error, theCase) ->
-      #console.dir theCase
       return res.redirect "back"  if error or not theCase.cid
-      #return res.redirect "back" unless theCase.listed is "true" or (theCase.listed is "false" and editor)
       console.log "rendering case"
-      requestHandlers.rendercase req, res, theCase, editor, db
+      requestHandlers.rendercase req, res, theCase, editor
 
 app.get "/case/:id/:page/feedback", (req, res) ->
-  return res.send 444 unless req.isAuthenticated()
   db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
     pagefeedback = []
     feedback.forEach (fb, fbID) ->
@@ -270,7 +223,7 @@ app.get "/sys/admin", (req, res) ->
     return res.render "admin",
       title: "ADMINPAGE"
       signed_in: req.isAuthenticated()
-      user: req.getAuthDetails().user.username
+      user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
 
 app.delete "/case/:id/:page", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
@@ -291,7 +244,6 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
       res.send "OK", 200
 
 app.get "/radio/:id", (req, res) ->
-  return res.redirect("/")  unless req.isAuthenticated()
   radio = {}
   radio.ID = req.params.id
   db.lrange "radio:" + req.params.id, 0, -1, (err, images) ->
@@ -303,7 +255,6 @@ app.get "/radio/:id", (req, res) ->
     object: radio
 
 app.get "/img/:img", (req, res) ->
-  return res.send 444 unless req.isAuthenticated()
   image = __dirname + "/img/" + req.params.img
   fs.readFile image, "binary", (err, file) ->
     return res.send 444  if err

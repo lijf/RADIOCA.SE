@@ -1,19 +1,11 @@
 (function() {
-  var app, db, easyoauth, exec, express, formidable, fs, loadUser, port, redis, requestHandlers, spawn, sys, url, username, util;
+  var app, db, easyoauth, exec, express, formidable, fs, port, redis, requestHandlers, spawn, sys, url, username, util;
 
   username = function(req, res) {
     if (req.isAuthenticated()) {
       return req.getAuthDetails().user.username;
     } else {
       return "0";
-    }
-  };
-
-  loadUser = function(req, res, next) {
-    if (!req.isAuthenticated()) {
-      return res.redirect("back");
-    } else {
-      return next();
     }
   };
 
@@ -99,26 +91,21 @@
     userdata.username = userdata.user.username;
     return db.sismember("users", uid, function(err, registered) {
       if (registered) {
-        db.hmset("user:" + uid, userdata, function(err, data) {});
+        db.hmset("user:" + uid, userdata);
+        db.set("user:" + userdata.username, uid);
         return res.send("OK", 200);
       } else {
-        return db.sismember("invitees", req.getAuthDetails().user.username, function(err, invited) {
-          if (invited) {
-            db.sadd("users", uid);
-            db.hmset("user:" + uid, userdata, function(err, data) {});
-            return res.send("new user, first login", 200);
-          } else {
-            req.logout();
-            return res.send("not allowed", 403);
-          }
-        });
+        db.sadd("users", uid);
+        db.hmset("user:" + uid, userdata);
+        db.set("user:" + userdata.username, uid);
+        return res.send("OK, new user", 200);
       }
     });
   });
 
   app.get("/sign_out", function(req, res) {
     req.logout();
-    return res.send("<button id=\"twitbutt\">Sign in with twitter</button>");
+    return res.send("OK", 200);
   });
 
   app.get("/stat/:pagename", function(req, res) {
@@ -129,98 +116,62 @@
     });
   });
 
-  app.get("/newcase", function(req, res) {
-    if (!req.isAuthenticated()) return res.redirect("/");
-    return res.render("newcase", {
-      title: "Create new case",
-      signed_in: req.isAuthenticated(),
-      user: req.getAuthDetails().user.username
-    });
-  });
-
   app.post("/newcase", function(req, res) {
-    var data;
-    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
-    data = req.body;
-    data.creator = req.getAuthDetails().user.username;
-    data.texts = [""];
-    data.created = new Date().getTime();
-    data.lastEdit = data.created;
-    data.listed = "true";
-    data.nextpage = "0";
-    data.prevpage = "0";
-    return db.incr("numberOfCases", function(err, cid) {
-      data.cid = cid;
-      db.incr("case:" + cid + ":pages");
-      db.zadd("casesLastEdit", data.lastEdit, cid);
-      if (data.listed === "true") db.zadd("listed", data.created, cid);
-      db.zadd("cases:" + data.creator, data.created, cid);
-      db.set("case:" + cid + ":firstpage", "1");
-      return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
-        return db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, data) {
-          console.log("created case: " + cid);
-          return res.send("/case/" + cid + "/1", 200);
+    return db.sismember("userCanAdd", req.getAuthDetails().user.user_id, function(err, canAdd) {
+      var data;
+      if (!canAdd) return res.send("FORBIDDEN", 403);
+      if (canAdd) {
+        data = req.body;
+        data.creator = req.getAuthDetails().user.username;
+        data.texts = [""];
+        data.created = new Date().getTime();
+        data.lastEdit = data.created;
+        data.listed = "true";
+        data.nextpage = "0";
+        data.prevpage = "0";
+        return db.incr("numberOfCases", function(err, cid) {
+          data.cid = cid;
+          db.incr("case:" + cid + ":pages");
+          db.zadd("casesLastEdit", data.lastEdit, cid);
+          if (data.listed === "true") db.zadd("listed", data.created, cid);
+          db.zadd("cases:" + data.creator, data.created, cid);
+          db.set("case:" + cid + ":firstpage", "1");
+          return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
+            return db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, data) {
+              console.log("created case: " + cid);
+              return res.send("/case/" + cid + "/1", 200);
+            });
+          });
         });
-      });
+      }
     });
   });
 
   app.get("/cases/:start/:finish", function(req, res) {
     var end, start;
-    if (!req.isAuthenticated()) return res.redirect("/");
     start = parseInt(req.params.start, 10);
     end = parseInt(req.params.finish, 10);
     return requestHandlers.rendercases(req, res, start, end);
   });
 
-  app.get("/casesold/:start/:finish", function(req, res) {
-    var end, start;
-    if (!req.isAuthenticated()) return res.redirect("/");
-    start = parseInt(req.params.start, 10);
-    end = parseInt(req.params.finish, 10);
-    return db.zrange("listed", start, end, function(err, cases) {
-      var sendcases;
-      if (err || !cases[0]) res.send(444);
-      sendcases = [];
-      return db.smembers("bookmarks:" + req.getAuthDetails().user_id, function(err, bookmarks) {
-        return db.smembers("completed:" + req.getAuthDetails().user_id, function(err, completed) {
-          return cases.forEach(function(theCase, iteration) {
-            return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
-              return db.hgetall("case:" + theCase, function(err, sendcase) {
-                sendcase.firstpage = firstpage;
-                sendcases[iteration] = sendcase;
-                if (!cases[iteration + 1]) {
-                  console.log("rendering cases");
-                  return res.render("cases", {
-                    title: "Cases",
-                    signed_in: req.isAuthenticated(),
-                    user: req.getAuthDetails().user.username,
-                    cases: sendcases,
-                    bookmarks: bookmarks,
-                    completed: completed
-                  });
-                }
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-
   app.get("/case/:id/:page", function(req, res) {
-    if (!req.isAuthenticated()) return res.redirect("/");
-    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
+    var userid;
+    if (req.isAuthenticated()) {
+      userid = req.getAuthDetails().user.user_id;
+    } else {
+      userid = '0';
+    }
+    console.log(userid);
+    return db.sismember("case:" + req.params.id + ":users", userid, function(err, editor) {
       return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(error, theCase) {
         if (error || !theCase.cid) return res.redirect("back");
         console.log("rendering case");
-        return requestHandlers.rendercase(req, res, theCase, editor, db);
+        return requestHandlers.rendercase(req, res, theCase, editor);
       });
     });
   });
 
   app.get("/case/:id/:page/feedback", function(req, res) {
-    if (!req.isAuthenticated()) return res.send(444);
     return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
       var pagefeedback;
       pagefeedback = [];
@@ -346,7 +297,7 @@
       return res.render("admin", {
         title: "ADMINPAGE",
         signed_in: req.isAuthenticated(),
-        user: req.getAuthDetails().user.username
+        user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
       });
     }
   });
@@ -376,7 +327,6 @@
 
   app.get("/radio/:id", function(req, res) {
     var radio;
-    if (!req.isAuthenticated()) return res.redirect("/");
     radio = {};
     radio.ID = req.params.id;
     return db.lrange("radio:" + req.params.id, 0, -1, function(err, images) {
@@ -392,7 +342,6 @@
 
   app.get("/img/:img", function(req, res) {
     var image;
-    if (!req.isAuthenticated()) return res.send(444);
     image = __dirname + "/img/" + req.params.img;
     return fs.readFile(image, "binary", function(err, file) {
       if (err) return res.send(444);

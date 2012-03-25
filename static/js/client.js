@@ -71,10 +71,13 @@
       data: json,
       statusCode: {
         403: function() {
-          return alert("Forbidden - are you logged in?");
+          return alert("Forbidden - if you want to add cases please write to info@radioca.se");
         },
         200: function(url) {
           return document.location = url;
+        },
+        500: function() {
+          return alert("Error - Please log in");
         }
       }
     });
@@ -209,8 +212,7 @@
       url: "/signed_in",
       statusCode: {
         200: function() {
-          $("#sign_in").attr('id', 'user_settings').html(" \u25c4 " + data.user.username);
-          return window.location.pathname = '/cases/0/-1';
+          return window.location.pathname = window.location.pathname;
         },
         403: function(data) {
           return alert("not allowed - if you feel that this is an error, please write to info@radioca.se");
@@ -308,20 +310,34 @@
         url: "/rmcompleted/" + $(this).attr("ID")
       });
     }).on("click", ".bookmark", function() {
-      $(this).removeClass('bookmark');
-      $(this).addClass('rmbookmark');
-      $(this).attr('src', '/static/ico/star.png');
       return $.ajax({
         type: "POST",
-        url: "/bookmark/" + $(this).attr("ID")
+        url: "/bookmark/" + $(this).attr("ID"),
+        statusCode: {
+          200: function() {
+            $(this).removeClass('bookmark');
+            $(this).addClass('rmbookmark');
+            return $(this).attr('src', '/static/ico/star.png');
+          },
+          444: function() {
+            return alert("Error, are you logged in?");
+          }
+        }
       });
     }).on("click", ".rmbookmark", function() {
-      $(this).removeClass('rmbookmark');
-      $(this).addClass('bookmark');
-      $(this).attr('src', '/static/ico/star-empty.png');
       return $.ajax({
         type: "POST",
-        url: "/rmbookmark/" + $(this).attr("ID")
+        url: "/rmbookmark/" + $(this).attr("ID"),
+        statusCode: {
+          200: function() {
+            $(this).removeClass('rmbookmark');
+            $(this).addClass('bookmark');
+            return $(this).attr('src', '/static/ico/star-empty.png');
+          },
+          444: function() {
+            return alert("Error, are you logged in?");
+          }
+        }
       });
     }).on("focus", "#filter", function() {
       if ($(this).val() === 'Type to filter') return $(this).val('');
@@ -395,8 +411,9 @@
       return $.ajax({
         url: "/sign_out",
         statusCode: {
-          200: function(data) {
-            return window.location.href = '/';
+          200: function() {
+            $("#usercontrols").html("<a class=\"session\" id=\"sign_in\"><img src=\"/static/img/sign-in-with-twitter-d.png\"></a>");
+            return window.location.href = window.location.href;
           }
         }
       }, $("#userinfo").hide());
@@ -468,6 +485,9 @@
           },
           403: function() {
             return alert("Forbidden, maybe your session timed out?");
+          },
+          444: function() {
+            return alert("Error, maybe you're not logged in?");
           }
         }
       });

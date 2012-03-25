@@ -11,11 +11,15 @@ renderRoot = (req, res) ->
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
 
 rendercases = (req, res, start, end) ->
+  if req.isAuthenticated()
+    userid = req.getAuthDetails().user_id
+  else
+    userid = "0"
   db.zrange "listed", start, end, (err, cases) ->
     res.send 444 if err or not cases[0]
     sendcases = []
-    db.smembers "bookmarks:" + req.getAuthDetails().user_id, (err, bookmarks) ->
-      db.smembers "completed:" + req.getAuthDetails().user_id, (err, completed) ->
+    db.smembers "bookmarks:" + userid, (err, bookmarks) ->
+      db.smembers "completed:" + userid, (err, completed) ->
         cases.forEach (theCase, iteration) ->
           db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
             db.hgetall "case:" + theCase, (err, sendcase) ->
@@ -26,7 +30,7 @@ rendercases = (req, res, start, end) ->
                 res.render "cases",
                   title: "Cases"
                   signed_in: req.isAuthenticated()
-                  user: req.getAuthDetails().user.username
+                  user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
                   cases: sendcases
                   bookmarks: bookmarks
                   completed: completed
@@ -42,7 +46,7 @@ render = (req, res, theCase, editor) ->
     created: theCase.created
     mdhelp: theCase.mdhelp
     signed_in: req.isAuthenticated()
-    user: req.getAuthDetails().user.username
+    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
     cid: req.params.id
     modalities: theCase.modalities or ""
     description: theCase.description or ""
@@ -58,19 +62,24 @@ render = (req, res, theCase, editor) ->
     style: theCase.style
 
 rendercase = (req, res, theCase, editor) ->
-  #console.dir req.getAuthDetails()
   db.get "markdown-help", (err, data) ->
+    if req.isAuthenticated()
+      username = req.getAuthDetails().username
+      userid = req.getAuthDetails().user_id
+    else
+      username = ""
+      userid = "0"
     theCase.mdhelp = JSON.parse(data)
     db.hgetall "case:" + req.params.id, (err, casedata) ->
       unless err or !casedata
         theCase.modalities = casedata.modalities
         theCase.description = casedata.description
-      if casedata.hidden == 'true' && !editor && req.getAuthDetails().username != 'radioca1se'
+      if casedata.hidden == 'true' && !editor && username != 'radioca1se'
         res.redirect '/'
-      db.sismember "bookmarks:" + req.getAuthDetails().user_id, req.params.id, (err, bookmarked) ->
+      db.sismember "bookmarks:" + userid, req.params.id, (err, bookmarked) ->
         unless err
           theCase.bookmarked = bookmarked
-        db.sismember "completed:" + req.getAuthDetails().user_id, req.params.id, (err, completed) ->
+        db.sismember "completed:" + userid, req.params.id, (err, completed) ->
           unless err
             theCase.completed = completed
           db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->

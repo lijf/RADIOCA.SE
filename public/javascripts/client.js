@@ -194,7 +194,7 @@
     return $.ajax({
       url: "/signed_in",
       statusCode: {
-        200: function() {
+        200: function(data) {
           return $("#session").html("<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>");
         },
         403: function(data) {
@@ -228,20 +228,28 @@
     $('tbody tr').addClass('visible');
     zebrarows('tbody tr:odd td', 'odd');
     $(document).on("click", ".bookmark", function() {
-      $(this).removeClass('bookmark');
-      $(this).addClass('rmbookmark');
-      $(this).attr('src', '/icons/bookmark.png');
       return $.ajax({
         type: "POST",
-        url: "/bookmark/" + $(this).attr("ID")
+        url: "/bookmark/" + $(this).attr("ID"),
+        statusCode: {
+          200: function() {
+            $(this).removeClass('bookmark');
+            $(this).addClass('rmbookmark');
+            return $(this).attr('src', '/icons/bookmark.png');
+          }
+        }
       });
     }).on("click", ".rmbookmark", function() {
-      $(this).removeClass('rmbookmark');
-      $(this).addClass('bookmark');
-      $(this).attr('src', '/icons/bookmark_bw.png');
       return $.ajax({
         type: "POST",
-        url: "/rmbookmark/" + $(this).attr("ID")
+        url: "/rmbookmark/" + $(this).attr("ID"),
+        statusCode: {
+          200: function() {
+            $(this).removeClass('rmbookmark');
+            $(this).addClass('bookmark');
+            return $(this).attr('src', '/icons/bookmark_bw.png');
+          }
+        }
       });
     }).on("focus", "#filter", function() {
       if ($(this).val() === 'Type to filter') return $(this).val('');
@@ -285,7 +293,7 @@
         url: "/sign_out",
         statusCode: {
           200: function(data) {
-            return window.location.href = '/';
+            return $("#session").html(data);
           }
         }
       });

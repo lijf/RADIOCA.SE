@@ -152,7 +152,7 @@ authcallback = (data) ->
   $.ajax
     url: "/signed_in"
     statusCode:
-      200: ->
+      200: (data) ->
         $("#session").html "<a class=\"session\" id=\"user_settings\">" + data.user.username + " ▼ </a>"
         #$("#feedbackbutton").attr("id", "editbutton").html "Edit"
       403: (data) ->
@@ -207,20 +207,24 @@ $ ->
 #          return lastY = parseInt(touch.pageY, 10)
 #        e.preventDefault()
   ).on("click", ".bookmark", ->
-    $(this).removeClass('bookmark')
-    $(this).addClass('rmbookmark')
-    $(this).attr('src', '/icons/bookmark.png')
     $.ajax
       type: "POST"
       url: "/bookmark/" + $(this).attr("ID")
+      statusCode:
+        200: ->
+          $(this).removeClass('bookmark')
+          $(this).addClass('rmbookmark')
+          $(this).attr('src', '/icons/bookmark.png')
 
   ).on("click", ".rmbookmark", ->
-    $(this).removeClass('rmbookmark')
-    $(this).addClass('bookmark')
-    $(this).attr('src','/icons/bookmark_bw.png')
     $.ajax
       type: "POST"
       url: "/rmbookmark/" + $(this).attr("ID")
+      statusCode:
+        200: ->
+          $(this).removeClass('rmbookmark')
+          $(this).addClass('bookmark')
+          $(this).attr('src','/icons/bookmark_bw.png')
   
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')
@@ -260,20 +264,6 @@ $ ->
       $(this).next().hide()
     e.preventDefault()
 
-#  ).on("mousewheel_old", ".stack > .stack_image", (e) ->
-#    delta = e.originalEvent.detail
-#    if !delta
-#      delta = e.originalEvent.wheelDelta
-#    if delta > 0 and $(this).next().length > 0
-#      $(this).prev().css "display", "none"
-#      $(this).css "display", "none"
-#      $(this).next().css "display", "inline"
-#    else if delta < 0 and $(this).prev().length > 0
-#      $(this).next().css "display", "none"
-#      $(this).css "display", "none"
-#      $(this).prev().css "display", "inline"
-#    e.preventDefault()
-
   ).on("click", "#user_settings", ->
     $("#userinfo").toggle()
 
@@ -286,8 +276,7 @@ $ ->
       url: "/sign_out"
       statusCode:
         200: (data) ->
-          window.location.href = '/'
-          #$("#session").html "<a class=\"session\" id=\"sign_in\">Sign in with twitter</a>"
+          $("#session").html data
 
     $("#userinfo").hide()
 
