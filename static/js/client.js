@@ -551,14 +551,14 @@
       $("#uploadform").submit();
       $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "edit caption </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
-      $(".radio:last", top.document).append($("<img class=\"control removeradio\" src=\'/icons/cross.png\'>"));
-      return $(".caption:last", top.document).append($("<img class=\"control textedit\" src=\'/icons/pencil.png\' style=\'display:inline\'>"));
+      $(".radio:last", top.document).append($("<img class=\"control removeradio\" src=\'/static/ico/cross.png\'>"));
+      return $(".caption:last", top.document).append($("<img class=\"control textedit\" src=\'/static/ico/pencil.png\' style=\'display:inline\'>"));
     }).on("click", ".hidecase", function() {
       var targeturl;
       targeturl = "/hide/" + $(this).attr("ID");
       $(this).addClass("showcase");
       $(this).removeClass("hidecase");
-      $(this).attr('src', '/icons/eye-prohibition.png');
+      $(this).attr('src', '/static/ico/eye-prohibition.png');
       return $.ajax({
         url: targeturl,
         type: "POST"
@@ -568,7 +568,7 @@
       targeturl = "/show/" + $(this).attr("ID");
       $(this).addClass("hidecase");
       $(this).removeClass("showcase");
-      $(this).attr('src', '/icons/eye.png');
+      $(this).attr('src', '/static/ico/eye.png');
       return $.ajax({
         url: targeturl,
         type: "POST"
