@@ -310,7 +310,7 @@ $ ->
         filter2('tbody tr.visible', query )
 
   ).on("click", ".textedit", ->
-    src = if $(this).attr('src') == '/static/ico/pencil.png' then '/static/ico/tick.png' else '/static//ico/pencil.png'
+    src = if $(this).attr('src') == '/static/ico/pencil.png' then '/static/ico/tick.png' else '/static/ico/pencil.png'
     $(this).attr('src', src)
     $(this).siblings(".mdtxt").toggle().focus().autogrow()
     $(this).siblings(".md").toggle()
