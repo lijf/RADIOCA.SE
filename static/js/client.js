@@ -359,7 +359,7 @@
       }
     }).on("click", ".textedit", function() {
       var src;
-      src = $(this).attr('src') === '/icons/pencil.png' ? '/icons/tick.png' : '/icons/pencil.png';
+      src = $(this).attr('src') === '/static/ico/pencil.png' ? '/static/ico/tick.png' : '/static//ico/pencil.png';
       $(this).attr('src', src);
       $(this).siblings(".mdtxt").toggle().focus().autogrow();
       $(this).siblings(".md").toggle();
