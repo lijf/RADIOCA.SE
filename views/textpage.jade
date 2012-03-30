@@ -7,9 +7,9 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     @#{creator}
   | &#x2002;
   - if (bookmarked)
-    img.control.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
+    img.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
   - else 
-    img.control.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
+    img.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
   span#lock
     a.abutton#lock(title='Edit Page')
       span#locked

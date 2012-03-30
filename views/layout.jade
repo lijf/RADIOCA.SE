@@ -39,7 +39,7 @@ html
             img.pageimage#casetextpage(src='/static/img/textpage.svg', alt='Textpage')
             img.pageimage#caseimagepage(src='/static/img/imagepage.svg', alt='Imagepage')
           a.Cancel
-            img(src="/static/ico/cross-circle.png")
+            img.control(src="/static/ico/cross-circle_bw.png")
         #newpage_dialog.dialog_box(style='display:none')
           h2.damion(style='text-align:left') Create new page
           h4 - Choose page layout.
@@ -48,7 +48,7 @@ html
             img.pageimage#newpage_text(src='/static/img/textpage.svg', alt='Textpage')
             img.pageimage#newpage_image(src='/static/img/imagepage.svg', alt='Imagepage')
           a.Cancel
-            img(src="/static/ico/cross-circle.png")
+            img.control(src="/static/ico/cross-circle_bw.png")
         #deletecase_dialog.dialog_box(style='display:none')
           | Do you want to delete this case?
           br
@@ -56,7 +56,7 @@ html
           button#deletecase_confirm(type='button')
             | Delete
           a.Cancel
-            img(src="/static/ico/cross-circle.png")
+            img.control(src="/static/ico/cross-circle_bw.png")
         #boxit_dialog.dialog_box(style='display:none')
           | Please check applicable language, modalities and areas
           br
@@ -111,7 +111,7 @@ html
             input.description#other(type='checkbox', value='#other')
             | Other
           a.Cancel
-            img(src="/static/ico/cross-circle.png")
+            img.control(src="/static/ico/cross-circle_bw.png")
 
         #addstack_dialog.dialog_box(style='display:none')
           | Please choose image(s) to upload.
@@ -129,8 +129,8 @@ html
                 button
                   | Browse
             input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
-            a.Cancel
-              img(src="/static/ico/cross-circle.png")
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
         #removeradio_dialog.dialog_box(style='display:none')
           | Do you want to remove the selected stack/radio from this page?
           br
@@ -138,7 +138,7 @@ html
           button#removeradio_confirm(type='button')
             | Remove radio
           a.Cancel
-            img(src="/static/ico/cross-circle.png")
+            img.control(src="/static/ico/cross-circle_bw.png")
         #deleteradio_dialog.dialog_box(style='display:none')
           | Do you want to delete the selected stack/radio from your collection?
           br
@@ -146,7 +146,7 @@ html
           button#deleteradio_confirm(type='button')
             | Delete
           a.Cancel
-            img(src="/static/ico/cross-circle.png")
+            img.control(src="/static/ico/cross-circle_bw.png")
     #footer
       a(href='/')
         | Home

@@ -139,12 +139,12 @@
             samp = 0;
             touch = e.touches[0];
             if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
-              visimg.hide();
               visimg.prev().show();
+              visimg.hide();
               visimg = visimg.prev();
             } else if (parseInt(touch.pageY, 10) < lastY && visimg.next().length > 0) {
-              visimg.hide();
               visimg.next().show();
+              visimg.hide();
               visimg = visimg.next();
             }
             return lastY = parseInt(touch.pageY, 10);
@@ -276,7 +276,11 @@
         return zebrarows(".visible:even td", "odd");
       });
     });
-    $(document).on("dblclick", ".radio", function() {
+    $(document).on("mouseover", ".control", function() {
+      return $(this).attr('src', $(this).attr('src').slice(0, -7) + '.png');
+    }).on("mouseout", ".control", function() {
+      return $(this).attr('src', $(this).attr('src').slice(0, -4) + '_bw.png');
+    }).on("dblclick", ".radio", function() {
       if ($("#maximized").is(":visible")) {
         return minimizeradio($(this));
       } else {
