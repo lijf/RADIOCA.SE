@@ -15,7 +15,7 @@ html
     script(src = '/static/js/Markdown.Converter.js')
     script(src = '/static/js/Markdown.Sanitizer.js')
     script(src = '/static/js/client.js')
-    //script(src= 'http://10.0.1.5:8124/debug.js')
+    //script(src = 'http://localhost:8124/debug.js')
   body
     #wrap
       #sl
@@ -32,7 +32,7 @@ html
       #maximized
       #horizon
         #newcase_dialog.dialog_box(style='display:none')
-          h1.damion(style='text-align:left') Create new case
+          h1.damion.orange(style='text-align:left') Create new case
           h3 - Choose page layout for first page
           #pagetype
             img.pageimage#casestandardpage(src='/static/img/standardpage.svg', alt='Standard')
@@ -72,8 +72,8 @@ html
           br
           br
           form#modalities_form
-            input.modality#plainfilm(type='checkbox', value='#plainfilm') 
-            | Plain Film
+            input.modality#XR(type='checkbox', value='#XR') 
+            | XR 
             input.modality#fluoro(type='checkbox', value='#fluro') 
             | Fluoroscopy
             input.modality#angio(type='checkbox', value='#angio') 
@@ -83,17 +83,17 @@ html
             | CT
             input.modality#MR(type='checkbox', value='#MR') 
             | MR
-            input.modality#ultrasound(type='checkbox', value='#ultrasound') 
-            | Ultrasound
-            input.modality#nuclear(type='checkbox', value='#nuclear')
-            | Nuclear Medicine
+            input.modality#US(type='checkbox', value='#US') 
+            | US 
+            input.modality#NM(type='checkbox', value='#NM')
+            | NM
           br
           br
           form#description_form
             input.description#neuro(type='checkbox', value='#neuro')
             | Neuro
-            input.description#headNeck(type='checkbox', value='#headNeck')
-            | Head & Neck 
+            input.description#headNeck(type='checkbox', value='#H & N')
+            | H & N 
             input.description#cardiothoracic(type='checkbox', value='#cardiothoracic')
             | Cardiothoracic
             br
@@ -101,8 +101,8 @@ html
             | Abdominal
             input.description#interventional(type='checkbox', value='#interventional')
             | Interventional
-            input.description#musculoskeletal(type='checkbox', value='#musculoskeletal')
-            | Musculoskeletal
+            input.description#msk(type='checkbox', value='#msk')
+            | Msk
             br
             input.description#breast(type='checkbox', value='#breast')
             | Breast

@@ -1,7 +1,9 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, filter2, getTitle, getfeedback, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
+  var authcallback, change_url, converter, editfunctions, filter2, flickY, getTitle, getfeedback, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
 
   lastY = 0;
+
+  flickY = 0;
 
   samp = 0;
 
@@ -133,23 +135,36 @@
       };
       return this.ontouchmove = function(e) {
         var touch;
-        if (e.targetTouches.length === 1) {
-          samp++;
-          if (samp === 3) {
-            samp = 0;
-            touch = e.touches[0];
-            if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
-              visimg.prev().show();
-              visimg.hide();
-              visimg = visimg.prev();
-            } else if (parseInt(touch.pageY, 10) < lastY && visimg.next().length > 0) {
-              visimg.next().show();
-              visimg.hide();
-              visimg = visimg.next();
-            }
-            return lastY = parseInt(touch.pageY, 10);
+        samp++;
+        if (e.targetTouches.length === 1 && samp > 2) {
+          e.preventDefault();
+          samp = 0;
+          touch = e.touches[0];
+          if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
+            visimg.prev().show();
+            visimg.hide();
+            visimg = visimg.prev();
+          } else if (parseInt(touch.pageY, 10) < lastY && visimg.next().length > 0) {
+            visimg.next().show();
+            visimg.hide();
+            visimg = visimg.next();
           }
-          return e.preventDefault();
+          return lastY = parseInt(touch.pageY, 10);
+        }
+        if (e.targetTouches.length === 3 && samp > 20) {
+          e.preventDefault();
+          samp = 0;
+          touch = e.touches[1];
+          if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
+            visimg.prev().show();
+            visimg.hide();
+            visimg = visimg.prev();
+          } else if (parseInt(touch.pageY, 10) < lastY && visimg.next().length > 0) {
+            visimg.next().show();
+            visimg.hide();
+            visimg = visimg.next();
+          }
+          return lastY = parseInt(touch.pageY, 10);
         }
       };
     });

@@ -1,5 +1,6 @@
 #these variables are for touchscroll,
 lastY = 0
+flickY = 0
 samp = 0
 visimg = $(".stack_image")
 
@@ -84,7 +85,6 @@ filter2 = (selector, query) ->
       $(this).hide().removeClass('visible')
     else
       $(this).show().addClass('visible')
-  
 
 getfeedback = ->
   $.ajax
@@ -102,8 +102,9 @@ touchscroll = ->
       visimg = $(this)
     @ontouchmove = (e) ->
       if e.targetTouches.length is 1
-        samp++
-        if samp is 3
+        samp ++
+        e.preventDefault()
+        if samp >2
           samp = 0
           touch = e.touches[0]
           if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
@@ -115,7 +116,21 @@ touchscroll = ->
             visimg.hide()
             visimg = visimg.next()
           return lastY = parseInt(touch.pageY, 10)
+      if e.targetTouches.length is 3
+        samp ++
         e.preventDefault()
+        if samp > 20
+          samp = 0
+          touch = e.touches[1]
+          if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
+            visimg.prev().show()
+            visimg.hide()
+            visimg = visimg.prev()
+          else if parseInt(touch.pageY, 10) < lastY and visimg.next().length > 0
+            visimg.next().show()
+            visimg.hide()
+            visimg = visimg.next()
+          return lastY = parseInt(touch.pageY, 10)
 
 rendermd = ->
   $(".md").html ->
