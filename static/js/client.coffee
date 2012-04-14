@@ -102,7 +102,7 @@ touchscroll = ->
       visimg = $(this)
     @ontouchmove = (e) ->
       if e.targetTouches.length is 1
-        samp ++
+        samp++
         e.preventDefault()
         if samp >2
           samp = 0
@@ -117,7 +117,7 @@ touchscroll = ->
             visimg = visimg.next()
           return lastY = parseInt(touch.pageY, 10)
       if e.targetTouches.length is 3
-        samp ++
+        samp++
         e.preventDefault()
         if samp > 20
           samp = 0
@@ -344,38 +344,15 @@ $ ->
     e.preventDefault()
     e.stopPropagation()
     image = $(this).find('.stack_image:visible')
-    delta = e.originalEvent.wheelDelta
-    if !delta
-      delta = e.originalEvent.detail
+    delta = e.originalEvent.wheelDelta || e.originalEvent.detail
+    #if !delta
+    #  delta = e.originalEvent.detail
     if delta > 0 and image.next().length > 0
       image.next().show()
       image.hide()
     else if delta < 0 and image.prev().length > 0
       image.prev().show()
       image.hide()
-
-  ).on("mousewheel", ".stackOLD", (e, delta) ->
-    e.preventDefault()
-    image = $(this).find('.stack_image')
-    alert image.src
-    if (delta > 0)
-      image.css 'top', parseInt (image.css 'top') + 40
-    else
-      image.css 'top', parseInt (image.css 'top') - 40
-
-  ).on("mousewheel", ".stackOLD > .stack_image", (e) ->
-    e.preventDefault()
-    delta = e.originalEvent.detail
-    if !delta
-      delta = e.originalEvent.wheelDelta
-    if delta > 0 and $(this).next().length > 0
-      $(this).next().show()
-      $(this).hide()
-      $(this).prev().hide()
-    else if delta < 0 and $(this).prev().length > 0
-      $(this).prev().show()
-      $(this).hide()
-      $(this).next().hide()
 
   ).on("click", "#user_settings", ->
     $("#userinfo").toggle("slide", {direction: "right"}, 300)
