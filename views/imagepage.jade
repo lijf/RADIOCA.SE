@@ -13,21 +13,21 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
   span#lock
     a.abutton#lock(title='Edit Page')
       span#locked
-        img.control(src='/static/ico/pencil.png')
+        img.control(src='/static/ico/pencil_bw.png')
       span#open
-        img.control(src='/static/ico/tick.png')
+        img.control(src='/static/ico/tick_bw.png')
   span#controls
-    img.control#help(src='/static/ico/question.png')
-    img.control#savepage(src='/static/ico/disc.png')
+    img.control#help(src='/static/ico/question_bw.png')
+    img.control#savepage(src='/static/ico/disc_bw.png')
     span#savepage_dialog(style='display:none')
       button(id='savepage_confirm', type='button')
         | Save page
-    img.control#deletepage(src='/static/ico/minus.png')
+    img.control#deletepage(src='/static/ico/minus_bw.png')
     span#deletepage_dialog(style='display:none')
       button(id='deletepage_confirm', type='button')
         | Delete Page
-    img.control#newpage(src='/static/ico/plus.png')
-    img.control#boxit(src='/static/ico/box.png')
+    img.control#newpage(src='/static/ico/plus_bw.png')
+    img.control#boxit(src='/static/ico/box_bw.png')
   #created(style='display:none')
     | #{created}
 #title
@@ -35,11 +35,11 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     textarea.mdtxt(style='display:none')
       ##{title}
     .md
-    img.control.textedit.session(src='/static/ico/pencil.png')
+    img.control.textedit.session(src='/static/ico/pencil_bw.png')
 a#prevpage(href='/case/#{cid}/#{prevpage}')
-  img.control(src='/static/ico/arrow-180.png')
+  img(src='/static/ico/arrow-180.png')
 a#nextpage(href='/case/#{cid}/#{nextpage}')
-  img.control(src='/static/ico/arrow.png')
+  img(src='/static/ico/arrow.png')
 #imagepageradios
   - each r in radios
     .radio.radioimagepage(id='#{r.ID}')
