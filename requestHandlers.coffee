@@ -139,7 +139,7 @@ postImage2 = (req, res, db) ->
 deletePage = (cid, page) ->
   db.lrange "case:" + cid + ":page:" + page + ":radios", 0, -1, (err, radioIDs) ->
     unless err
-      removeRadio cid, page, radioID for radioID in radioIDs
+      removeRadio2 cid, page, radioID for radioID in radioIDs
   db.hgetall "case:" + cid + ":page:" + page, (err, thePage) ->
     unless err
         db.set "case:" + cid + ":firstpage", thePage.nextpage  if thePage.prevpage is "0"

@@ -180,7 +180,7 @@
         _results = [];
         for (_i = 0, _len = radioIDs.length; _i < _len; _i++) {
           radioID = radioIDs[_i];
-          _results.push(removeRadio(cid, page, radioID));
+          _results.push(removeRadio2(cid, page, radioID));
         }
         return _results;
       }
