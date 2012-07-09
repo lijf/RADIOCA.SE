@@ -20,7 +20,8 @@ html
     #wrap
       #sl
         a(href='/cases/0/-1')
-          img(src='/static/img/RADIOCA.SE_small_logo.png')
+          .orbitron.vertical RADIOCA.SE
+          //img(src='/static/img/RADIOCA.SE_small_logo.png')
           //img#db(src='/static/ico/server.png')
       #container
         #usercontrols
@@ -32,8 +33,7 @@ html
       #maximized
       #horizon
         #newcase_dialog.dialog_box(style='display:none')
-          h1.damion.orange(style='text-align:left') Create new case
-          h3 - Choose page layout for first page
+          h5 Create new case <br> / Choose page layout for first page
           #pagetype
             img.pageimage#casestandardpage(src='/static/img/standardpage.svg', alt='Standard')
             img.pageimage#casetextpage(src='/static/img/textpage.svg', alt='Textpage')
@@ -41,8 +41,7 @@ html
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #newpage_dialog.dialog_box(style='display:none')
-          h2.damion(style='text-align:left') Create new page
-          h4 - Choose page layout.
+          h5 Create new page <br> / Choose page layout
           #pagetypes
             img.pageimage#newpage_standard(src='/static/img/standardpage.svg', alt='Standard')
             img.pageimage#newpage_text(src='/static/img/textpage.svg', alt='Textpage')
@@ -50,7 +49,7 @@ html
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #deletecase_dialog.dialog_box(style='display:none')
-          | Do you want to delete this case?
+          h5 Do you want to delete this case?
           br
           br
           button#deletecase_confirm(type='button')
@@ -58,7 +57,7 @@ html
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #boxit_dialog.dialog_box(style='display:none')
-          | Please check applicable language, modalities and areas
+          h5 Please check applicable language, modalities and areas
           br
           br
           br

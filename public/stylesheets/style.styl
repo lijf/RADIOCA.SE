@@ -49,8 +49,9 @@
     left -24px
 #newcase
     position absolute
-    top 60px
-    left 5%
+    top 15px
+    right 50%
+    margin-left -12px
 .maximizeradio, .minimizeradio
     position absolute
     top 0
@@ -84,8 +85,8 @@ input#filter:focus
     width 25%
 input#filter
     position absolute
-    top 60px
-    right 5% 
+    top 15px
+    left 5% 
     width 75px
 input.rounded
     -moz-border-radus 10px
@@ -267,14 +268,14 @@ span#controls
     font-size 50pt
     margin-top 50px
 .orbitron
-    color #bca 
     font-family "Orbitron"
-//    color #bca
 .damion
     font-family "Damion"
     text-shadow #a00 0.5px -2px 5px
 #sl
     position fixed
+    top 50px
+    left -45px
 #horizon
     top 35%
     left 0px
@@ -283,11 +284,14 @@ span#controls
     overflow visible
     display block
     position fixed 
+.vertical
+    -moz-transform rotate(-90deg)
+    -webkit-transform rotate(-90deg)
 .dialog_box
-    width 65%
+    width 320px
     position absolute
     left 50%
-    margin-left -32%
+    margin-left -160px
     top -50%
     visibility visible
     background #222
@@ -358,17 +362,13 @@ span#controls
     background-image url("/static/img/paper/Texture0213.jpg")
     color #006
 @media screen and (max-width: 450px)
-    #newcase
-        left 0%
-    #cases
-        margin-top 20px
     .caseListTitle
         position absolute
         top 10px
     #db
         display none
     input#filter
-        right 0px
+        left 0px
     #markdown-help
         width 100%
     #sl
