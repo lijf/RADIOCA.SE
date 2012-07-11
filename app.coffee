@@ -232,18 +232,15 @@ app.delete "/case/:id/:page", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
-      console.log "editor"
+      console.log "editor - removing page"
       requestHandlers.deletePage req.params.id, req.params.page
       res.send "OK", 200
 
 app.delete "/case/:id/:page/:radio", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
-      db.del "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption"
-      db.lrem "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, req.params.radio
-      #      db.srem "image:" + req.params.radio, req.params.id
-      db.del "radio:" + req.params.radio
-      db.lpush "removedRadios", req.params.radio
+      console.log "editor - removing radio"
+      requestHandlers.removeRadio2 req.params.id, req.params.page, req.params.radio 
       res.send "OK", 200
 
 app.get "/radio/:id", (req, res) ->

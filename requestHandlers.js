@@ -1,5 +1,5 @@
 (function() {
-  var cleanupCases, db, deleteCase, deleteCaseID, deletePage, deletePage2, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeRadio2, render, renderRoot, rendercase, rendercases, url;
+  var cleanupCases, db, deleteCaseID, deletePage, deletePage2, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeCase, removeRadio2, render, renderRoot, rendercase, rendercases, url;
 
   formidable = require("formidable");
 
@@ -28,31 +28,33 @@
     }
     return db.zrange("listed", start, end, function(err, cases) {
       var sendcases;
-      if (err || !cases[0]) res.send(444);
-      sendcases = [];
-      return db.smembers("bookmarks:" + userid, function(err, bookmarks) {
-        return db.smembers("completed:" + userid, function(err, completed) {
-          return cases.forEach(function(theCase, iteration) {
-            return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
-              return db.hgetall("case:" + theCase, function(err, sendcase) {
-                sendcase.firstpage = firstpage;
-                sendcases[iteration] = sendcase;
-                if (!cases[iteration + 1]) {
-                  console.log("rendering cases");
-                  return res.render("cases", {
-                    title: "Cases",
-                    signed_in: req.isAuthenticated(),
-                    user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
-                    cases: sendcases,
-                    bookmarks: bookmarks,
-                    completed: completed
-                  });
-                }
+      if (!(err || !cases[0])) {
+        console.log(cases[0]);
+        sendcases = [];
+        return db.smembers("bookmarks:" + userid, function(err, bookmarks) {
+          return db.smembers("completed:" + userid, function(err, completed) {
+            return cases.forEach(function(theCase, iteration) {
+              return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
+                return db.hgetall("case:" + theCase, function(err, sendcase) {
+                  sendcase.firstpage = firstpage;
+                  sendcases[iteration] = sendcase;
+                  if (!cases[iteration + 1]) {
+                    console.log("rendering cases");
+                    return res.render("cases", {
+                      title: "Cases",
+                      signed_in: req.isAuthenticated(),
+                      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+                      cases: sendcases,
+                      bookmarks: bookmarks,
+                      completed: completed
+                    });
+                  }
+                });
               });
             });
           });
         });
-      });
+      }
     });
   };
 
@@ -218,7 +220,8 @@
   };
 
   deleteCaseID = function(cid) {
-    db.lrem("deletedCases", 0, cid);
+    db.lrem("removedCases", 0, cid);
+    db.zrem("listed", cid);
     return db.get("case:" + cid + ":pages", function(err, pages) {
       var page;
       if (!(err || !pages)) {
@@ -234,7 +237,7 @@
   };
 
   cleanupCases = function(req, res) {
-    return db.lrange('deletedCases', 0, -1, function(err, caseIDs) {
+    return db.lrange('removedCases', 0, -1, function(err, caseIDs) {
       var caseID, _i, _len, _results;
       if (!(err || !caseIDs)) {
         _results = [];
@@ -305,16 +308,16 @@
     });
   };
 
-  deleteCase = function(req, res) {
+  removeCase = function(req, res) {
     var cid;
     cid = req.params.id;
-    console.log("deleteCase called");
+    console.log("removeCase called");
     db.zrem("listed", cid);
-    db.rpush("deletedCases", cid);
-    return res.send("OK, deleted", 200);
+    db.rpush("removedCases", cid);
+    return res.send("OK, removed case", 200);
   };
 
-  exports.deleteCase = deleteCase;
+  exports.removeCase = removeCase;
 
   exports.postNewpage = postNewpage;
 

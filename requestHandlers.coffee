@@ -16,24 +16,25 @@ rendercases = (req, res, start, end) ->
   else
     userid = "0"
   db.zrange "listed", start, end, (err, cases) ->
-    res.send 444 if err or not cases[0]
-    sendcases = []
-    db.smembers "bookmarks:" + userid, (err, bookmarks) ->
-      db.smembers "completed:" + userid, (err, completed) ->
-        cases.forEach (theCase, iteration) ->
-          db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
-            db.hgetall "case:" + theCase, (err, sendcase) ->
-              sendcase.firstpage = firstpage
-              sendcases[iteration] = sendcase
-              unless cases[iteration + 1]
-                console.log "rendering cases"
-                res.render "cases",
-                  title: "Cases"
-                  signed_in: req.isAuthenticated()
-                  user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-                  cases: sendcases
-                  bookmarks: bookmarks
-                  completed: completed
+    res.send "Error", 444 unless !err or cases[0]
+      console.log cases[0]
+      sendcases = []
+      db.smembers "bookmarks:" + userid, (err, bookmarks) ->
+        db.smembers "completed:" + userid, (err, completed) ->
+          cases.forEach (theCase, iteration) ->
+            db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
+              db.hgetall "case:" + theCase, (err, sendcase) ->
+                sendcase.firstpage = firstpage
+                sendcases[iteration] = sendcase
+                unless cases[iteration + 1]
+                  console.log "rendering cases"
+                  res.render "cases",
+                    title: "Cases"
+                    signed_in: req.isAuthenticated()
+                    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+                    cases: sendcases
+                    bookmarks: bookmarks
+                    completed: completed
 
 render = (req, res, theCase, editor) ->
   #console.dir theCase
@@ -161,7 +162,8 @@ deletePage2 = (cid, page) ->
     db.del "case:" + cid + ":page:" + page + ":radios"
 
 deleteCaseID = (cid) ->
-  db.lrem "deletedCases", 0, cid
+  db.lrem "removedCases", 0, cid
+  db.zrem "listed", cid
   db.get "case:" + cid + ":pages", (err, pages) ->
     unless err or !pages
       deletePage2 cid, page for page in [0..pages]
@@ -171,7 +173,7 @@ deleteCaseID = (cid) ->
       db.del "case:" + cid + ":firstpage"
 
 cleanupCases = (req, res) ->
-  db.lrange 'deletedCases', 0, -1, (err, caseIDs) ->
+  db.lrange 'removedCases', 0, -1, (err, caseIDs) ->
     unless err or !caseIDs
       deleteCaseID caseID for caseID in caseIDs
 
@@ -227,14 +229,14 @@ newpage = (req, res, cid, page, db, pagedata) ->
       db.hmset trypage, pagedata
       res.send "/case/" + cid + "/" + page, 200
 
-deleteCase = (req, res) ->
+removeCase = (req, res) ->
   cid = req.params.id
-  console.log "deleteCase called"
+  console.log "removeCase called"
   db.zrem "listed", cid
-  db.rpush "deletedCases", cid
-  return res.send "OK, deleted", 200
+  db.rpush "removedCases", cid
+  return res.send "OK, removed case", 200
     
-exports.deleteCase = deleteCase
+exports.removeCase = removeCase
 exports.postNewpage = postNewpage
 exports.putPage = putPage
 exports.deletePage = deletePage

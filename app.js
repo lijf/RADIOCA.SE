@@ -308,7 +308,7 @@
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
-        console.log("editor");
+        console.log("editor - removing page");
         requestHandlers.deletePage(req.params.id, req.params.page);
         return res.send("OK", 200);
       }
@@ -318,10 +318,8 @@
   app["delete"]("/case/:id/:page/:radio", function(req, res) {
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
-        db.del("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + req.params.radio + ":caption");
-        db.lrem("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, req.params.radio);
-        db.del("radio:" + req.params.radio);
-        db.lpush("removedRadios", req.params.radio);
+        console.log("editor - removing radio");
+        requestHandlers.removeRadio2(req.params.id, req.params.page, req.params.radio);
         return res.send("OK", 200);
       }
     });
