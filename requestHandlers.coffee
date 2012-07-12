@@ -16,25 +16,26 @@ rendercases = (req, res, start, end) ->
   else
     userid = "0"
   db.zrange "listed", start, end, (err, cases) ->
-    res.send "Error", 444 unless !err or cases[0]
-      console.log cases[0]
-      sendcases = []
-      db.smembers "bookmarks:" + userid, (err, bookmarks) ->
-        db.smembers "completed:" + userid, (err, completed) ->
-          cases.forEach (theCase, iteration) ->
-            db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
-              db.hgetall "case:" + theCase, (err, sendcase) ->
-                sendcase.firstpage = firstpage
-                sendcases[iteration] = sendcase
-                unless cases[iteration + 1]
-                  console.log "rendering cases"
-                  res.render "cases",
-                    title: "Cases"
-                    signed_in: req.isAuthenticated()
-                    user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-                    cases: sendcases
-                    bookmarks: bookmarks
-                    completed: completed
+    if err or !cases[0]
+      return res.send "Error", 444
+    console.log cases[0]
+    sendcases = []
+    db.smembers "bookmarks:" + userid, (err, bookmarks) ->
+      db.smembers "completed:" + userid, (err, completed) ->
+        cases.forEach (theCase, iteration) ->
+          db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
+            db.hgetall "case:" + theCase, (err, sendcase) ->
+              sendcase.firstpage = firstpage
+              sendcases[iteration] = sendcase
+              unless cases[iteration + 1]
+                console.log "rendering cases"
+                res.render "cases",
+                  title: "Cases"
+                  signed_in: req.isAuthenticated()
+                  user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+                  cases: sendcases
+                  bookmarks: bookmarks
+                  completed: completed
 
 render = (req, res, theCase, editor) ->
   #console.dir theCase
@@ -70,7 +71,10 @@ rendercase = (req, res, theCase, editor) ->
     else
       username = ""
       userid = "0"
-    theCase.mdhelp = JSON.parse(data)
+    console.log data
+    #theCase.mdhelp = JSON.parse(data)
+    theCase.mdhelp = data
+    console.log "parsed"
     db.hgetall "case:" + req.params.id, (err, casedata) ->
       unless err or !casedata
         theCase.modalities = casedata.modalities
