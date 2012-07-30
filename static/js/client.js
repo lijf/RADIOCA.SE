@@ -1,5 +1,5 @@
 (function() {
-  var authcallback, change_url, converter, editfunctions, filter2, flickY, getTitle, getfeedback, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
+  var authcallback, change_url, converter, deletepage, editfunctions, filter2, flickY, getTitle, getfeedback, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
 
   lastY = 0;
 
@@ -196,6 +196,22 @@
     json.private = $("#private").is(":checked");
     json.created = $("#created").val();
     return json;
+  };
+
+  deletepage = function(lastpage) {
+    return $.ajax({
+      type: "DELETE",
+      url: top.document.location.pathname,
+      statusCode: {
+        200: function() {
+          if (lastpage) {
+            return window.location.replace('/cases/0/-1');
+          } else {
+            return window.location.replace($("#prevpage").attr("href"));
+          }
+        }
+      }
+    });
   };
 
   spiderpage = function() {
@@ -511,15 +527,13 @@
     }).on("click", "#deletepage_cancel", function() {
       return $("#deletepage_dialog").hide();
     }).on("click", "#deletepage_confirm", function() {
-      return $.ajax({
-        type: "DELETE",
-        url: top.document.location.pathname,
-        statusCode: {
-          200: function() {
-            return window.location.replace($("#prevpage").attr("href"));
-          }
-        }
-      });
+      if ($('#nextpage').attr('pageno') === '0' && $('#prevpage').attr('pageno') === '0') {
+        return $('#lastpage_dialog').show();
+      } else {
+        return deletepage();
+      }
+    }).on("click", "#lastpage_confirm", function() {
+      return deletepage('last');
     }).on("click", "#cleanupbutton", function() {
       return $.ajax({
         type: "DELETE",

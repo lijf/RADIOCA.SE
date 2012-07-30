@@ -1,4 +1,4 @@
-iframe.hidden(name="postframe", id="postframe", src="about:none")
+iframe.hidden#postframe(name="postframe", src="about:none")
 #pageinfo
   #meta_cid.hidden #{cid}
   #meta_page.hidden #{page}
@@ -33,8 +33,8 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
 #title
   .txt
     textarea.mdtxt(style='display:none')
-      ##{title}
-    .md
+      ###{title}
+    .md.gray
     img.control.textedit.session(src='/static/ico/pencil_bw.png')
 a#prevpage(href='/case/#{cid}/#{prevpage}')
   img(src='/static/ico/arrow-180.png')
@@ -59,7 +59,7 @@ img.control#feedbackbutton(src='/static/ico/balloon.png')
   #feedbacktext
   textarea#feedbackbox
   br
-  button(id='feedback_confirm', type='button')
+  button#feedback_confirm(type='button')
     | Send
 #info(style='display:none')
 script(type='text/javascript')

@@ -21,18 +21,16 @@ html
       #sl
         a(href='/cases/0/-1')
           .orbitron.vertical RADIOCA.SE
-          //img(src='/static/img/RADIOCA.SE_small_logo.png')
-          //img#db(src='/static/ico/server.png')
       #container
         #usercontrols
           a#sign_in
             img(src='/static/img/sign-in-with-twitter-d.png')
           #userinfo(style='display:none')
-            a(id='sign_out') sign out
+            a(id='sign_out') sign out &nbsp;
         != body // this renders the body of an individual view
       #maximized
       #horizon
-        #newcase_dialog.dialog_box.orbitron(style='display:none')
+        #newcase_dialog.dialog_box(style='display:none')
           | Create new case <br><br> / Choose page layout for first page <br>
           #pagetype
             img.pageimage#casestandardpage(src='/static/img/standardpage.svg', alt='Standard')
@@ -40,7 +38,7 @@ html
             img.pageimage#caseimagepage(src='/static/img/imagepage.svg', alt='Imagepage')
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
-        #newpage_dialog.dialog_box.orbitron(style='display:none')
+        #newpage_dialog.dialog_box(style='display:none')
           | Create new page <br> / Choose page layout
           #pagetypes
             img.pageimage#newpage_standard(src='/static/img/standardpage.svg', alt='Standard')
@@ -48,7 +46,7 @@ html
             img.pageimage#newpage_image(src='/static/img/imagepage.svg', alt='Imagepage')
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
-        #deletecase_dialog.dialog_box.orbitron(style='display:none')
+        #deletecase_dialog.dialog_box(style='display:none')
           | Do you want to delete this case?
           br
           br
@@ -56,7 +54,7 @@ html
             | Delete
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
-        #boxit_dialog.dialog_box.orbitron(style='display:none')
+        #boxit_dialog.dialog_box(style='display:none')
           | Please check applicable language, modalities and areas
           br
           br
@@ -136,6 +134,14 @@ html
           br
           button#removeradio_confirm(type='button')
             | Remove radio
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #lastpage_dialog.dialog_box(style='display:none')
+          | This is the only page of this case, if you delete it the case will be removed
+          br
+          br
+          button#lastpage_confirm(type='button')
+            | Delete page & remove case
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #deleteradio_dialog.dialog_box(style='display:none')

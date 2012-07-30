@@ -34,6 +34,7 @@ newpage  = (type) ->
   json.description = $(".description:checked").map(->
     $(this).val()
   ).get()
+     
   $.ajax
     url: window.location.pathname + "/newpage"
     type: "POST"
@@ -150,6 +151,17 @@ pageMeta = ->
   json.private = $("#private").is(":checked")
   json.created = $("#created").val()
   json
+
+deletepage = (lastpage) ->
+  $.ajax
+    type: "DELETE"
+    url: top.document.location.pathname
+    statusCode:
+      200: ->
+        if lastpage
+          window.location.replace '/cases/0/-1'
+        else
+          window.location.replace $("#prevpage").attr("href")
 
 spiderpage = ->
   json = pageMeta()
@@ -469,12 +481,13 @@ $ ->
     $("#deletepage_dialog").hide()
 
   ).on("click", "#deletepage_confirm", ->
-    $.ajax
-      type: "DELETE"
-      url: top.document.location.pathname
-      statusCode:
-        200: ->
-          window.location.replace $("#prevpage").attr("href")
+    if $('#nextpage').attr('pageno') == '0' and $('#prevpage').attr('pageno') == '0'
+      $('#lastpage_dialog').show()
+    else
+      deletepage()
+
+  ).on("click", "#lastpage_confirm", ->
+    deletepage('last')
 
   ).on("click", "#cleanupbutton", ->
     $.ajax

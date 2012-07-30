@@ -1,0 +1,56 @@
+user facing functions reside in statis/js/client.coffee (C)
+node js.server in app.coffee (A), and many larger functions in requestHandlers.coffee (R)
+layout.jade has the general layout for pages, and other .jade files in /views represent individual pages
+
+user creates a new case
+  C clicks on #casestandardpage / #casetextpage / #caseimagepage
+  C ajax-call POST /newcase
+    with DATA title, listed, icd
+  A Check if user can add cases
+  A add to DATA created, creator, lastEdit, listed, nextpage (0), prevpage (0)
+  A increment numberOfCases 
+  A add to DATA cid (recieved from numberOfCases)
+  A increment the number of pages in case 
+  A add cid and time to "casesLastEdit"
+  A add to 'listed' if appropriate
+  A add to users cases, with time and cid
+  A set the case's firstpage to 1
+  A set DATA to case:cid:page:1
+  A add current user to case:cid:users
+  A send 200 with url (/case/cid/1)
+  C Recieve 403 -> "Forbidden"
+  C Recieve 200 -> go to newly created case/1  
+
+user adds a page to a case
+  C clicks on #newpage_standard/image/text
+  C ajax-call POST /case/:id/:page/newpage 
+    with DATA title, private, created, pagetype, modalities, description 
+  A Check if user is allowed, call postNewpage (with DATA)
+  R   DATA = pagedata 
+  R   increase counter on case:id:pages
+  R   make space for the new page by:
+  R     setting 'prevpage' to id/page of calling page
+  R     setting 'nextpage' to 'nextpage' of calling page 
+  R     setting previous page's nextpage to this page
+  R     setting next page's prevpage to this page
+  R   create page and also set the case:id DATA to pagedata
+  R   send 200 with url of newly created page  
+  C Recieve 404 -> "Not found"
+  C Recieve 200 -> Save current page, go to newly created page
+  C Recieve 403 -> "Forbidden"
+
+
+user removes a page from a case:
+  C clicks delepage_confirm (an anchor)
+NEW Check if the page's prevpage AND nextpage is '0' -> return question, remove page and remove case (this data is already on the page -> can be checked in client)
+  C ajax-call DELETE current location (/case/:id/:page)
+  A Check if user is allowed -> Call deletePage :id :page 
+  R   get list of radios on page and remove these (function removeRadio2)
+  R   remove this page from the 'stack' / 'flow' by:
+  R     set the case's first page to this page's nextpage if this page's prevpage is 0 
+        (thus, if this is this the first page, and it has no nextpage (nextpage is 0), the case's first page will be 0 -> this can automatically unlist cases with no pages - However, the user is not warned before in the current implementation)
+  R     set the page's previous page's 'nextpage' to this page's nextpage 
+  R     set the page's next page's 'prevpage' to this page's prevpage (=0 if this is the first page)
+  R     delete this page
+  A Send 200
+  C Recieve 200 -> go to previous page (is it better to go to next page, instead, if it exists?)

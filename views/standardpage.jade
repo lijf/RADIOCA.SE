@@ -35,12 +35,12 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
 #title
   .txt
     textarea.mdtxt(style='display:none')
-      ##{title}
-    .md
+      ###{title}
+    .md.gray
     img.control.textedit.session(src='/static/ico/pencil_bw.png')
-a#prevpage(href='/case/#{cid}/#{prevpage}')
+a#prevpage(href='/case/#{cid}/#{prevpage}', pageno='#{prevpage}')
   img(src='/static/ico/arrow-180.png')
-a#nextpage(href='/case/#{cid}/#{nextpage}')
+a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
   img(src='/static/ico/arrow.png')
 #texts
   .txt

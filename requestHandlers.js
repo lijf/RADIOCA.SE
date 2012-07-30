@@ -93,9 +93,7 @@
         username = "";
         userid = "0";
       }
-      console.log(data);
       theCase.mdhelp = data;
-      console.log("parsed");
       return db.hgetall("case:" + req.params.id, function(err, casedata) {
         if (!(err || !casedata)) {
           theCase.modalities = casedata.modalities;

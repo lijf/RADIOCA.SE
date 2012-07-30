@@ -1,4 +1,4 @@
-Text areas are formatted using [markdown](http://www.daringfireball.net/), created by John Gruber of Daring Fireball fame.
+Text areas are formatted using [markdown](http://www.daringfireball.net/projects/markdown/), created by John Gruber of Daring Fireball fame.
 
 Paragraphs are separated with one or more empty lines. If you put more than one line the rendering won't change (so no creating whitespace this way!) 
 
@@ -24,8 +24,8 @@ Control-characters can be escaped with backslash (\\) - which can be useful if y
 
 There are two main ways of creating hyperlinks.
 
-1. Either you can enclose the \"link-word\" with brackets and then put the target and an optional title inside a parenthesis just after it [google](http://www.google.com, \"Google\") renders to [google](http://www.google.com \"Google\").
-2. The other option is to use a reference, where you again put the link word in brackets followed by an id in brackets \[link\]\[id\], then you reference this id on a separate line further down the page like this: \[id\]: http://radiographics.rsna.org/ \"Optional title\"
+1. Either you can enclose the "link-word" with brackets and then put the target and an optional title inside a parenthesis just after it and then an optional link title in quotes \[google\](http://www.google.com, 'Google') renders to [google](http://www.google.com 'Google').
+2. The other option is to use a reference, where you again put the link word in brackets followed by an id in brackets \[link\]\[id\], then you reference this id on a separate line further down the page like this: \[id\]: http://radiographics.rsna.org/ 'Optional title'
 
 An example of a [link with reference][ref]. This has the advantage of moving the literal addresses out of the flow of the source text, they can for example be put at the end of the document.
 

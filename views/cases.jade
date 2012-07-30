@@ -15,28 +15,29 @@
         th
     tbody
       - each c in cases
-        - if (c.hidden == 'false' || c.creator == user || user == 'radioca1se')
-          tr(ID="#{c.cid}") 
-            //td.lastEdit(style='display:none') #{c.lastEdit}
-            td #{c.modalities} 
-            td #{c.description}
-            td 
-              a(href='/case/#{c.cid}/#{c.firstpage}') #{c.title}
-            td.invisible
-              //a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
-              @#{c.creator}
-            td.eye(style='width:24px')
-              - if (c.creator == user || user == 'radioca1se') 
-                - if (c.hidden=='true')
-                  img.showcase(ID='#{c.cid}', src='/static/ico/eye-prohibition.png')
-                - else
-                  img.hidecase(ID='#{c.cid}', src='/static/ico/eye.png')
-            td.invisible ##{c.language}
-            td.invisible(ID='#{c.cid}bm')
-            td.invisible(ID='#{c.cid}cc')
-            td.invisible(style='width:24px')
-              - if (c.creator == user) 
-                img.deletecase(ID='#{c.cid}', src='/static/ico/minus.png')
+        - if (c.hidden == 'false' || c.creator == user || user == 'radioca1se' )
+          - if (c.firstpage != '0')  
+            tr(ID="#{c.cid}") 
+              //td.lastEdit(style='display:none') #{c.lastEdit}
+              td #{c.modalities} 
+              td #{c.description}
+              td 
+                a(href='/case/#{c.cid}/#{c.firstpage}') #{c.title}
+              td.invisible
+                //a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
+                @#{c.creator}
+              td.eye(style='width:24px')
+                - if (c.creator == user || user == 'radioca1se') 
+                  - if (c.hidden=='true')
+                    img.showcase(ID='#{c.cid}', src='/static/ico/eye-prohibition.png')
+                  - else
+                    img.hidecase(ID='#{c.cid}', src='/static/ico/eye.png')
+              td.invisible ##{c.language}
+              td.invisible(ID='#{c.cid}bm')
+              td.invisible(ID='#{c.cid}cc')
+              td.invisible(style='width:24px')
+                - if (c.creator == user) 
+                  img.deletecase(ID='#{c.cid}', src='/static/ico/minus.png')
 script(type='text/javascript")
   var bookmarks = [#{bookmarks}];
   var completed = [#{completed}];

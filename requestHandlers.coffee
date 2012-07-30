@@ -71,10 +71,7 @@ rendercase = (req, res, theCase, editor) ->
     else
       username = ""
       userid = "0"
-    console.log data
-    #theCase.mdhelp = JSON.parse(data)
     theCase.mdhelp = data
-    console.log "parsed"
     db.hgetall "case:" + req.params.id, (err, casedata) ->
       unless err or !casedata
         theCase.modalities = casedata.modalities
