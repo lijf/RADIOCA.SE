@@ -1,5 +1,5 @@
 (function() {
-  var authcallback, change_url, converter, deletepage, editfunctions, filter2, flickY, getTitle, getfeedback, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
+  var authcallback, change_url, converter, deletepage, editfunctions, filter2, findICD, flickY, getTitle, getfeedback, icdquery, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
 
   lastY = 0;
 
@@ -8,6 +8,54 @@
   samp = 0;
 
   visimg = $(".stack_image");
+
+  icdquery = "";
+
+  String.prototype.toProperCase = function() {
+    return this.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  };
+
+  findICD = function(icdquery) {
+    var json, json2;
+    json = {};
+    json2 = {};
+    icdquery = "" + icdquery;
+    json.qs = icdquery;
+    json2.qs = icdquery.charAt(0).toUpperCase() + icdquery.substr(1);
+    $("#icd_res").html("");
+    $.ajax({
+      type: "POST",
+      url: "/icd",
+      data: json,
+      cache: false,
+      statusCode: {
+        200: function(data) {
+          data = data.replace(/"\]/g, '');
+          data = data.replace(/","/g, '');
+          data = data.replace(/\["/, '');
+          data = data.replace(/\[\]/, '');
+          return $("#icd_res").append(data);
+        }
+      }
+    });
+    return $.ajax({
+      type: "POST",
+      url: "/icd",
+      data: json2,
+      cache: false,
+      statusCode: {
+        200: function(data) {
+          data = data.replace(/"\]/g, '');
+          data = data.replace(/","/g, '');
+          data = data.replace(/\["/g, '');
+          data = data.replace(/\[\]/, '');
+          return $("#icd_res").append(data);
+        }
+      }
+    });
+  };
 
   change_url = function(url) {
     return document.location = url;
@@ -383,6 +431,25 @@
           }
         }
       });
+    }).on("keyup", "#icd_req", function(event) {
+      var icdquery2;
+      if (event.keyCode === 27 || $(this).val() === '') {
+        $(this).val('');
+        return $("#icd_res").html("");
+      } else {
+        icdquery2 = $(this).val().split("\ ");
+        if (icdquery !== icdquery2[0]) {
+          icdquery = icdquery2[0];
+          findICD(icdquery);
+        }
+        $('.icdcode').addClass('visible');
+        return icdquery2.forEach(function(query) {
+          return filter2('.icdcode', query);
+        });
+      }
+    }).on("click", ".icdt", function() {
+      $('#icd_req').val($(this).text());
+      return $('#icd_req').keyup();
     }).on("focus", "#filter", function() {
       if ($(this).val() === 'Type to filter') return $(this).val('');
     }).on("keyup", "#filter", function(event) {

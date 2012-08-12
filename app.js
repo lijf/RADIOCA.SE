@@ -1,5 +1,5 @@
 (function() {
-  var app, db, easyoauth, exec, express, formidable, fs, port, redis, requestHandlers, spawn, sys, url, username, util;
+  var app, db, easyoauth, exec, express, formidable, fs, icd, port, redis, requestHandlers, spawn, sys, url, username, util;
 
   username = function(req, res) {
     if (req.isAuthenticated()) {
@@ -7,6 +7,12 @@
     } else {
       return "0";
     }
+  };
+
+  String.prototype.toProperCase = function() {
+    return this.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
   };
 
   express = require("express");
@@ -30,6 +36,8 @@
   redis = require("redis");
 
   db = redis.createClient(6666);
+
+  icd = redis.createClient(4444);
 
   easyoauth = require("easy-oauth");
 
@@ -143,6 +151,22 @@
             });
           });
         });
+      }
+    });
+  });
+
+  app.post("/icd", function(req, res) {
+    var body;
+    body = req.body.qs;
+    body = '*' + body + '*';
+    return icd.keys(body, function(err, codes) {
+      if (!err) {
+        codes = JSON.stringify(codes, null, '\t');
+        if (codes.length < 10000) {
+          return res.send(codes, 200);
+        } else {
+          return res.send(444);
+        }
       }
     });
   });

@@ -3,6 +3,43 @@ lastY = 0
 flickY = 0
 samp = 0
 visimg = $(".stack_image")
+icdquery = ""
+
+String.prototype.toProperCase = ->
+  this.replace(/\w\S*/g, (txt) ->
+    txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())
+
+findICD = (icdquery) ->
+  json = {}
+  json2 = {}
+  icdquery = "" + icdquery
+  json.qs = icdquery
+  json2.qs = icdquery.charAt(0).toUpperCase() + icdquery.substr(1)
+  $("#icd_res").html ""
+  $.ajax
+    type: "POST"
+    url: "/icd"
+    data: json
+    cache: false
+    statusCode:
+      200: (data) ->
+        data=data.replace /"\]/g,''
+        data=data.replace /","/g,''
+        data=data.replace /\["/,''
+        data=data.replace /\[\]/,''
+        $("#icd_res").append data
+  $.ajax
+    type: "POST"
+    url: "/icd"
+    data: json2
+    cache: false
+    statusCode:
+      200: (data) ->
+        data=data.replace /"\]/g,''
+        data=data.replace /","/g,''
+        data=data.replace /\["/g,''
+        data=data.replace /\[\]/,''
+        $("#icd_res").append data
 
 change_url = (url) ->
   document.location = url
@@ -322,6 +359,22 @@ $ ->
         444: ->
           alert "Error, are you logged in?"
           
+  ).on("keyup", "#icd_req", (event) ->
+    if (event.keyCode == 27 || $(this).val() == '')
+      $(this).val('')
+      $("#icd_res").html ""
+    else
+      icdquery2 = $(this).val().split("\ ")
+      if icdquery != icdquery2[0]
+        icdquery = icdquery2[0]
+        findICD icdquery
+      $('.icdcode').addClass('visible')
+      icdquery2.forEach (query) ->
+        filter2('.icdcode', query)
+
+  ).on("click", ".icdt", ->
+    $('#icd_req').val($(this).text())
+    $('#icd_req').keyup()
 
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')

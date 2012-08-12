@@ -55,7 +55,7 @@ html
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #boxit_dialog.dialog_box(style='display:none')
-          | Please check applicable language, modalities and areas
+          | Please check applicable language, modalities and areas and add icd-code
           br
           br
           br
@@ -109,6 +109,12 @@ html
             | Other
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
+          form#icd_form
+            input#icd_req(type='text', name='icd')
+          #icd_res_wrap
+            #icd_res_box
+              table
+                tbody#icd_res
 
         #addstack_dialog.dialog_box(style='display:none')
           | Please choose image(s) to upload.

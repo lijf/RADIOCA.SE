@@ -1,6 +1,8 @@
 username = (req, res) ->
   (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
-
+String.prototype.toProperCase = ->
+  this.replace /\w\S*/g, (txt) ->
+    txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
 
 express = require("express")
 formidable = require("formidable")
@@ -14,6 +16,7 @@ util = require("util")
 redis = require("redis")
 #db = redis.createClient()
 db = redis.createClient(6666)
+icd = redis.createClient(4444)
 easyoauth = require("easy-oauth")
 app = module.exports = express.createServer()
 app.configure ->
@@ -100,6 +103,17 @@ app.post "/newcase", (req, res) ->
           db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
             console.log "created case: " + cid
             res.send "/case/" + cid + "/1", 200
+
+app.post "/icd", (req, res) ->
+  body = req.body.qs
+  body = '*' + body + '*'
+  icd.keys body, (err, codes) ->
+    unless err
+      codes = JSON.stringify codes, null, '\t'
+      if codes.length < 10000
+        res.send codes, 200
+      else
+        res.send 444
 
 app.get "/cases/:start/:finish", (req, res) ->
   start = parseInt(req.params.start, 10)
