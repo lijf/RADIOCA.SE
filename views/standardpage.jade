@@ -88,6 +88,7 @@ script(type='text/javascript')
       $(this).attr("checked",true);
     });
     $("##{language}").attr("checked", true);
+    $("#icd").html("<a class='icdt'>#{icd}</a>")
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {

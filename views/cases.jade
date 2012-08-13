@@ -1,13 +1,16 @@
 #cases
   img.control#newcase(src='/static/ico/plus_bw.png')
   input.rounded#filter(type='text', name='filter', value='Type to filter')
+  button#toggleDiagnosis(type='button')
+    | Show/hide diagnosis
   table#cases
     thead
       tr.orbitron 
         //th.sortable Last Edit
         th.sortable Modalities
         th.sortable Area
-        th.sortable Title
+        th.sortable.title Title
+        th.sortable.diagnosis.invisible Diagnosis
         th.invisible Creator
         th 
         th
@@ -16,13 +19,14 @@
     tbody
       - each c in cases
         - if (c.hidden == 'false' || c.creator == user || user == 'radioca1se' )
-          - if (c.firstpage != '0')  
+          - if (c.firstpage != '0')
             tr(ID="#{c.cid}") 
               //td.lastEdit(style='display:none') #{c.lastEdit}
               td #{c.modalities} 
               td #{c.description}
-              td 
+              td.title 
                 a(href='/case/#{c.cid}/#{c.firstpage}') #{c.title}
+              td.diagnosis.invisible #{c.icd}
               td.invisible
                 //a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
                 @#{c.creator}

@@ -55,19 +55,16 @@ html
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #boxit_dialog.dialog_box(style='display:none')
-          | Please check applicable language, modalities and areas and add icd-code
-          br
-          br
-          br
-          form#language_form
-            input.language#se(name='language', type='radio', value='se')
-            | Swedish
-            input.language#gb(name='language', type='radio', value='gb')
-            | English
-            input.language#es(name='language', type='radio', value='es')
-            | Spanish
-          br
-          br
+          h5 Please check applicable modalities and areas and add ICD-code
+          //form#language_form
+          //  input.language#se(name='language', type='radio', value='se')
+          //  | Swedish
+          //  input.language#gb(name='language', type='radio', value='gb')
+          //  | English
+          //  input.language#es(name='language', type='radio', value='es')
+          //  | Spanish
+          //br
+          //br
           form#modalities_form
             input.modality#XR(type='checkbox', value='#XR') 
             | XR 
@@ -109,8 +106,13 @@ html
             | Other
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
+          br
+          #icd
+          br
           form#icd_form
             input#icd_req(type='text', name='icd')
+            img.control#chooseICD(src="/static/ico/ticksmall_bw.png")
+          br
           #icd_res_wrap
             #icd_res_box
               table

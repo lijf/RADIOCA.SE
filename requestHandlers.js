@@ -29,7 +29,6 @@
     return db.zrange("listed", start, end, function(err, cases) {
       var sendcases;
       if (err || !cases[0]) return res.send("Error", 444);
-      console.log(cases[0]);
       sendcases = [];
       return db.smembers("bookmarks:" + userid, function(err, bookmarks) {
         return db.smembers("completed:" + userid, function(err, completed) {
@@ -39,7 +38,6 @@
                 sendcase.firstpage = firstpage;
                 sendcases[iteration] = sendcase;
                 if (!cases[iteration + 1]) {
-                  console.log("rendering cases");
                   return res.render("cases", {
                     title: "Cases",
                     signed_in: req.isAuthenticated(),
@@ -70,6 +68,7 @@
       cid: req.params.id,
       modalities: theCase.modalities || "",
       description: theCase.description || "",
+      icd: theCase.icd || "",
       language: theCase.language || "",
       prevpage: theCase.prevpage,
       nextpage: theCase.nextpage,
@@ -98,6 +97,7 @@
         if (!(err || !casedata)) {
           theCase.modalities = casedata.modalities;
           theCase.description = casedata.description;
+          theCase.icd = casedata.icd;
         }
         if (casedata.hidden === 'true' && !editor && username !== 'radioca1se') {
           res.redirect('/');
@@ -141,8 +141,7 @@
   postImage = function(req, res, db) {
     return req.form.on("progress", function(bytesReceived, bytesExpected) {
       var percent;
-      percent = (bytexReceived / bytesExpected * 100) || 0;
-      return console.log("Uploading: %" + percent + "\r");
+      return percent = (bytexReceived / bytesExpected * 100) || 0;
     });
   };
 
@@ -166,8 +165,7 @@
       db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", d);
       db.rpush("user:" + req.getAuthDetails().user.username + ":radios", d);
       db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption");
-      res.send(d, 200);
-      return console.log("-> upload done");
+      return res.send(d, 200);
     });
     return form.parse(req, function(err, fields, files) {
       if (err) return console.log(err);
@@ -252,7 +250,6 @@
   putPage = function(req, res) {
     var data;
     data = req.body;
-    console.dir(data);
     data.cid = req.params.id;
     data.lastEdit = new Date().getTime();
     data.creator = req.getAuthDetails().user.username;
@@ -267,7 +264,6 @@
         return db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id);
       });
     }
-    console.log("saved page");
     return res.send("OK", 200);
   };
 
@@ -310,7 +306,6 @@
   removeCase = function(req, res) {
     var cid;
     cid = req.params.id;
-    console.log("removeCase called");
     db.zrem("listed", cid);
     db.rpush("removedCases", cid);
     return res.send("OK, removed case", 200);

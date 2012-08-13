@@ -11,11 +11,11 @@ String.prototype.toProperCase = ->
 
 findICD = (icdquery) ->
   json = {}
-  json2 = {}
-  icdquery = "" + icdquery
+  #json2 = {}
+  #icdquery = "" + icdquery
   json.qs = icdquery
-  json2.qs = icdquery.charAt(0).toUpperCase() + icdquery.substr(1)
-  $("#icd_res").html ""
+  #json2.qs = icdquery.charAt(0).toUpperCase() + icdquery.substr(1)
+  #$("#icd_res").html ""
   $.ajax
     type: "POST"
     url: "/icd"
@@ -28,18 +28,18 @@ findICD = (icdquery) ->
         data=data.replace /\["/,''
         data=data.replace /\[\]/,''
         $("#icd_res").append data
-  $.ajax
-    type: "POST"
-    url: "/icd"
-    data: json2
-    cache: false
-    statusCode:
-      200: (data) ->
-        data=data.replace /"\]/g,''
-        data=data.replace /","/g,''
-        data=data.replace /\["/g,''
-        data=data.replace /\[\]/,''
-        $("#icd_res").append data
+  #$.ajax
+  #  type: "POST"
+  #  url: "/icd"
+  #  data: json2
+  #  cache: false
+  #  statusCode:
+  #    200: (data) ->
+  #      data=data.replace /"\]/g,''
+  #      data=data.replace /","/g,''
+  #      data=data.replace /\["/g,''
+  #      data=data.replace /\[\]/,''
+  #      $("#icd_res").append data
 
 change_url = (url) ->
   document.location = url
@@ -71,7 +71,9 @@ newpage  = (type) ->
   json.description = $(".description:checked").map(->
     $(this).val()
   ).get()
-     
+  json.icd = $("#icd").map(->
+    $(this).val()
+  ).get()
   $.ajax
     url: window.location.pathname + "/newpage"
     type: "POST"
@@ -218,6 +220,7 @@ spiderpage = ->
     $(this).val()
   ).get()
   json.language = $("input:radio[name=language]:checked").val()
+  json.icd = $("#icd").text()
   #  alert JSON.stringify json
   json
 
@@ -367,14 +370,25 @@ $ ->
       icdquery2 = $(this).val().split("\ ")
       if icdquery != icdquery2[0]
         icdquery = icdquery2[0]
+        icdqueryPropercase = icdquery.charAt(0).toUpperCase() + icdquery.substr(1)
+        $("#icd_res").html ""
         findICD icdquery
+        findICD icdqueryPropercase
       $('.icdcode').addClass('visible')
       icdquery2.forEach (query) ->
         filter2('.icdcode', query)
 
+  ).on("click", "#chooseICD", ->
+    $("#icd").append("<span><a class='icdt'>" + $("#icd_req").val() + "</a></span><img class='removeICD, control' src='/static/ico/small_minus_bw'></br>")
+
   ).on("click", ".icdt", ->
-    $('#icd_req').val($(this).text())
-    $('#icd_req').keyup()
+    $('#icd_req').val($(this).parent().text())
+    $("#icd_res").html ""
+    findICD $(this).text()
+    #$('#icd_req').keyup()
+
+  ).on("click", "#toggleDiagnosis", ->
+    $('.diagnosis').toggleClass('invisible')
 
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')

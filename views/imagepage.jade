@@ -33,7 +33,7 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
 #title
   .txt
     textarea.mdtxt(style='display:none')
-      ##{title}
+      ###{title}
     .md.gray
     img.control.textedit.session(src='/static/ico/pencil_bw.png')
 a#prevpage(href='/case/#{cid}/#{prevpage}')
@@ -78,6 +78,7 @@ script(type='text/javascript')
       $(this).attr("checked",true);
     });
     $("##{language}").attr("checked", true);
+    $("#icd").html("<a class='icdt'>#{icd}</a>")
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {

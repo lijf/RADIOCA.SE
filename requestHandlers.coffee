@@ -18,7 +18,7 @@ rendercases = (req, res, start, end) ->
   db.zrange "listed", start, end, (err, cases) ->
     if err or !cases[0]
       return res.send "Error", 444
-    console.log cases[0]
+    #console.log cases[0]
     sendcases = []
     db.smembers "bookmarks:" + userid, (err, bookmarks) ->
       db.smembers "completed:" + userid, (err, completed) ->
@@ -28,7 +28,7 @@ rendercases = (req, res, start, end) ->
               sendcase.firstpage = firstpage
               sendcases[iteration] = sendcase
               unless cases[iteration + 1]
-                console.log "rendering cases"
+                #console.log "rendering cases"
                 res.render "cases",
                   title: "Cases"
                   signed_in: req.isAuthenticated()
@@ -52,6 +52,7 @@ render = (req, res, theCase, editor) ->
     cid: req.params.id
     modalities: theCase.modalities or ""
     description: theCase.description or ""
+    icd: theCase.icd or ""
     language: theCase.language or ""
     prevpage: theCase.prevpage
     nextpage: theCase.nextpage
@@ -76,6 +77,7 @@ rendercase = (req, res, theCase, editor) ->
       unless err or !casedata
         theCase.modalities = casedata.modalities
         theCase.description = casedata.description
+        theCase.icd = casedata.icd
       if casedata.hidden == 'true' && !editor && username != 'radioca1se'
         res.redirect '/'
       db.sismember "bookmarks:" + userid, req.params.id, (err, bookmarked) ->
@@ -106,7 +108,7 @@ rendercase = (req, res, theCase, editor) ->
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->
     percent = (bytexReceived / bytesExpected * 100) or 0
-    console.log "Uploading: %" + percent + "\r"
+    #console.log "Uploading: %" + percent + "\r"
 
 postImage2 = (req, res, db) ->
   d = new Date().getTime().toString()
@@ -132,7 +134,7 @@ postImage2 = (req, res, db) ->
     db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
     db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption"
     res.send d, 200
-    console.log "-> upload done"
+    #console.log "-> upload done"
 
   form.parse req, (err, fields, files) ->
     if err
@@ -180,7 +182,7 @@ cleanupCases = (req, res) ->
 
 putPage = (req, res) ->
   data = req.body
-  console.dir data
+#  console.dir data
   data.cid = req.params.id
   data.lastEdit = new Date().getTime()
   data.creator = req.getAuthDetails().user.username
@@ -200,7 +202,7 @@ putPage = (req, res) ->
     data.radios.forEach (r, rID) ->
       db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
       db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id
-  console.log "saved page"
+  #console.log "saved page"
   res.send "OK", 200
 
 postNewpage = (req, res) ->
@@ -232,7 +234,7 @@ newpage = (req, res, cid, page, db, pagedata) ->
 
 removeCase = (req, res) ->
   cid = req.params.id
-  console.log "removeCase called"
+  #console.log "removeCase called"
   db.zrem "listed", cid
   db.rpush "removedCases", cid
   return res.send "OK, removed case", 200
