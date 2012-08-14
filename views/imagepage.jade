@@ -78,7 +78,12 @@ script(type='text/javascript')
       $(this).attr("checked",true);
     });
     $("##{language}").attr("checked", true);
-    $("#icd").html("<a class='icdt'>#{icd}</a>")
+    var icds = ['#{icds}'];
+    if(icds[0] != ""){
+      for (var i=0; i < icds.length; i++){
+        $("#icd").append("<div class='ICDCode'><a class='icdt'>" + icds[i] + "</a><a class='removeICD'><img class='control' src='/static/ico/small_minus_bw.png'></a></div><br>");
+      }
+    }
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {

@@ -68,7 +68,7 @@
       cid: req.params.id,
       modalities: theCase.modalities || "",
       description: theCase.description || "",
-      icd: theCase.icd || "",
+      icds: [theCase.icds] || "",
       language: theCase.language || "",
       prevpage: theCase.prevpage,
       nextpage: theCase.nextpage,
@@ -97,7 +97,7 @@
         if (!(err || !casedata)) {
           theCase.modalities = casedata.modalities;
           theCase.description = casedata.description;
-          theCase.icd = casedata.icd;
+          theCase.icds = casedata.icds;
         }
         if (casedata.hidden === 'true' && !editor && username !== 'radioca1se') {
           res.redirect('/');
@@ -253,6 +253,7 @@
     data.cid = req.params.id;
     data.lastEdit = new Date().getTime();
     data.creator = req.getAuthDetails().user.username;
+    if (!data.icds) data.icds = "";
     db.zadd("casesLastEdit", data.lastEdit, data.cid);
     db.zadd("cases", data.created, data.cid);
     db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);

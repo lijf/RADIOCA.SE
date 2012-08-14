@@ -146,7 +146,6 @@
           db.set("case:" + cid + ":firstpage", "1");
           return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
             return db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, data) {
-              console.log("created case: " + cid);
               return res.send("/case/" + cid + "/1", 200);
             });
           });
@@ -185,11 +184,9 @@
     } else {
       userid = '0';
     }
-    console.log(userid);
     return db.sismember("case:" + req.params.id + ":users", userid, function(err, editor) {
       return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(error, theCase) {
         if (error || !theCase.cid) return res.redirect("back");
-        console.log("rendering case");
         return requestHandlers.rendercase(req, res, theCase, editor);
       });
     });
@@ -235,7 +232,6 @@
   });
 
   app.post("/case/:id/:page/newpage", function(req, res) {
-    console.log("newpage triggered");
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) return requestHandlers.postNewpage(req, res);
     });
@@ -264,7 +260,6 @@
   });
 
   app.post("/hide/:id", function(req, res) {
-    console.log("Hide case " + req.params.id + " called");
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
       if (owner || req.getAuthDetails().user.username === 'radioca1se') {
@@ -280,7 +275,6 @@
   });
 
   app.post("/show/:id", function(req, res) {
-    console.log("Show case " + req.params.id + " called");
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
       if (owner || req.getAuthDetails().user.username === 'radioca1se') {
@@ -296,7 +290,6 @@
   });
 
   app["delete"]("/case/:id", function(req, res) {
-    console.log("DELETE /case/" + req.params.id + " called");
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
       if (owner) return requestHandlers.deleteCase(req, res);
@@ -304,7 +297,6 @@
   });
 
   app["delete"]("/sys/deletedcases", function(req, res) {
-    console.log("DELETE CASES, CLEANUP CALLED");
     if (req.getAuthDetails().user.username !== 'radioca1se') {
       return res.send("FORBIDDEN", 403);
     }
@@ -314,12 +306,10 @@
   });
 
   app.get("/sys/admin", function(req, res) {
-    console.log("ADMINPAGE CALLED");
     if (req.getAuthDetails().user.username !== 'radioca1se') {
       return res.send("FORBIDDEN", 403);
     }
     if (req.getAuthDetails().user.username === 'radioca1se') {
-      console.log("rendering adminpage");
       return res.render("admin", {
         title: "ADMINPAGE",
         signed_in: req.isAuthenticated(),
@@ -332,7 +322,6 @@
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
-        console.log("editor - removing page");
         requestHandlers.deletePage(req.params.id, req.params.page);
         return res.send("OK", 200);
       }
@@ -342,7 +331,6 @@
   app["delete"]("/case/:id/:page/:radio", function(req, res) {
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
-        console.log("editor - removing radio");
         requestHandlers.removeRadio2(req.params.id, req.params.page, req.params.radio);
         return res.send("OK", 200);
       }
@@ -377,7 +365,6 @@
   });
 
   app.post("/image/:id/:page", function(req, res) {
-    console.log("POST /image/ called");
     if (!req.isAuthenticated()) return res.send(444);
     return requestHandlers.postImage2(req, res, db);
   });

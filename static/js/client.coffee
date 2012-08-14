@@ -220,8 +220,14 @@ spiderpage = ->
     $(this).val()
   ).get()
   json.language = $("input:radio[name=language]:checked").val()
-  json.icd = $("#icd").text()
-  #  alert JSON.stringify json
+  json.icds = [""]
+  json.icds = $(".ICDCode>.icdt").map(->
+    $(this).text()
+  ).get()
+  if(!json.icds)
+    alert "no icds"
+    json.icds = [""]
+  #alert JSON.stringify json
   json
 
 sessionButton = (user) ->
@@ -379,11 +385,14 @@ $ ->
         filter2('.icdcode', query)
 
   ).on("click", "#chooseICD", ->
-    $("#icd").append("<span><a class='icdt'>" + $("#icd_req").val() + "</a></span><img class='removeICD, control' src='/static/ico/small_minus_bw'></br>")
+    $("#icd").append("<div class='ICDCode'><a class='icdt'>" + $("#icd_req").val() + "</a><a class='removeICD'><img class='control' src='/static/ico/small_minus_bw.png'></a></div><br>")
+
+  ).on("click", ".removeICD", ->
+    $(this).parent().remove()
 
   ).on("click", ".icdt", ->
-    $('#icd_req').val($(this).parent().text())
     $("#icd_res").html ""
+    $('#icd_req').val($(this).parent().text())
     findICD $(this).text()
     #$('#icd_req').keyup()
 

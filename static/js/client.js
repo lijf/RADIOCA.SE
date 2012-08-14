@@ -266,7 +266,14 @@
       return $(this).val();
     }).get();
     json.language = $("input:radio[name=language]:checked").val();
-    json.icd = $("#icd").text();
+    json.icds = [""];
+    json.icds = $(".ICDCode>.icdt").map(function() {
+      return $(this).text();
+    }).get();
+    if (!json.icds) {
+      alert("no icds");
+      json.icds = [""];
+    }
     return json;
   };
 
@@ -436,10 +443,12 @@
         });
       }
     }).on("click", "#chooseICD", function() {
-      return $("#icd").append("<span><a class='icdt'>" + $("#icd_req").val() + "</a></span><img class='removeICD, control' src='/static/ico/small_minus_bw'></br>");
+      return $("#icd").append("<div class='ICDCode'><a class='icdt'>" + $("#icd_req").val() + "</a><a class='removeICD'><img class='control' src='/static/ico/small_minus_bw.png'></a></div><br>");
+    }).on("click", ".removeICD", function() {
+      return $(this).parent().remove();
     }).on("click", ".icdt", function() {
-      $('#icd_req').val($(this).parent().text());
       $("#icd_res").html("");
+      $('#icd_req').val($(this).parent().text());
       return findICD($(this).text());
     }).on("click", "#toggleDiagnosis", function() {
       return $('.diagnosis').toggleClass('invisible');

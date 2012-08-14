@@ -52,7 +52,7 @@ render = (req, res, theCase, editor) ->
     cid: req.params.id
     modalities: theCase.modalities or ""
     description: theCase.description or ""
-    icd: theCase.icd or ""
+    icds: [ theCase.icds ] or ""
     language: theCase.language or ""
     prevpage: theCase.prevpage
     nextpage: theCase.nextpage
@@ -77,7 +77,7 @@ rendercase = (req, res, theCase, editor) ->
       unless err or !casedata
         theCase.modalities = casedata.modalities
         theCase.description = casedata.description
-        theCase.icd = casedata.icd
+        theCase.icds = casedata.icds
       if casedata.hidden == 'true' && !editor && username != 'radioca1se'
         res.redirect '/'
       db.sismember "bookmarks:" + userid, req.params.id, (err, bookmarked) ->
@@ -186,6 +186,8 @@ putPage = (req, res) ->
   data.cid = req.params.id
   data.lastEdit = new Date().getTime()
   data.creator = req.getAuthDetails().user.username
+  if(!data.icds)
+    data.icds = ""
   db.zadd "casesLastEdit", data.lastEdit, data.cid
 #  if data.private is "false"
 #    db.zadd "cases", data.created, data.cid

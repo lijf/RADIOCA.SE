@@ -101,7 +101,7 @@ app.post "/newcase", (req, res) ->
         db.set "case:" + cid + ":firstpage", "1"
         db.hmset "case:" + cid + ":page:1", data, (err, data) ->
           db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
-            console.log "created case: " + cid
+            #console.log "created case: " + cid
             res.send "/case/" + cid + "/1", 200
 
 app.post "/icd", (req, res) ->
@@ -125,11 +125,11 @@ app.get "/case/:id/:page", (req, res) ->
     userid = req.getAuthDetails().user.user_id
   else
     userid = '0'
-  console.log userid
+  #console.log userid
   db.sismember "case:" + req.params.id + ":users", userid, (err, editor) ->
     db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (error, theCase) ->
       return res.redirect "back"  if error or not theCase.cid
-      console.log "rendering case"
+      #console.log "rendering case"
       requestHandlers.rendercase req, res, theCase, editor
 
 app.get "/case/:id/:page/feedback", (req, res) ->
@@ -171,7 +171,7 @@ app.post "/rmbookmark/:id", (req, res) ->
   res.send 200
 
 app.post "/case/:id/:page/newpage", (req, res) ->
-  console.log "newpage triggered"
+  #console.log "newpage triggered"
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
       requestHandlers.postNewpage req, res
@@ -200,7 +200,7 @@ app.put "/case/:id/:page", (req, res) ->
       requestHandlers.putPage req, res
 
 app.post "/hide/:id", (req, res) ->
-  console.log "Hide case " + req.params.id + " called"
+  #console.log "Hide case " + req.params.id + " called"
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
     if owner || req.getAuthDetails().user.username == 'radioca1se'
@@ -210,7 +210,7 @@ app.post "/hide/:id", (req, res) ->
         else res.send "OK", 200
 
 app.post "/show/:id", (req, res) ->
-  console.log "Show case " + req.params.id + " called"
+  #console.log "Show case " + req.params.id + " called"
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
     if owner || req.getAuthDetails().user.username == 'radioca1se'
@@ -220,23 +220,23 @@ app.post "/show/:id", (req, res) ->
         else res.send "OK", 200
 
 app.delete "/case/:id", (req, res) ->
-  console.log "DELETE /case/" + req.params.id + " called"
+  #console.log "DELETE /case/" + req.params.id + " called"
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
     if owner
       return requestHandlers.deleteCase req, res
 
 app.delete "/sys/deletedcases", (req, res) ->
-  console.log "DELETE CASES, CLEANUP CALLED"
+  #console.log "DELETE CASES, CLEANUP CALLED"
   return res.send "FORBIDDEN", 403 unless req.getAuthDetails().user.username == 'radioca1se'
   if req.getAuthDetails().user.username == 'radioca1se'
     return requestHandlers.cleanupCases req, res
 
 app.get "/sys/admin", (req, res) ->
-  console.log "ADMINPAGE CALLED"
+  #console.log "ADMINPAGE CALLED"
   return res.send "FORBIDDEN", 403 unless req.getAuthDetails().user.username == 'radioca1se'
   if req.getAuthDetails().user.username == 'radioca1se'
-    console.log "rendering adminpage"
+    #console.log "rendering adminpage"
     return res.render "admin",
       title: "ADMINPAGE"
       signed_in: req.isAuthenticated()
@@ -246,14 +246,14 @@ app.delete "/case/:id/:page", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
-      console.log "editor - removing page"
+      #console.log "editor - removing page"
       requestHandlers.deletePage req.params.id, req.params.page
       res.send "OK", 200
 
 app.delete "/case/:id/:page/:radio", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
-      console.log "editor - removing radio"
+      #console.log "editor - removing radio"
       requestHandlers.removeRadio2 req.params.id, req.params.page, req.params.radio 
       res.send "OK", 200
 
@@ -278,7 +278,7 @@ app.get "/img/:img", (req, res) ->
     res.end()
 
 app.post "/image/:id/:page", (req, res) ->
-  console.log "POST /image/ called"
+  #console.log "POST /image/ called"
   return res.send 444 unless req.isAuthenticated()
   requestHandlers.postImage2 req, res, db
 
