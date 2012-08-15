@@ -54,10 +54,14 @@
 #icd_res_box
     overflow auto
     max-height 100px
-#newcase
+#toggleDiagnosis
     position absolute
     top 15px
     left 50%
+    margin-left -61px
+#newcase
+    left 50%
+    margin-top 10px
     margin-left -12px
 .maximizeradio, .minimizeradio
     position absolute
@@ -92,10 +96,17 @@ input#filter:focus
     width 25%
 input#filter
     position absolute
-    top 15px
+    top 13px
     left 5% 
     width 75px
 input.rounded
+    -moz-border-radus 10px
+    -webkit-border-radius 10px
+    border-radius 10px
+    -moz-box-shadow 2px 2px 3px #222
+    -webkit-box-shadow 2px 2px 3px #222
+    box-shadow 2px 2px 3px #222
+button.rounded
     -moz-border-radus 10px
     -webkit-border-radius 10px
     border-radius 10px

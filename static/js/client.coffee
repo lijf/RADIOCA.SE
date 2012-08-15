@@ -398,6 +398,9 @@ $ ->
 
   ).on("click", "#toggleDiagnosis", ->
     $('.diagnosis').toggleClass('invisible')
+    if $('.diagnosis').hasClass 'invisible'
+    then $(this).text "Show dx"
+    else $(this).text "Hide dx"
 
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')

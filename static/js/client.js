@@ -451,7 +451,12 @@
       $('#icd_req').val($(this).parent().text());
       return findICD($(this).text());
     }).on("click", "#toggleDiagnosis", function() {
-      return $('.diagnosis').toggleClass('invisible');
+      $('.diagnosis').toggleClass('invisible');
+      if ($('.diagnosis').hasClass('invisible')) {
+        return $(this).text("Show dx");
+      } else {
+        return $(this).text("Hide dx");
+      }
     }).on("focus", "#filter", function() {
       if ($(this).val() === 'Type to filter') return $(this).val('');
     }).on("keyup", "#filter", function(event) {
