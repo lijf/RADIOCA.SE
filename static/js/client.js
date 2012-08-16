@@ -127,7 +127,8 @@
     $(".moveradioup").toggle();
     $(".moveradiodown").toggle();
     $("#boxit_dialog").hide();
-    return $("#addstack_dialog").hide();
+    $("#addstack_dialog").hide();
+    return $("#addtext").toggle();
   };
 
   zebrarows = function(selector, className) {
@@ -257,8 +258,12 @@
       return radio;
     }).get();
     json.texts = $("#texts>.txt>.mdtxt").map(function() {
-      return $(this).val();
+      var text;
+      text = {};
+      text.val = $(this).val();
+      return text;
     }).get();
+    if (!json.texts) json.texts = [""];
     json.modalities = $(".modality:checked").map(function() {
       return $(this).val();
     }).get();
@@ -266,14 +271,13 @@
       return $(this).val();
     }).get();
     json.language = $("input:radio[name=language]:checked").val();
-    json.icds = [""];
     json.icds = $(".ICDCode>.icdt").map(function() {
-      return $(this).text();
+      var icd;
+      icd = {};
+      icd.code = $(this).text();
+      return icd;
     }).get();
-    if (!json.icds) {
-      alert("no icds");
-      json.icds = [""];
-    }
+    if (!json.icds) json.icds = [""];
     return json;
   };
 
@@ -618,6 +622,18 @@
           }
         }
       });
+    }).on("click", "#addtext", function() {
+      return $("#addtext_dialog").show();
+    }).on("click", "#visibletext", function() {
+      $("<div class='txt'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore("#addtext");
+      $(this).parent().hide();
+      return rendermd();
+    }).on("click", "#togglabletext", function() {
+      $("<a class='toggletext'>Show/hide text</a><div class='txt invisible togglable'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore("#addtext");
+      $(this).parent().hide();
+      return rendermd();
+    }).on("click", ".toggletext", function() {
+      return $(this).next().toggleClass('invisible');
     }).on("click", "#addstack", function() {
       return $("#addstack_dialog").show();
     }).on("click", "#addstack_cancel", function() {

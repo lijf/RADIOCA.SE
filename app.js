@@ -120,7 +120,8 @@
     return res.render(req.params.pagename, {
       title: req.params.pagename,
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+      icds: ""
     });
   });
 
@@ -313,7 +314,8 @@
       return res.render("admin", {
         title: "ADMINPAGE",
         signed_in: req.isAuthenticated(),
-        user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+        user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+        icds: ""
       });
     }
   });

@@ -9,6 +9,7 @@ renderRoot = (req, res) ->
     title: "Home"
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+    icds: ""
 
 rendercases = (req, res, start, end) ->
   if req.isAuthenticated()
@@ -28,7 +29,6 @@ rendercases = (req, res, start, end) ->
               sendcase.firstpage = firstpage
               sendcases[iteration] = sendcase
               unless cases[iteration + 1]
-                #console.log "rendering cases"
                 res.render "cases",
                   title: "Cases"
                   signed_in: req.isAuthenticated()
@@ -36,14 +36,15 @@ rendercases = (req, res, start, end) ->
                   cases: sendcases
                   bookmarks: bookmarks
                   completed: completed
+                  icds: ""
 
 render = (req, res, theCase, editor) ->
-  #console.dir theCase
+  console.dir theCase
   #console.log theCase.pagetype
   res.render theCase.pagetype,
     title: theCase.title or " - untitled"
     radios: theCase.radios or ""
-    texts: [ theCase.texts ] or ""
+    texts: theCase.texts or ""
     creator: theCase.creator or ""
     created: theCase.created
     mdhelp: theCase.mdhelp
@@ -52,7 +53,7 @@ render = (req, res, theCase, editor) ->
     cid: req.params.id
     modalities: theCase.modalities or ""
     description: theCase.description or ""
-    icds: [ theCase.icds ] or ""
+    icds: theCase.icds  or ""
     language: theCase.language or ""
     prevpage: theCase.prevpage
     nextpage: theCase.nextpage
@@ -77,7 +78,6 @@ rendercase = (req, res, theCase, editor) ->
       unless err or !casedata
         theCase.modalities = casedata.modalities
         theCase.description = casedata.description
-        theCase.icds = casedata.icds
       if casedata.hidden == 'true' && !editor && username != 'radioca1se'
         res.redirect '/'
       db.sismember "bookmarks:" + userid, req.params.id, (err, bookmarked) ->
@@ -86,24 +86,33 @@ rendercase = (req, res, theCase, editor) ->
         db.sismember "completed:" + userid, req.params.id, (err, completed) ->
           unless err
             theCase.completed = completed
-          db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
-            return render(req, res, theCase, editor)  if radioIDs.length < 1
-            theCase.radios = []
-            radioIDs.forEach (radioID, ID) ->
-              db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
-                theCase.radios[ID] = []
-                theCase.radios[ID].ID = radioID
-                theCase.radios[ID].caption = caption  if caption
-                db.lrange "radio:" + radioID, 0, -1, (err, images) ->
-                  theCase.radios[ID].images = []
-                  images.forEach (image, imgID) ->
-                    theCase.radios[ID].images[imgID] = image
-                  theCase.feedback = []
-                  db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
-                    feedback.forEach (fb, fbID) ->
-                      theCase.feedback[fbID] = fb
-                    #console.dir theCase
-                    render req, res, theCase, editor  unless radioIDs[ID + 1]
+          db.lrange "case:" + req.params.id + ":icds", 0, -1, (err, ICDCodes) ->
+            unless err
+              theCase.icds = []
+              ICDCodes.forEach (ICDCode, iID) ->
+                theCase.icds[iID] = ICDCode
+            db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":texts", 0, -1, (err, txts) ->
+              unless err
+                theCase.texts = []
+                txts.forEach (txt, tID) ->
+                  theCase.texts[tID] = txt
+              db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
+                return render(req, res, theCase, editor)  if radioIDs.length < 1
+                theCase.radios = []
+                radioIDs.forEach (radioID, ID) ->
+                  db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
+                    theCase.radios[ID] = []
+                    theCase.radios[ID].ID = radioID
+                    theCase.radios[ID].caption = caption  if caption
+                    db.lrange "radio:" + radioID, 0, -1, (err, images) ->
+                      theCase.radios[ID].images = []
+                      images.forEach (image, imgID) ->
+                        theCase.radios[ID].images[imgID] = image
+                      theCase.feedback = []
+                      db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+                        feedback.forEach (fb, fbID) ->
+                          theCase.feedback[fbID] = fb
+                        render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->
@@ -182,17 +191,11 @@ cleanupCases = (req, res) ->
 
 putPage = (req, res) ->
   data = req.body
-#  console.dir data
+  console.dir data
   data.cid = req.params.id
   data.lastEdit = new Date().getTime()
   data.creator = req.getAuthDetails().user.username
-  if(!data.icds)
-    data.icds = ""
   db.zadd "casesLastEdit", data.lastEdit, data.cid
-#  if data.private is "false"
-#    db.zadd "cases", data.created, data.cid
-#  else
-#   db.zrem "cases", data.cid
   db.zadd "cases", data.created, data.cid
   db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
   db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
@@ -200,11 +203,19 @@ putPage = (req, res) ->
 #  db.hset "case:" + req.params.id, "modalities", data.modalities
 #  db.hset "case:" + req.params.id, "description", data.description
   if data.radios
-  #  db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
+    db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->
       db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
       db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id
   #console.log "saved page"
+  if data.icds
+    db.del "case:" + req.params.id + ":icds"
+    data.icds.forEach (i, iID) ->
+      db.rpush "case:" + req.params.id + ":icds", i.code
+  if data.texts
+    db.del "case:" + req.params.id + ":page:" + req.params.page + ":texts"
+    data.texts.forEach (t, tID) ->
+      db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":texts", t.val
   res.send "OK", 200
 
 postNewpage = (req, res) ->

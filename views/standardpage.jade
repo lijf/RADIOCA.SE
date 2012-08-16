@@ -22,11 +22,11 @@ iframe.hidden(name="postframe", id="postframe", src="about:none")
     img.control#help(src='/static/ico/question_bw.png')
     img.control#savepage(src='/static/ico/disc_bw.png')
     span#savepage_dialog(style='display:none')
-      button(id='savepage_confirm', type='button')
+      button.rounded(id='savepage_confirm', type='button')
         | Save page
     img.control#deletepage(src='/static/ico/minus_bw.png')
     span#deletepage_dialog(style='display:none')
-      button(id='deletepage_confirm', type='button')
+      button.rounded(id='deletepage_confirm', type='button')
         | Delete Page
     img.control#newpage(src='/static/ico/plus_bw.png')
     img.control#boxit(src='/static/ico/box_bw.png')
@@ -43,11 +43,14 @@ a#prevpage(href='/case/#{cid}/#{prevpage}', pageno='#{prevpage}')
 a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
   img(src='/static/ico/arrow.png')
 #texts
-  .txt
-    textarea.mdtxt(style='display:none')
-      #{texts}
-    .md
-    img.control.textedit.session(src='/static/ico/pencil_bw.png')
+  - each t in texts
+    a.toggletext Toggle text
+    .txt.invisible
+      textarea.mdtxt(style='display:none')
+        #{t}
+      .md
+      img.control.textedit.session(src='/static/ico/pencil_bw.png')
+  img.control#addtext(style='display:none', src='/static/ico/plus_bw.png')
   br
   br
 #radios
@@ -88,12 +91,6 @@ script(type='text/javascript')
       $(this).attr("checked",true);
     });
     $("##{language}").attr("checked", true);
-    var icds = ['#{icds}'];
-    if(icds[0] != ""){
-      for (var i=0; i < icds.length; i++){
-        $("#icd").append("<div class='ICDCode'><a class='icdt'>" + icds[i] + "</a><a class='removeICD'><img class='control' src='/static/ico/small_minus_bw.png'></a></div><br>");
-      }
-    }
     var cid = '#{cid}';
     var page = '#{page}';
     if(#{editor}=='1') {

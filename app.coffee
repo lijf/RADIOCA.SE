@@ -79,6 +79,7 @@ app.get "/stat/:pagename", (req, res) -> # this may be to much of a 'catch all'
     title: req.params.pagename
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+    icds: ""
 
 app.post "/newcase", (req, res) ->
   db.sismember "userCanAdd", req.getAuthDetails().user.user_id, (err, canAdd) ->
@@ -241,6 +242,7 @@ app.get "/sys/admin", (req, res) ->
       title: "ADMINPAGE"
       signed_in: req.isAuthenticated()
       user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+      icds: ""
 
 app.delete "/case/:id/:page", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()

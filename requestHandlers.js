@@ -15,7 +15,8 @@
     return res.render("index", {
       title: "Home",
       signed_in: req.isAuthenticated(),
-      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0")
+      user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
+      icds: ""
     });
   };
 
@@ -44,7 +45,8 @@
                     user: (req.isAuthenticated() ? req.getAuthDetails().user.username : "0"),
                     cases: sendcases,
                     bookmarks: bookmarks,
-                    completed: completed
+                    completed: completed,
+                    icds: ""
                   });
                 }
               });
@@ -56,10 +58,11 @@
   };
 
   render = function(req, res, theCase, editor) {
+    console.dir(theCase);
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
       radios: theCase.radios || "",
-      texts: [theCase.texts] || "",
+      texts: theCase.texts || "",
       creator: theCase.creator || "",
       created: theCase.created,
       mdhelp: theCase.mdhelp,
@@ -68,7 +71,7 @@
       cid: req.params.id,
       modalities: theCase.modalities || "",
       description: theCase.description || "",
-      icds: [theCase.icds] || "",
+      icds: theCase.icds || "",
       language: theCase.language || "",
       prevpage: theCase.prevpage,
       nextpage: theCase.nextpage,
@@ -97,7 +100,6 @@
         if (!(err || !casedata)) {
           theCase.modalities = casedata.modalities;
           theCase.description = casedata.description;
-          theCase.icds = casedata.icds;
         }
         if (casedata.hidden === 'true' && !editor && username !== 'radioca1se') {
           res.redirect('/');
@@ -106,27 +108,45 @@
           if (!err) theCase.bookmarked = bookmarked;
           return db.sismember("completed:" + userid, req.params.id, function(err, completed) {
             if (!err) theCase.completed = completed;
-            return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
-              if (radioIDs.length < 1) return render(req, res, theCase, editor);
-              theCase.radios = [];
-              return radioIDs.forEach(function(radioID, ID) {
-                return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
-                  theCase.radios[ID] = [];
-                  theCase.radios[ID].ID = radioID;
-                  if (caption) theCase.radios[ID].caption = caption;
-                  return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
-                    theCase.radios[ID].images = [];
-                    images.forEach(function(image, imgID) {
-                      return theCase.radios[ID].images[imgID] = image;
-                    });
-                    theCase.feedback = [];
-                    return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
-                      feedback.forEach(function(fb, fbID) {
-                        return theCase.feedback[fbID] = fb;
+            return db.lrange("case:" + req.params.id + ":icds", 0, -1, function(err, ICDCodes) {
+              if (!err) {
+                theCase.icds = [];
+                ICDCodes.forEach(function(ICDCode, iID) {
+                  return theCase.icds[iID] = ICDCode;
+                });
+              }
+              return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":texts", 0, -1, function(err, txts) {
+                if (!err) {
+                  theCase.texts = [];
+                  txts.forEach(function(txt, tID) {
+                    return theCase.texts[tID] = txt;
+                  });
+                }
+                return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
+                  if (radioIDs.length < 1) {
+                    return render(req, res, theCase, editor);
+                  }
+                  theCase.radios = [];
+                  return radioIDs.forEach(function(radioID, ID) {
+                    return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
+                      theCase.radios[ID] = [];
+                      theCase.radios[ID].ID = radioID;
+                      if (caption) theCase.radios[ID].caption = caption;
+                      return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
+                        theCase.radios[ID].images = [];
+                        images.forEach(function(image, imgID) {
+                          return theCase.radios[ID].images[imgID] = image;
+                        });
+                        theCase.feedback = [];
+                        return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
+                          feedback.forEach(function(fb, fbID) {
+                            return theCase.feedback[fbID] = fb;
+                          });
+                          if (!radioIDs[ID + 1]) {
+                            return render(req, res, theCase, editor);
+                          }
+                        });
                       });
-                      if (!radioIDs[ID + 1]) {
-                        return render(req, res, theCase, editor);
-                      }
                     });
                   });
                 });
@@ -250,19 +270,32 @@
   putPage = function(req, res) {
     var data;
     data = req.body;
+    console.dir(data);
     data.cid = req.params.id;
     data.lastEdit = new Date().getTime();
     data.creator = req.getAuthDetails().user.username;
-    if (!data.icds) data.icds = "";
     db.zadd("casesLastEdit", data.lastEdit, data.cid);
     db.zadd("cases", data.created, data.cid);
     db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);
     db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
     db.hmset("case:" + req.params.id, data);
     if (data.radios) {
+      db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
       data.radios.forEach(function(r, rID) {
         db.set("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption);
         return db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id);
+      });
+    }
+    if (data.icds) {
+      db.del("case:" + req.params.id + ":icds");
+      data.icds.forEach(function(i, iID) {
+        return db.rpush("case:" + req.params.id + ":icds", i.code);
+      });
+    }
+    if (data.texts) {
+      db.del("case:" + req.params.id + ":page:" + req.params.page + ":texts");
+      data.texts.forEach(function(t, tID) {
+        return db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":texts", t.val);
       });
     }
     return res.send("OK", 200);

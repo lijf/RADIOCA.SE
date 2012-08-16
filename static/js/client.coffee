@@ -11,11 +11,7 @@ String.prototype.toProperCase = ->
 
 findICD = (icdquery) ->
   json = {}
-  #json2 = {}
-  #icdquery = "" + icdquery
   json.qs = icdquery
-  #json2.qs = icdquery.charAt(0).toUpperCase() + icdquery.substr(1)
-  #$("#icd_res").html ""
   $.ajax
     type: "POST"
     url: "/icd"
@@ -28,18 +24,6 @@ findICD = (icdquery) ->
         data=data.replace /\["/,''
         data=data.replace /\[\]/,''
         $("#icd_res").append data
-  #$.ajax
-  #  type: "POST"
-  #  url: "/icd"
-  #  data: json2
-  #  cache: false
-  #  statusCode:
-  #    200: (data) ->
-  #      data=data.replace /"\]/g,''
-  #      data=data.replace /","/g,''
-  #      data=data.replace /\["/g,''
-  #      data=data.replace /\[\]/,''
-  #      $("#icd_res").append data
 
 change_url = (url) ->
   document.location = url
@@ -114,6 +98,7 @@ editfunctions = ->
   $(".moveradiodown").toggle()
   $("#boxit_dialog").hide()
   $("#addstack_dialog").hide()
+  $("#addtext").toggle()
 
 zebrarows = (selector, className) ->
   $(selector).removeClass(className).addClass(className)
@@ -211,8 +196,12 @@ spiderpage = ->
     radio
   ).get()
   json.texts = $("#texts>.txt>.mdtxt").map(->
-    $(this).val()
+    text = {}
+    text.val = $(this).val()
+    text
   ).get()
+  if(!json.texts)
+    json.texts = [""]
   json.modalities = $(".modality:checked").map(->
     $(this).val()
   ).get()
@@ -220,12 +209,12 @@ spiderpage = ->
     $(this).val()
   ).get()
   json.language = $("input:radio[name=language]:checked").val()
-  json.icds = [""]
   json.icds = $(".ICDCode>.icdt").map(->
-    $(this).text()
+    icd = {}
+    icd.code = $(this).text()
+    icd
   ).get()
   if(!json.icds)
-    alert "no icds"
     json.icds = [""]
   #alert JSON.stringify json
   json
@@ -575,6 +564,23 @@ $ ->
       statusCode:
         200: ->
           alert "OK, cases deleted"
+
+  ).on("click", "#addtext", ->
+    $("#addtext_dialog").show()
+
+  ).on("click", "#visibletext", ->
+    $("<div class='txt'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore "#addtext"
+    $(this).parent().hide()
+    rendermd()
+    
+  ).on("click", "#togglabletext", ->
+    $("<a class='toggletext'>Show/hide text</a><div class='txt invisible togglable'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore "#addtext"
+    $(this).parent().hide()
+    rendermd()
+
+  ).on("click", ".toggletext", ->
+    $(this).next().toggleClass('invisible')
+
 
   ).on("click", "#addstack", ->
     $("#addstack_dialog").show()

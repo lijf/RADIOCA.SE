@@ -108,6 +108,12 @@ html
             img.control(src="/static/ico/cross-circle_bw.png")
           br
           #icd
+            - each icd in icds
+              .ICDCode
+                a.icdt #{icd}
+                a.removeICD
+                  img.control(src='/static/ico/small_minus_bw.png')
+                br
           br
           form#icd_form
             | Find ICD: 
@@ -119,6 +125,10 @@ html
               table
                 tbody#icd_res
 
+        #addtext_dialog.dialog_box(style='display:none')
+          button.rounded#togglabletext Add textarea
+          a.Cancel
+            img.control(src='/static/ico/cross-circle_bw.png')
         #addstack_dialog.dialog_box(style='display:none')
           | Please choose image(s) to upload.
           br
