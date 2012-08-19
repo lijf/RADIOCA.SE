@@ -147,6 +147,14 @@ html
             input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
+        #deletetext_dialog.dialog_box(style='display:none')
+          | Do you want to remove the selected text area from this page?
+          br
+          br
+          button.rounded#deletetext_confirm(type='button')
+            | Delete text
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
         #removeradio_dialog.dialog_box(style='display:none')
           | Do you want to remove the selected stack/radio from this page?
           br

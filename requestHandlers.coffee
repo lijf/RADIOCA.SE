@@ -88,11 +88,13 @@ rendercase = (req, res, theCase, editor) ->
             theCase.completed = completed
           db.lrange "case:" + req.params.id + ":icds", 0, -1, (err, ICDCodes) ->
             unless err
+              delete theCase.icds
               theCase.icds = []
               ICDCodes.forEach (ICDCode, iID) ->
                 theCase.icds[iID] = ICDCode
             db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":texts", 0, -1, (err, txts) ->
               unless err
+                delete theCase.texts
                 theCase.texts = []
                 txts.forEach (txt, tID) ->
                   theCase.texts[tID] = txt

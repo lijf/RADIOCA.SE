@@ -43,16 +43,18 @@ a#prevpage(href='/case/#{cid}/#{prevpage}', pageno='#{prevpage}')
 a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
   img(src='/static/ico/arrow.png')
 #texts
-  - each t in texts
-    a.toggletext Toggle text
+  - each t, i in texts
+    br
+    a.toggletext Toggle textarea 
     .txt.invisible
       textarea.mdtxt(style='display:none')
         #{t}
       .md
+      img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
+      br
       img.control.textedit.session(src='/static/ico/pencil_bw.png')
+  br
   img.control#addtext(style='display:none', src='/static/ico/plus_bw.png')
-  br
-  br
 #radios
   - each r in radios
     .radio(id='#{r.ID}')

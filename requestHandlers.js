@@ -110,6 +110,7 @@
             if (!err) theCase.completed = completed;
             return db.lrange("case:" + req.params.id + ":icds", 0, -1, function(err, ICDCodes) {
               if (!err) {
+                delete theCase.icds;
                 theCase.icds = [];
                 ICDCodes.forEach(function(ICDCode, iID) {
                   return theCase.icds[iID] = ICDCode;
@@ -117,6 +118,7 @@
               }
               return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":texts", 0, -1, function(err, txts) {
                 if (!err) {
+                  delete theCase.texts;
                   theCase.texts = [];
                   txts.forEach(function(txt, tID) {
                     return theCase.texts[tID] = txt;

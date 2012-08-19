@@ -99,6 +99,7 @@ editfunctions = ->
   $("#boxit_dialog").hide()
   $("#addstack_dialog").hide()
   $("#addtext").toggle()
+  $(".deletetext").toggle()
 
 zebrarows = (selector, className) ->
   $(selector).removeClass(className).addClass(className)
@@ -322,6 +323,7 @@ $ ->
   ).on("click", ".Cancel", ->
     $(this).parent().hide()
     $('.selected').removeClass('selected')
+    $('.selectedtext').removeClass('selectedtext')
 
   ).on("click", ".rmcompleted", ->
     $(this).removeClass('rmcompleted')
@@ -568,19 +570,22 @@ $ ->
   ).on("click", "#addtext", ->
     $("#addtext_dialog").show()
 
-  ).on("click", "#visibletext", ->
-    $("<div class='txt'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore "#addtext"
-    $(this).parent().hide()
-    rendermd()
-    
   ).on("click", "#togglabletext", ->
-    $("<a class='toggletext'>Show/hide text</a><div class='txt invisible togglable'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore "#addtext"
+    $("<a class='toggletext'></a>Toggle textarea<div class='txt invisible togglable'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div><br>").insertBefore "#addtext"
     $(this).parent().hide()
     rendermd()
+
+  ).on("click", ".deletetext", ->
+    $(this).parent().addClass "selectedtext"
+    $("#deletetext_dialog").show()
+
+  ).on("click", "#deletetext_confirm", ->
+    $(".selectedtext").prev().remove()
+    $(".selectedtext").remove()
+    $("#deletetext_dialog").hide()
 
   ).on("click", ".toggletext", ->
     $(this).next().toggleClass('invisible')
-
 
   ).on("click", "#addstack", ->
     $("#addstack_dialog").show()

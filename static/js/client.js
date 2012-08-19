@@ -128,7 +128,8 @@
     $(".moveradiodown").toggle();
     $("#boxit_dialog").hide();
     $("#addstack_dialog").hide();
-    return $("#addtext").toggle();
+    $("#addtext").toggle();
+    return $(".deletetext").toggle();
   };
 
   zebrarows = function(selector, className) {
@@ -384,7 +385,8 @@
       });
     }).on("click", ".Cancel", function() {
       $(this).parent().hide();
-      return $('.selected').removeClass('selected');
+      $('.selected').removeClass('selected');
+      return $('.selectedtext').removeClass('selectedtext');
     }).on("click", ".rmcompleted", function() {
       $(this).removeClass('rmcompleted');
       $(this).addClass('completed');
@@ -624,14 +626,17 @@
       });
     }).on("click", "#addtext", function() {
       return $("#addtext_dialog").show();
-    }).on("click", "#visibletext", function() {
-      $("<div class='txt'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore("#addtext");
-      $(this).parent().hide();
-      return rendermd();
     }).on("click", "#togglabletext", function() {
-      $("<a class='toggletext'>Show/hide text</a><div class='txt invisible togglable'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div>").insertBefore("#addtext");
+      $("<a class='toggletext'></a>Toggle textarea<div class='txt invisible togglable'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div><br>").insertBefore("#addtext");
       $(this).parent().hide();
       return rendermd();
+    }).on("click", ".deletetext", function() {
+      $(this).parent().addClass("selectedtext");
+      return $("#deletetext_dialog").show();
+    }).on("click", "#deletetext_confirm", function() {
+      $(".selectedtext").prev().remove();
+      $(".selectedtext").remove();
+      return $("#deletetext_dialog").hide();
     }).on("click", ".toggletext", function() {
       return $(this).next().toggleClass('invisible');
     }).on("click", "#addstack", function() {
