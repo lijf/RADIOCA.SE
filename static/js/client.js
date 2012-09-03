@@ -258,10 +258,11 @@
       radio.caption = $(this).children(".caption").children(".mdtxt").val();
       return radio;
     }).get();
-    json.texts = $("#texts>.txt>.mdtxt").map(function() {
+    json.texts = $("#texts>#text>.txt>.mdtxt").map(function() {
       var text;
       text = {};
       text.val = $(this).val();
+      text.caption = $(this).closest("#text").find(".toggletext>.txt>.mdtxt").val();
       return text;
     }).get();
     if (!json.texts) json.texts = [""];
@@ -631,10 +632,9 @@
       $(this).parent().hide();
       return rendermd();
     }).on("click", ".deletetext", function() {
-      $(this).parent().addClass("selectedtext");
+      $(this).parent().parent().addClass("selectedtext");
       return $("#deletetext_dialog").show();
     }).on("click", "#deletetext_confirm", function() {
-      $(".selectedtext").prev().remove();
       $(".selectedtext").remove();
       return $("#deletetext_dialog").hide();
     }).on("click", ".toggletext", function() {

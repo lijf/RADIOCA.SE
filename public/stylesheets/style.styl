@@ -182,6 +182,7 @@ th.sorted-desc
 .control
     cursor pointer 
     margin 0 10px
+    z-index 10000
 button
     height 21px
     vertical-align top
@@ -400,6 +401,10 @@ span#controls
     background-image url("/static/img/paper/Texture0213.jpg")
     position relative
     color #006
+.txt>.control
+    position absolute
+    right 0
+    bottom 0
 @media screen and (max-width: 450px)
     .caseListTitle
         position absolute
@@ -465,8 +470,6 @@ textarea
     font-size 100%
 .md
     padding 10px 30px
-.mdtxt
-    float left
 #markdown-help
     background-image url("/static/img/paper/Texture0213.jpg")
     color #006

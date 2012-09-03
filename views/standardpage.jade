@@ -45,14 +45,20 @@ a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
 #texts
   - each t, i in texts
     br
-    a.toggletext Toggle textarea 
-    .txt.invisible
-      textarea.mdtxt(style='display:none')
-        #{t}
-      .md
-      img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
-      br
-      img.control.textedit.session(src='/static/ico/pencil_bw.png')
+    #text
+      a.toggletext  
+        .txt
+          textarea.mdtxt(style='display:none')
+            Toggle textarea
+          .md
+          img.control.textedit.session(src='/static/ico/pencil_bw.png')
+      .txt.invisible
+        textarea.mdtxt(style='display:none')
+          #{t}
+        .md
+        img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
+        br
+        img.control.textedit.session(src='/static/ico/pencil_bw.png')
   br
   img.control#addtext(style='display:none', src='/static/ico/plus_bw.png')
 #radios

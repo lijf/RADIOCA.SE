@@ -296,9 +296,7 @@
     }
     if (data.texts) {
       db.del("case:" + req.params.id + ":page:" + req.params.page + ":texts");
-      data.texts.forEach(function(t, tID) {
-        return db.rpush("case:" + req.params.id + ":page:" + req.params.page + ":texts", t.val);
-      });
+      db.hmset("case:" + req.params.id + ":page:" + req.params.page + ":texts", JSON.stringify(data.texts));
     }
     return res.send("OK", 200);
   };

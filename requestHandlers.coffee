@@ -216,8 +216,7 @@ putPage = (req, res) ->
       db.rpush "case:" + req.params.id + ":icds", i.code
   if data.texts
     db.del "case:" + req.params.id + ":page:" + req.params.page + ":texts"
-    data.texts.forEach (t, tID) ->
-      db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":texts", t.val
+    db.hmset "case:" + req.params.id + ":page:" + req.params.page + ":texts", JSON.stringify data.texts
   res.send "OK", 200
 
 postNewpage = (req, res) ->

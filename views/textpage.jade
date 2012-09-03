@@ -41,16 +41,18 @@ a#prevpage(href='/case/#{cid}/#{prevpage}')
 a#nextpage(href='/case/#{cid}/#{nextpage}')
   img(src='/static/ico/arrow.png')
 #texts(style='width: 100%')
-  - each text in texts
-    a.toggletext Show/hide next text
-      .txt
-        textarea.mdtxt(style='display:none')
-          #{text.value}
-        .md
-        img.control.textedit.session(src='/static/ico/pencil.png')
+  - each t, i in texts
+    br
+    a.toggletext Toggle textarea 
+    .txt.invisible
+      textarea.mdtxt(style='display:none')
+        #{t}
+      .md
+      img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
+      br
+      img.control.textedit.session(src='/static/ico/pencil_bw.png')
+  br
   img.control#addtext(style='display:none', src='/static/ico/plus_bw.png')
-  br
-  br
 #markdown-help(style='display:none')
   img.control.textedit.session(src='/static/ico/pencil.png')
   img.control.Cancel(src='/static/ico/cross-circle.png')

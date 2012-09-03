@@ -196,9 +196,10 @@ spiderpage = ->
     radio.caption = $(this).children(".caption").children(".mdtxt").val()
     radio
   ).get()
-  json.texts = $("#texts>.txt>.mdtxt").map(->
+  json.texts = $("#texts>#text>.txt>.mdtxt").map(->
     text = {}
     text.val = $(this).val()
+    text.caption = $(this).closest("#text").find(".toggletext>.txt>.mdtxt").val()
     text
   ).get()
   if(!json.texts)
@@ -576,11 +577,11 @@ $ ->
     rendermd()
 
   ).on("click", ".deletetext", ->
-    $(this).parent().addClass "selectedtext"
+    $(this).parent().parent().addClass "selectedtext"
     $("#deletetext_dialog").show()
 
   ).on("click", "#deletetext_confirm", ->
-    $(".selectedtext").prev().remove()
+    #$(".selectedtext").prev().remove()
     $(".selectedtext").remove()
     $("#deletetext_dialog").hide()
 
