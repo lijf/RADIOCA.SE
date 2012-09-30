@@ -58,7 +58,8 @@
     app.use(easyoauth(require("./keys_file")));
     app.use(app.router);
     app.use(express.favicon(__dirname + "/public/favicon.ico"));
-    return app.use(express.static(__dirname + "/public"));
+    app.use(express.static(__dirname + "/public"));
+    return app.use(require('connect-assets')());
   });
 
   delete express.bodyParser.parse['multipart/form-data'];

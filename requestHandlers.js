@@ -96,6 +96,7 @@
         userid = "0";
       }
       theCase.mdhelp = data;
+      if (theCase.texts) theCase.texts = JSON.parse(theCase.texts);
       return db.hgetall("case:" + req.params.id, function(err, casedata) {
         if (!(err || !casedata)) {
           theCase.modalities = casedata.modalities;
@@ -116,38 +117,27 @@
                   return theCase.icds[iID] = ICDCode;
                 });
               }
-              return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":texts", 0, -1, function(err, txts) {
-                if (!err) {
-                  delete theCase.texts;
-                  theCase.texts = [];
-                  txts.forEach(function(txt, tID) {
-                    return theCase.texts[tID] = txt;
-                  });
-                }
-                return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
-                  if (radioIDs.length < 1) {
-                    return render(req, res, theCase, editor);
-                  }
-                  theCase.radios = [];
-                  return radioIDs.forEach(function(radioID, ID) {
-                    return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
-                      theCase.radios[ID] = [];
-                      theCase.radios[ID].ID = radioID;
-                      if (caption) theCase.radios[ID].caption = caption;
-                      return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
-                        theCase.radios[ID].images = [];
-                        images.forEach(function(image, imgID) {
-                          return theCase.radios[ID].images[imgID] = image;
+              return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, function(err, radioIDs) {
+                if (radioIDs.length < 1) return render(req, res, theCase, editor);
+                theCase.radios = [];
+                return radioIDs.forEach(function(radioID, ID) {
+                  return db.get("case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", function(err, caption) {
+                    theCase.radios[ID] = [];
+                    theCase.radios[ID].ID = radioID;
+                    if (caption) theCase.radios[ID].caption = caption;
+                    return db.lrange("radio:" + radioID, 0, -1, function(err, images) {
+                      theCase.radios[ID].images = [];
+                      images.forEach(function(image, imgID) {
+                        return theCase.radios[ID].images[imgID] = image;
+                      });
+                      theCase.feedback = [];
+                      return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
+                        feedback.forEach(function(fb, fbID) {
+                          return theCase.feedback[fbID] = fb;
                         });
-                        theCase.feedback = [];
-                        return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
-                          feedback.forEach(function(fb, fbID) {
-                            return theCase.feedback[fbID] = fb;
-                          });
-                          if (!radioIDs[ID + 1]) {
-                            return render(req, res, theCase, editor);
-                          }
-                        });
+                        if (!radioIDs[ID + 1]) {
+                          return render(req, res, theCase, editor);
+                        }
                       });
                     });
                   });
@@ -295,8 +285,8 @@
       });
     }
     if (data.texts) {
-      db.del("case:" + req.params.id + ":page:" + req.params.page + ":texts");
-      db.hmset("case:" + req.params.id + ":page:" + req.params.page + ":texts", JSON.stringify(data.texts));
+      console.log(JSON.stringify(data.texts));
+      db.hset("case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify(data.texts));
     }
     return res.send("OK", 200);
   };

@@ -74,6 +74,8 @@ rendercase = (req, res, theCase, editor) ->
       username = ""
       userid = "0"
     theCase.mdhelp = data
+    if theCase.texts
+      theCase.texts = JSON.parse theCase.texts
     db.hgetall "case:" + req.params.id, (err, casedata) ->
       unless err or !casedata
         theCase.modalities = casedata.modalities
@@ -92,29 +94,23 @@ rendercase = (req, res, theCase, editor) ->
               theCase.icds = []
               ICDCodes.forEach (ICDCode, iID) ->
                 theCase.icds[iID] = ICDCode
-            db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":texts", 0, -1, (err, txts) ->
-              unless err
-                delete theCase.texts
-                theCase.texts = []
-                txts.forEach (txt, tID) ->
-                  theCase.texts[tID] = txt
-              db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
-                return render(req, res, theCase, editor)  if radioIDs.length < 1
-                theCase.radios = []
-                radioIDs.forEach (radioID, ID) ->
-                  db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
-                    theCase.radios[ID] = []
-                    theCase.radios[ID].ID = radioID
-                    theCase.radios[ID].caption = caption  if caption
-                    db.lrange "radio:" + radioID, 0, -1, (err, images) ->
-                      theCase.radios[ID].images = []
-                      images.forEach (image, imgID) ->
-                        theCase.radios[ID].images[imgID] = image
-                      theCase.feedback = []
-                      db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
-                        feedback.forEach (fb, fbID) ->
-                          theCase.feedback[fbID] = fb
-                        render req, res, theCase, editor  unless radioIDs[ID + 1]
+            db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":radios", 0, -1, (err, radioIDs) ->
+              return render(req, res, theCase, editor)  if radioIDs.length < 1
+              theCase.radios = []
+              radioIDs.forEach (radioID, ID) ->
+                db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
+                  theCase.radios[ID] = []
+                  theCase.radios[ID].ID = radioID
+                  theCase.radios[ID].caption = caption  if caption
+                  db.lrange "radio:" + radioID, 0, -1, (err, images) ->
+                    theCase.radios[ID].images = []
+                    images.forEach (image, imgID) ->
+                      theCase.radios[ID].images[imgID] = image
+                    theCase.feedback = []
+                    db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+                      feedback.forEach (fb, fbID) ->
+                        theCase.feedback[fbID] = fb
+                      render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->
@@ -215,8 +211,8 @@ putPage = (req, res) ->
     data.icds.forEach (i, iID) ->
       db.rpush "case:" + req.params.id + ":icds", i.code
   if data.texts
-    db.del "case:" + req.params.id + ":page:" + req.params.page + ":texts"
-    db.hmset "case:" + req.params.id + ":page:" + req.params.page + ":texts", JSON.stringify data.texts
+    console.log JSON.stringify data.texts
+    db.hset "case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify data.texts
   res.send "OK", 200
 
 postNewpage = (req, res) ->

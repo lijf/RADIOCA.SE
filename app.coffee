@@ -15,7 +15,7 @@ sys = require("sys")
 util = require("util")
 redis = require("redis")
 #db = redis.createClient()
-db = redis.createClient(6666)
+db = redis.createClient(process.env.DB_PORT)
 icd = redis.createClient(4444)
 easyoauth = require("easy-oauth")
 app = module.exports = express.createServer()
@@ -31,6 +31,7 @@ app.configure ->
   app.use app.router
   app.use express.favicon(__dirname + "/public/favicon.ico")
   app.use express.static(__dirname + "/public")
+  app.use require('connect-assets')()
 
 delete express.bodyParser.parse['multipart/form-data']
 
@@ -284,7 +285,7 @@ app.post "/image/:id/:page", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   requestHandlers.postImage2 req, res, db
 
-port = process.env.PORT or 3333
+port = process.env.PORT
 app.listen port, ->
   console.log process.env.NODE_ENV
   console.log "Express server listening on port %d in %s mode", app.address().port, app.settings.env

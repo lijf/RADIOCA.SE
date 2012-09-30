@@ -12,6 +12,7 @@
         "easy-oauth": ">=0.2.0",
         "markdown": ">=0.2.1",
         "connect-form": ">=0.2.1",
-        "redback": ">=0.2.7"
+        "redback": ">=0.2.7",
+        "connect-assets": ">=2.3.3"
     }
 }

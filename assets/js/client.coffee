@@ -196,10 +196,10 @@ spiderpage = ->
     radio.caption = $(this).children(".caption").children(".mdtxt").val()
     radio
   ).get()
-  json.texts = $("#texts>#text>.txt>.mdtxt").map(->
+  json.texts = $("#texts>.text>.txt>.mdtxt").map(->
     text = {}
     text.val = $(this).val()
-    text.caption = $(this).closest("#text").find(".toggletext>.txt>.mdtxt").val()
+    text.caption = $(this).closest(".text").find(".toggletext>.txt>.mdtxt").val()
     text
   ).get()
   if(!json.texts)
@@ -572,7 +572,21 @@ $ ->
     $("#addtext_dialog").show()
 
   ).on("click", "#togglabletext", ->
-    $("<a class='toggletext'></a>Toggle textarea<div class='txt invisible togglable'><textarea class='mdtxt' style='display:none'></textarea><div class='md'></div><img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'></div><br>").insertBefore "#addtext"
+    $("<div class='text'>
+        <a class='toggletext'>
+          <div class='txt'>
+            <textarea class='mdtxt' style='display:none'>Toggle textarea</textarea>
+            <div class='md'></div>
+            <img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'>
+          </div>
+        </a>
+        <div class='txt invisible togglable'>
+          <textarea class='mdtxt' style='display:none'></textarea>
+          <div class='md'></div>
+          <img src='/static/ico/pencil_bw.png' class='control textedit session' style='display: inline'>
+        </div>
+       </div>
+      <br>").insertBefore "#addtext"
     $(this).parent().hide()
     rendermd()
 
