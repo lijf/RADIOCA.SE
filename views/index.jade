@@ -1,17 +1,20 @@
-#indexpage
-  br
-  .big_logo.orbitron RADIOCA.SE
-  br
-  br
-  img(src='/static/img/OldRadio_3_320.png', style='width: 320px')
+extends layout
 
-  br
-  br
-  br
-  a(href='/cases/0/-1') 
-    h4.orbitron List cases
-script(type='text/javascript')
-  $(function(){
-    // Hides small logo
-    $('#sl').hide();
-    });
+block mainContent
+  #indexpage
+    br
+    .big_logo.orbitron RADIOCA.SE
+    br
+    br
+    img(src='/static/img/OldRadio_3_320.png', style='width: 320px')
+
+    br
+    br
+    br
+    a(href='/cases/0/-1') 
+      h4.orbitron List cases
+  script(type='text/javascript')
+    $(function(){
+      // Hides small logo
+      $('#sl').hide();
+      });

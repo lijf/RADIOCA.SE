@@ -5,6 +5,9 @@ String.prototype.toProperCase = ->
     txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
 
 express = require("express")
+http = require("http")
+app = module.exports = express()
+silent = 'test' == process.env.NODE_ENV
 formidable = require("formidable")
 exec = require("child_process").exec
 spawn = require("child_process").spawn
@@ -15,38 +18,53 @@ sys = require("sys")
 util = require("util")
 redis = require("redis")
 #db = redis.createClient()
-db = redis.createClient(process.env.DB_PORT)
+db = redis.createClient(6666)
+#db = redis.createClient(process.env.DB_PORT)
 icd = redis.createClient(4444)
+util = require("util")
 easyoauth = require("easy-oauth")
-app = module.exports = express.createServer()
-app.configure ->
-  app.set "views", __dirname + "/views"
-  app.set "view engine", "jade"
-  app.use express.bodyParser()
-  app.use express.methodOverride()
-  app.use express.cookieParser()
-  app.use express.session(secret: "eventuallycloseduringnative")
-  app.use require("stylus").middleware(src: __dirname + "/public/")
-  app.use easyoauth(require("./keys_file"))
-  app.use app.router
-  app.use express.favicon(__dirname + "/public/favicon.ico")
-  app.use express.static(__dirname + "/public")
-  app.use require('connect-assets')()
+app.set "views", __dirname + "/views"
+app.set "view engine", "jade"
+app.set "view options",
+  layout: false
+app.use express.bodyParser()
+app.enable("verbose errors")
+if "production" == app.settings.env
+  app.disable("verbose errors")
+silent or app.use(express.logger('dev'))
+app.use express.methodOverride()
+app.use express.cookieParser()
+app.use express.session(secret: "eventuallycloseduringnative")
+app.use require("stylus").middleware(src: __dirname + "/public/")
+app.use require('connect-assets')()
+app.use easyoauth(require("./keys_file"))
+app.use app.router
+#app.use error
+app.use express.favicon(__dirname + "/public/favicon.ico")
+app.use express.static(__dirname + "/public")
 
-delete express.bodyParser.parse['multipart/form-data']
+app.use (req,res,next) ->
+  res.status(404)
+  if req.accepts("html")
+    res.render "404",
+      url: req.url
 
-app.configure "development", ->
-  app.use express.errorHandler(
-    dumpExceptions: true
-    showStack: true
-  )
+    return
+  if req.accepts("json")
+    res.send eror: "Not found"
+    return
+  res.type("txt").send "Not found"
 
-app.configure "production", ->
-  app.use express.errorHandler()
+app.use (err, req, res, next) ->
+  res.status err.status or 500
+  res.render "500"
+    error: err
 
-app.error (err, req, res, next) ->
-  sys.puts "APP.ERROR:" + sys.inspect(err)
-  next err
+#delete express.bodyParser.parse['multipart/form-data']
+
+#error = (err, req, res, next) ->
+#  console.error err.stack
+#  res.send 500
 
 db.on "error", (err) ->
   console.log "Redis Error " + err
@@ -56,19 +74,17 @@ app.get "/", (req, res) ->
   else requestHandlers.renderRoot req, res
 
 app.get "/signed_in", (req, res) ->
-  uid = req.getAuthDetails().user.user_id
   userdata = req.getAuthDetails()
-  userdata.user_id = userdata.user.user_id
-  userdata.username = userdata.user.username
-  db.sismember "users", uid, (err, registered) ->
+  #console.log userdata
+  db.sismember "users", userdata.user.user_id (err, registered) ->
     if registered
-      db.hmset "user:" + uid, userdata
-      db.set "user:" + userdata.username, uid
+      db.set "user:" + userdata.user.user_id, JSON.stringify userdata
+      db.set "user:" + userdata.user.username, userdata.user.user_id
       res.send "OK", 200
     else
-      db.sadd "users", uid
-      db.hmset "user:" + uid, userdata
-      db.set "user:" + userdata.username, uid
+      db.sadd "users", userdata.user.user_id
+      db.set "user:" + userdata.user.user_id, JSON.stringify userdata
+      db.set "user:" + userdata.user.username, userdata.user.user_id
       res.send "OK, new user", 200
 
 app.get "/sign_out", (req, res) ->
@@ -285,7 +301,8 @@ app.post "/image/:id/:page", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   requestHandlers.postImage2 req, res, db
 
-port = process.env.PORT
-app.listen port, ->
-  console.log process.env.NODE_ENV
-  console.log "Express server listening on port %d in %s mode", app.address().port, app.settings.env
+port = 3333
+console.log port
+unless module.parent
+  server = http.createServer(app).listen(port)
+  silent or console.log "Express server listening on port %d in %s mode", server.address().port, app.settings.env

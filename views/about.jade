@@ -1,87 +1,90 @@
-#topleftdiv
-#about
-  | <span class=orbitron> RADIOCA.SE </span> -  a database for radiological cases
-  br
-  br
-  ul 
-    li Do you have that creeping feeling that your collected cases will disappear in the next PACS upgrade?
-    li Would you like to be able to access your cases from anywhere/anything with an internet connection (including your nice, shiny iPad)?
-    li Do you like sharing?
-  br
-  p
-    | - Just use <span class=orbitron> RADIOCA.SE </span>
-  hr
-  br
-  h5
-    | Cheat-sheet
-  table#cheatsheet
-    tr
-      td
-        img(src='/static/ico/question.png') 
-      td Markdown help
-      td
-        img(src='/static/ico/box.png')
-      td Metadata / Categorize
-    tr
-      td
-        img(src='/static/ico/plus.png')
-      td Add page / image 
-      td
-        img(src='/static/ico/minus.png')
-      td Delete page / case
-    tr
-      td
-        img(src='/static/ico/eye.png')
-      td Case visible
-      td
-        img(src='/static/ico/eye-prohibition.png')
-      td Case hidden
-    tr
-      td
-        img(src='/static/ico/arrow-090.png')
-      td Move image up
-      td
-        img(src='/static/ico/arrow-270.png')
-      td Move image down
-    tr
-      td
-        img(src='/static/ico/disc.png') 
-      td Save page
-      td
-        img(src='/static/ico/cross.png')
-      td Remove image
-    tr
-      td
-        img(src='/static/ico/pencil.png')
-      td Edit page / text
-      td  
-        img(src='/static/ico/tick.png')
-      td Done
-    tr
-      td
-        img(src='/static/ico/arrow-180.png')
-      td Previous page
-      td
-        img(src='/static/ico/arrow.png') 
-      td Next page
-    tr
-      td 
-        img(src='/static/ico/star.png')
-      td Favorite
-      td
-        img(src='/static/ico/balloon.png')
-      td Feedback
-  br
-  hr
-  br
-  ul
-    li To filter and only show your favorites type \#fav into the box at the case list. 
-    li Type your username into the box to filter and only show your cases.
-    li Type \#se for Swedish cases, \#es for Spanish and \#gb for English.
-  br
-  br
-  | Please see
-  a(href="/stat/colophon") colophon
-  |  for the techical stuff and 
-  a(href="/stat/disclaimer") disclaimer
-  |  for the rest.
+extends layout
+
+block mainContent
+  #topleftdiv
+  #about
+    | <span class=orbitron> RADIOCA.SE </span> -  a database for radiological cases
+    br
+    br
+    ul 
+      li Do you have that creeping feeling that your collected cases will disappear in the next PACS upgrade?
+      li Would you like to be able to access your cases from anywhere/anything with an internet connection (including your nice, shiny iPad)?
+      li Do you like sharing?
+    br
+    p
+      | - Just use <span class=orbitron> RADIOCA.SE </span>
+    hr
+    br
+    h5
+      | Cheat-sheet
+    table#cheatsheet
+      tr
+        td
+          img(src='/static/ico/question.png') 
+        td Markdown help
+        td
+          img(src='/static/ico/box.png')
+        td Metadata / Categorize
+      tr
+        td
+          img(src='/static/ico/plus.png')
+        td Add page / image 
+        td
+          img(src='/static/ico/minus.png')
+        td Delete page / case
+      tr
+        td
+          img(src='/static/ico/eye.png')
+        td Case visible
+        td
+          img(src='/static/ico/eye-prohibition.png')
+        td Case hidden
+      tr
+        td
+          img(src='/static/ico/arrow-090.png')
+        td Move image up
+        td
+          img(src='/static/ico/arrow-270.png')
+        td Move image down
+      tr
+        td
+          img(src='/static/ico/disc.png') 
+        td Save page
+        td
+          img(src='/static/ico/cross.png')
+        td Remove image
+      tr
+        td
+          img(src='/static/ico/pencil.png')
+        td Edit page / text
+        td  
+          img(src='/static/ico/tick.png')
+        td Done
+      tr
+        td
+          img(src='/static/ico/arrow-180.png')
+        td Previous page
+        td
+          img(src='/static/ico/arrow.png') 
+        td Next page
+      tr
+        td 
+          img(src='/static/ico/star.png')
+        td Favorite
+        td
+          img(src='/static/ico/balloon.png')
+        td Feedback
+    br
+    hr
+    br
+    ul
+      li To filter and only show your favorites type #fav into the box at the case list. 
+      li Type your username into the box to filter and only show your cases.
+      li Type #se for Swedish cases, #es for Spanish and #gb for English.
+    br
+    br
+    | Please see 
+    a(href="/stat/colophon") colophon
+    |  for the techical stuff and 
+    a(href="/stat/disclaimer") disclaimer
+    |  for the rest.

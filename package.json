@@ -1,5 +1,5 @@
 {
-    "name": "express-radicase",
+    "name": "express-radiocase",
     "version": "0.0.1",
     "dependencies": {
         "stylus": ">=0.13.7",

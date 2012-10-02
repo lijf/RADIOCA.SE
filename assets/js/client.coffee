@@ -230,6 +230,8 @@ authcallback = (data) ->
   $.ajax
     url: "/signed_in"
     statusCode:
+      500: ->
+        window.location.pathname = window.location.pathname
       200: ->
         #$("#sign_in").attr('id','user_settings').html " \u25c4 " + data.user.username
         window.location.pathname = window.location.pathname

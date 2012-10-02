@@ -26,6 +26,7 @@ rendercases = (req, res, start, end) ->
         cases.forEach (theCase, iteration) ->
           db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
             db.hgetall "case:" + theCase, (err, sendcase) ->
+              sendcase = {} unless sendcase
               sendcase.firstpage = firstpage
               sendcases[iteration] = sendcase
               unless cases[iteration + 1]
@@ -110,6 +111,7 @@ rendercase = (req, res, theCase, editor) ->
                     db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
                       feedback.forEach (fb, fbID) ->
                         theCase.feedback[fbID] = fb
+                      console.log theCase
                       render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->

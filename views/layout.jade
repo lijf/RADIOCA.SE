@@ -15,6 +15,7 @@ html
     script(src = '/static/js/Markdown.Converter.js')
     script(src = '/static/js/Markdown.Sanitizer.js')
     //script(src = 'http://localhost:8124/debug.js')
+    //script(src = '/static/js/client.js')
     != js('client')
   body
     #wrap
@@ -27,7 +28,7 @@ html
             img(src='/static/img/sign-in-with-twitter-d.png')
           #userinfo(style='display:none')
             a(id='sign_out') sign out &nbsp;
-        != body // this renders the body of an individual view
+        block mainContent
       #maximized
       #horizon
         #newcase_dialog.dialog_box(style='display:none')

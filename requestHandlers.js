@@ -36,6 +36,7 @@
           return cases.forEach(function(theCase, iteration) {
             return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
               return db.hgetall("case:" + theCase, function(err, sendcase) {
+                if (!sendcase) sendcase = {};
                 sendcase.firstpage = firstpage;
                 sendcases[iteration] = sendcase;
                 if (!cases[iteration + 1]) {
@@ -135,6 +136,7 @@
                         feedback.forEach(function(fb, fbID) {
                           return theCase.feedback[fbID] = fb;
                         });
+                        console.log(theCase);
                         if (!radioIDs[ID + 1]) {
                           return render(req, res, theCase, editor);
                         }
