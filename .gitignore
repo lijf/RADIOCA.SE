@@ -1,5 +1,6 @@
 .idea
 .DS_Store
+node_env.txt
 radioca.se
 verification-file-dl.html
 node_modules

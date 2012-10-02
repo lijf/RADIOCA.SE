@@ -41,7 +41,7 @@
 
   redis = require("redis");
 
-  db = redis.createClient(6666);
+  db = redis.createClient(process.env.DB_PORT);
 
   icd = redis.createClient(4444);
 
@@ -400,7 +400,7 @@
     return requestHandlers.postImage2(req, res, db);
   });
 
-  port = 3333;
+  port = process.env.PORT;
 
   console.log(port);
 
