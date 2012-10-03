@@ -17,7 +17,6 @@ requestHandlers = require("./requestHandlers")
 sys = require("sys")
 util = require("util")
 redis = require("redis")
-#db = redis.createClient()
 #db = redis.createClient(6666)
 db = redis.createClient(process.env.DB_PORT)
 icd = redis.createClient(4444)
@@ -36,7 +35,7 @@ app.use express.methodOverride()
 app.use express.cookieParser()
 app.use express.session(secret: "eventuallycloseduringnative")
 app.use require("stylus").middleware(src: __dirname + "/public/")
-app.use require('connect-assets')()
+app.use require("connect-assets")()
 app.use easyoauth(require("./keys_file"))
 app.use app.router
 #app.use error
@@ -302,7 +301,6 @@ app.post "/image/:id/:page", (req, res) ->
   requestHandlers.postImage2 req, res, db
 
 port = process.env.PORT
-console.log port
 unless module.parent
   server = http.createServer(app).listen(port)
   silent or console.log "Express server listening on port %d in %s mode", server.address().port, app.settings.env

@@ -77,7 +77,7 @@
     src: __dirname + "/public/"
   }));
 
-  app.use(require('connect-assets')());
+  app.use(require("connect-assets")());
 
   app.use(easyoauth(require("./keys_file")));
 
@@ -401,8 +401,6 @@
   });
 
   port = process.env.PORT;
-
-  console.log(port);
 
   if (!module.parent) {
     server = http.createServer(app).listen(port);

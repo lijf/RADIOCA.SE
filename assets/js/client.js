@@ -293,6 +293,9 @@
     return $.ajax({
       url: "/signed_in",
       statusCode: {
+        500: function() {
+          return window.location.pathname = window.location.pathname;
+        },
         200: function() {
           return window.location.pathname = window.location.pathname;
         },
