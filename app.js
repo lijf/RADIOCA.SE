@@ -400,6 +400,8 @@
     return requestHandlers.postImage2(req, res, db);
   });
 
+  console.log(JSON.stringify(process.env));
+
   port = process.env.PORT;
 
   if (!module.parent) {

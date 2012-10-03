@@ -9,7 +9,7 @@
 
   redis = require("redis");
 
-  db = redis.createClient(dprocess.env.DB_POR);
+  db = redis.createClient(process.env.DB_PORT);
 
   renderRoot = function(req, res) {
     return res.render("index", {
