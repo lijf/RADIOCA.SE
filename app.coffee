@@ -18,7 +18,8 @@ sys = require("sys")
 util = require("util")
 redis = require("redis")
 #db = redis.createClient(6666)
-db = redis.createClient(process.env.DB_PORT)
+dbport = process.env.DB_PORT
+db = redis.createClient(dbport)
 icd = redis.createClient(4444)
 util = require("util")
 easyoauth = require("easy-oauth")
@@ -300,6 +301,7 @@ app.post "/image/:id/:page", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   requestHandlers.postImage2 req, res, db
 
+console.log JSON.stringify process.env
 port = process.env.PORT
 unless module.parent
   server = http.createServer(app).listen(port)
