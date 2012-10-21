@@ -143,10 +143,15 @@ app.get "/case/:id/:page", (req, res) ->
     userid = '0'
   #console.log userid
   db.sismember "case:" + req.params.id + ":users", userid, (err, editor) ->
-    db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (error, theCase) ->
-      return res.redirect "back"  if error or not theCase.cid
-      #console.log "rendering case"
-      requestHandlers.rendercase req, res, theCase, editor
+    db.get "case:" + req.params.id + ":page:" + req.params.page + ":stringified", (error, theCase_stringified) ->
+      unless !theCase_stringified or error
+        theCase = JSON.parse theCase_stringified
+        requestHandlers.rendercase req, res, theCase, editor
+      if !theCase_stringified or error
+        db.hgetall "case:" + req.params.id + ":page:" + req.params.page, (error, theCase) ->
+          if error or !theCase
+            return res.redirect "back"
+          requestHandlers.rendercase req, res, theCase, editor
 
 app.get "/case/:id/:page/feedback", (req, res) ->
   db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->

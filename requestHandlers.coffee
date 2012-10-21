@@ -75,12 +75,14 @@ rendercase = (req, res, theCase, editor) ->
       username = ""
       userid = "0"
     theCase.mdhelp = data
-    if theCase.texts
-      theCase.texts = JSON.parse theCase.texts
+#    if theCase.texts
+#      theCase.texts = JSON.parse theCase.texts
+    #db.get "case:" + req.params.id + ":stringified", (err, casedata_stringified) ->
+#      if casedata_stringified
+#        casedata = JSON.parse casedata_stringified
     db.hgetall "case:" + req.params.id, (err, casedata) ->
-      unless err or !casedata
-        theCase.modalities = casedata.modalities
-        theCase.description = casedata.description
+      theCase.modalities = casedata.modalities
+      theCase.description = casedata.description
       if casedata.hidden == 'true' && !editor && username != 'radioca1se'
         res.redirect '/'
       db.sismember "bookmarks:" + userid, req.params.id, (err, bookmarked) ->
@@ -191,17 +193,20 @@ cleanupCases = (req, res) ->
 
 putPage = (req, res) ->
   data = req.body
-  console.dir data
   data.cid = req.params.id
   data.lastEdit = new Date().getTime()
   data.creator = req.getAuthDetails().user.username
   db.zadd "casesLastEdit", data.lastEdit, data.cid
   db.zadd "cases", data.created, data.cid
+  data_stringified = JSON.stringify data
+  console.dir data
+  db.set "case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified
   db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
   db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
   db.hmset "case:" + req.params.id, data
-#  db.hset "case:" + req.params.id, "modalities", data.modalities
-#  db.hset "case:" + req.params.id, "description", data.description
+  db.set "case:" + req.params.id + "stringified", data_stringified
+  db.hset "case:" + req.params.id, "modalities", data.modalities
+  db.hset "case:" + req.params.id, "description", data.description
   if data.radios
     db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->

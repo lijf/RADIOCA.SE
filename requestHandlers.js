@@ -97,9 +97,11 @@
         userid = "0";
       }
       theCase.mdhelp = data;
-      if (theCase.texts) theCase.texts = JSON.parse(theCase.texts);
-      return db.hgetall("case:" + req.params.id, function(err, casedata) {
-        if (!(err || !casedata)) {
+      return db.get("case:" + req.params.id + ":stringified", function(err, casedata_stringified) {
+        var casedata;
+        if (!(err || !casedata_stringified)) {
+          console.log(casedata_stringified);
+          casedata = JSON.parse(casedata_stringified);
           theCase.modalities = casedata.modalities;
           theCase.description = casedata.description;
         }
@@ -262,17 +264,18 @@
   };
 
   putPage = function(req, res) {
-    var data;
+    var data, data_stringified;
     data = req.body;
-    console.dir(data);
     data.cid = req.params.id;
     data.lastEdit = new Date().getTime();
     data.creator = req.getAuthDetails().user.username;
     db.zadd("casesLastEdit", data.lastEdit, data.cid);
     db.zadd("cases", data.created, data.cid);
-    db.hmset("case:" + req.params.id + ":page:" + req.params.page, data);
+    data_stringified = JSON.stringify(data);
+    console.dir(data);
+    db.set("case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified);
     db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
-    db.hmset("case:" + req.params.id, data);
+    db.set("case:" + req.params.id + "stringified", data_stringified);
     if (data.radios) {
       db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
       data.radios.forEach(function(r, rID) {
