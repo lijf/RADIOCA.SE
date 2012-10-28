@@ -41,7 +41,7 @@ rendercases = (req, res, start, end) ->
 
 render = (req, res, theCase, editor) ->
   console.dir theCase
-  #console.log theCase.pagetype
+  console.log theCase.pagetype
   res.render theCase.pagetype,
     title: theCase.title or " - untitled"
     radios: theCase.radios or ""
@@ -61,6 +61,7 @@ render = (req, res, theCase, editor) ->
     bookmarked: theCase.bookmarked
     completed: theCase.completed
     page: req.params.page
+    pagetype: theCase.pagetype
     editor: editor
     private: theCase.private or 0
     feedback: theCase.feedback or ''
@@ -200,13 +201,14 @@ putPage = (req, res) ->
   db.zadd "cases", data.created, data.cid
   data_stringified = JSON.stringify data
   console.dir data
+  console.dir data_stringified
   db.set "case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified
-  db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
+  db.set "case:" + req.params.id + ":stringified", data_stringified
+  #db.hmset "case:" + req.params.id, data
+  #db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
   db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
-  db.hmset "case:" + req.params.id, data
-  db.set "case:" + req.params.id + "stringified", data_stringified
-  db.hset "case:" + req.params.id, "modalities", data.modalities
-  db.hset "case:" + req.params.id, "description", data.description
+  db.hset "case:" + req.params.id, ":modalities", data.modalities
+  db.hset "case:" + req.params.id, ":description", data.description
   if data.radios
     db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->

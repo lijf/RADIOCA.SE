@@ -175,6 +175,7 @@ pageMeta = ->
   json.title = getTitle()
   json.private = $("#private").is(":checked")
   json.created = $("#created").val()
+  json.pagetype = $("#meta_pagetype").html()
   json
 
 deletepage = (lastpage) ->

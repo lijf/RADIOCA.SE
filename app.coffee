@@ -144,7 +144,7 @@ app.get "/case/:id/:page", (req, res) ->
   #console.log userid
   db.sismember "case:" + req.params.id + ":users", userid, (err, editor) ->
     db.get "case:" + req.params.id + ":page:" + req.params.page + ":stringified", (error, theCase_stringified) ->
-      unless !theCase_stringified or error
+      unless !theCase_stringified
         theCase = JSON.parse theCase_stringified
         requestHandlers.rendercase req, res, theCase, editor
       if !theCase_stringified or error

@@ -217,9 +217,16 @@
     return db.sismember("case:" + req.params.id + ":users", userid, function(err, editor) {
       return db.get("case:" + req.params.id + ":page:" + req.params.page + ":stringified", function(error, theCase_stringified) {
         var theCase;
-        if (error || !theCase_stringified) return res.redirect("back");
-        theCase = JSON.parse(theCase_stringified);
-        return requestHandlers.rendercase(req, res, theCase, editor);
+        if (!!theCase_stringified) {
+          theCase = JSON.parse(theCase_stringified);
+          requestHandlers.rendercase(req, res, theCase, editor);
+        }
+        if (!theCase_stringified || error) {
+          return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(error, theCase) {
+            if (error || !theCase) return res.redirect("back");
+            return requestHandlers.rendercase(req, res, theCase, editor);
+          });
+        }
       });
     });
   });

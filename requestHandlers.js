@@ -60,6 +60,7 @@
 
   render = function(req, res, theCase, editor) {
     console.dir(theCase);
+    console.log(theCase.pagetype);
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
       radios: theCase.radios || "",
@@ -79,6 +80,7 @@
       bookmarked: theCase.bookmarked,
       completed: theCase.completed,
       page: req.params.page,
+      pagetype: theCase.pagetype,
       editor: editor,
       private: theCase.private || 0,
       feedback: theCase.feedback || '',
@@ -97,14 +99,9 @@
         userid = "0";
       }
       theCase.mdhelp = data;
-      return db.get("case:" + req.params.id + ":stringified", function(err, casedata_stringified) {
-        var casedata;
-        if (!(err || !casedata_stringified)) {
-          console.log(casedata_stringified);
-          casedata = JSON.parse(casedata_stringified);
-          theCase.modalities = casedata.modalities;
-          theCase.description = casedata.description;
-        }
+      return db.hgetall("case:" + req.params.id, function(err, casedata) {
+        theCase.modalities = casedata.modalities;
+        theCase.description = casedata.description;
         if (casedata.hidden === 'true' && !editor && username !== 'radioca1se') {
           res.redirect('/');
         }
@@ -273,9 +270,12 @@
     db.zadd("cases", data.created, data.cid);
     data_stringified = JSON.stringify(data);
     console.dir(data);
+    console.dir(data_stringified);
     db.set("case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified);
+    db.set("case:" + req.params.id + ":stringified", data_stringified);
     db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
-    db.set("case:" + req.params.id + "stringified", data_stringified);
+    db.hset("case:" + req.params.id, ":modalities", data.modalities);
+    db.hset("case:" + req.params.id, ":description", data.description);
     if (data.radios) {
       db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
       data.radios.forEach(function(r, rID) {

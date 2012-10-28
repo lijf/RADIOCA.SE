@@ -175,6 +175,7 @@ pageMeta = ->
   json.title = getTitle()
   json.private = $("#private").is(":checked")
   json.created = $("#created").val()
+  json.pagetype = $("#meta_pagetype").val()
   json
 
 deletepage = (lastpage) ->
@@ -218,8 +219,8 @@ spiderpage = ->
   ).get()
   if(!json.icds)
     json.icds = [""]
-  #alert JSON.stringify json
-  json
+  alert JSON.stringify json
+  #json
 
 sessionButton = (user) ->
   $("#session").html "<button id=\"sign_out\">Sign out " + user + "</button>"
