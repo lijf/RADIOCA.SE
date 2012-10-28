@@ -230,6 +230,8 @@
     json.private = $("#private").is(":checked");
     json.created = $("#created").val();
     json.pagetype = $("#meta_pagetype").html();
+    json.nextpage = $("#meta_nextpage").html();
+    json.prevpage = $("#meta_prevpage").html();
     return json;
   };
 

@@ -60,7 +60,6 @@
 
   render = function(req, res, theCase, editor) {
     console.dir(theCase);
-    console.log(theCase.pagetype);
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
       radios: theCase.radios || "",
@@ -99,6 +98,7 @@
         userid = "0";
       }
       theCase.mdhelp = data;
+      if (theCase.texts) theCase.texts = JSON.parse(theCase.texts);
       return db.hgetall("case:" + req.params.id, function(err, casedata) {
         theCase.modalities = casedata.modalities;
         theCase.description = casedata.description;
@@ -261,21 +261,21 @@
   };
 
   putPage = function(req, res) {
-    var data, data_stringified;
+    var data;
     data = req.body;
     data.cid = req.params.id;
     data.lastEdit = new Date().getTime();
     data.creator = req.getAuthDetails().user.username;
     db.zadd("casesLastEdit", data.lastEdit, data.cid);
     db.zadd("cases", data.created, data.cid);
-    data_stringified = JSON.stringify(data);
+    data.lastEdit = data.lastEdit.toString();
     console.dir(data);
-    console.dir(data_stringified);
-    db.set("case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified);
-    db.set("case:" + req.params.id + ":stringified", data_stringified);
+    if (data.texts) {
+      db.hset("case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify(data.texts));
+    }
     db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
-    db.hset("case:" + req.params.id, ":modalities", data.modalities);
-    db.hset("case:" + req.params.id, ":description", data.description);
+    db.hset("case:" + req.params.id, "modalities", data.modalities);
+    db.hset("case:" + req.params.id, "description", data.description);
     if (data.radios) {
       db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
       data.radios.forEach(function(r, rID) {
@@ -288,10 +288,6 @@
       data.icds.forEach(function(i, iID) {
         return db.rpush("case:" + req.params.id + ":icds", i.code);
       });
-    }
-    if (data.texts) {
-      console.log(JSON.stringify(data.texts));
-      db.hset("case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify(data.texts));
     }
     return res.send("OK", 200);
   };

@@ -41,7 +41,7 @@ rendercases = (req, res, start, end) ->
 
 render = (req, res, theCase, editor) ->
   console.dir theCase
-  console.log theCase.pagetype
+  #console.log theCase.pagetype
   res.render theCase.pagetype,
     title: theCase.title or " - untitled"
     radios: theCase.radios or ""
@@ -76,8 +76,9 @@ rendercase = (req, res, theCase, editor) ->
       username = ""
       userid = "0"
     theCase.mdhelp = data
-#    if theCase.texts
-#      theCase.texts = JSON.parse theCase.texts
+    if theCase.texts
+      theCase.texts = JSON.parse theCase.texts
+      console.dir theCase.texts
     #db.get "case:" + req.params.id + ":stringified", (err, casedata_stringified) ->
 #      if casedata_stringified
 #        casedata = JSON.parse casedata_stringified
@@ -199,16 +200,17 @@ putPage = (req, res) ->
   data.creator = req.getAuthDetails().user.username
   db.zadd "casesLastEdit", data.lastEdit, data.cid
   db.zadd "cases", data.created, data.cid
-  data_stringified = JSON.stringify data
+  data.lastEdit = data.lastEdit.toString()
+  #data_stringified = JSON.stringify data
   console.dir data
-  console.dir data_stringified
-  db.set "case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified
-  db.set "case:" + req.params.id + ":stringified", data_stringified
-  #db.hmset "case:" + req.params.id, data
-  #db.hmset "case:" + req.params.id + ":page:" + req.params.page, data
+  #console.dir data_stringified
+  #db.set "case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified
+  #db.set "case:" + req.params.id + ":stringified", data_stringified
+  if data.texts
+    db.hset "case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify data.texts
   db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
-  db.hset "case:" + req.params.id, ":modalities", data.modalities
-  db.hset "case:" + req.params.id, ":description", data.description
+  db.hset "case:" + req.params.id, "modalities", data.modalities
+  db.hset "case:" + req.params.id, "description", data.description
   if data.radios
     db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->
@@ -219,9 +221,6 @@ putPage = (req, res) ->
     db.del "case:" + req.params.id + ":icds"
     data.icds.forEach (i, iID) ->
       db.rpush "case:" + req.params.id + ":icds", i.code
-  if data.texts
-    console.log JSON.stringify data.texts
-    db.hset "case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify data.texts
   res.send "OK", 200
 
 postNewpage = (req, res) ->

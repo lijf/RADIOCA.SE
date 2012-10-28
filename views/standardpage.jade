@@ -8,8 +8,10 @@ block mainContent
     #meta_modalities.hidden #{modalities}
     #meta_description.hidden #{description}
     #meta_pagetype.hidden #{pagetype}
+    #meta_nextpage.hidden #{nextpage}
+    #meta_prevpage.hidden #{prevpage}
     | by:
-    a(href='https://twitter.com/intent/user?screen_name=#{creator}', title='Link to twitter')
+    a(href='https://twitter.com/intent/user?screen_name=#{creator}', target='_blank', title='Link to twitter')
       @#{creator}
     | &#x2002;
     - if (bookmarked)
