@@ -33,6 +33,7 @@ block mainContent
                     if(c.icds)
                       - each icd in c.icds
                         | #{icd.code}
+                        br
                   td.invisible
                     //a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
                     @#{c.creator}
