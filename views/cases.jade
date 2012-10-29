@@ -29,7 +29,10 @@ block mainContent
                   td #{c.description}
                   td.title 
                     a(href='/case/#{c.cid}/#{c.firstpage}') #{c.title}
-                  td.diagnosis.invisible #{c.icds}
+                  td.diagnosis.invisible
+                    if(c.icds)
+                      - each icd in c.icds
+                        | #{icd.code}
                   td.invisible
                     //a(href='https://twitter.com/intent/user?screen_name=#{c.creator}')
                     @#{c.creator}

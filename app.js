@@ -190,7 +190,6 @@
     body = '*' + body + '*';
     return icd.keys(body, function(err, codes) {
       if (!err) {
-        console.dir(codes);
         codes = JSON.stringify(codes, null, '\t');
         if (codes.length < 10000) {
           return res.send(codes, 200);

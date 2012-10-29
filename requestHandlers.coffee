@@ -27,8 +27,12 @@ rendercases = (req, res, start, end) ->
           db.get "case:" + theCase + ":firstpage", (err, firstpage) ->
             db.hgetall "case:" + theCase, (err, sendcase) ->
               sendcase = {} unless sendcase
+              if sendcase.icds
+                console.log sendcase.icds
+                sendcase.icds = JSON.parse sendcase.icds
               sendcase.firstpage = firstpage
               sendcases[iteration] = sendcase
+              console.dir sendcase
               unless cases[iteration + 1]
                 res.render "cases",
                   title: "Cases"
@@ -221,6 +225,8 @@ putPage = (req, res) ->
     db.del "case:" + req.params.id + ":icds"
     data.icds.forEach (i, iID) ->
       db.rpush "case:" + req.params.id + ":icds", i.code
+    icdsString = JSON.stringify data.icds
+    db.hset "case:" + req.params.id, "icds", icdsString
   res.send "OK", 200
 
 postNewpage = (req, res) ->

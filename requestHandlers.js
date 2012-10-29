@@ -37,8 +37,13 @@
             return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
               return db.hgetall("case:" + theCase, function(err, sendcase) {
                 if (!sendcase) sendcase = {};
+                if (sendcase.icds) {
+                  console.log(sendcase.icds);
+                  sendcase.icds = JSON.parse(sendcase.icds);
+                }
                 sendcase.firstpage = firstpage;
                 sendcases[iteration] = sendcase;
+                console.dir(sendcase);
                 if (!cases[iteration + 1]) {
                   return res.render("cases", {
                     title: "Cases",
@@ -264,7 +269,7 @@
   };
 
   putPage = function(req, res) {
-    var data;
+    var data, icdsString;
     data = req.body;
     data.cid = req.params.id;
     data.lastEdit = new Date().getTime();
@@ -291,6 +296,8 @@
       data.icds.forEach(function(i, iID) {
         return db.rpush("case:" + req.params.id + ":icds", i.code);
       });
+      icdsString = JSON.stringify(data.icds);
+      db.hset("case:" + req.params.id, "icds", icdsString);
     }
     return res.send("OK", 200);
   };

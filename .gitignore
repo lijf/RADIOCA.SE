@@ -12,3 +12,5 @@ public/googleebd05104a11efb9b.html
 *.swp
 nginx_access.log
 nginx_error.log
+app.js
+requestHandlers.js
