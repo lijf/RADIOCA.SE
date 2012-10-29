@@ -190,6 +190,7 @@
     body = '*' + body + '*';
     return icd.keys(body, function(err, codes) {
       if (!err) {
+        console.dir(codes);
         codes = JSON.stringify(codes, null, '\t');
         if (codes.length < 10000) {
           return res.send(codes, 200);
@@ -215,18 +216,9 @@
       userid = '0';
     }
     return db.sismember("case:" + req.params.id + ":users", userid, function(err, editor) {
-      return db.get("case:" + req.params.id + ":page:" + req.params.page + ":stringified", function(error, theCase_stringified) {
-        var theCase;
-        if (!!theCase_stringified) {
-          theCase = JSON.parse(theCase_stringified);
-          requestHandlers.rendercase(req, res, theCase, editor);
-        }
-        if (!theCase_stringified || error) {
-          return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(error, theCase) {
-            if (error || !theCase) return res.redirect("back");
-            return requestHandlers.rendercase(req, res, theCase, editor);
-          });
-        }
+      return db.hgetall("case:" + req.params.id + ":page:" + req.params.page, function(error, theCase) {
+        if (error || !theCase) return res.redirect("back");
+        return requestHandlers.rendercase(req, res, theCase, editor);
       });
     });
   });

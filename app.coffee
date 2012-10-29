@@ -125,6 +125,7 @@ app.post "/icd", (req, res) ->
   body = '*' + body + '*'
   icd.keys body, (err, codes) ->
     unless err
+      console.dir codes
       codes = JSON.stringify codes, null, '\t'
       if codes.length < 10000
         res.send codes, 200

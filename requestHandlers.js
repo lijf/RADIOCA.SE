@@ -98,7 +98,10 @@
         userid = "0";
       }
       theCase.mdhelp = data;
-      if (theCase.texts) theCase.texts = JSON.parse(theCase.texts);
+      if (theCase.texts) {
+        theCase.texts = JSON.parse(theCase.texts);
+        console.dir(theCase.texts);
+      }
       return db.hgetall("case:" + req.params.id, function(err, casedata) {
         theCase.modalities = casedata.modalities;
         theCase.description = casedata.description;
