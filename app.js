@@ -63,8 +63,6 @@
 
   if ("production" === app.settings.env) app.disable("verbose errors");
 
-  silent || app.use(express.logger('dev'));
-
   app.use(express.methodOverride());
 
   app.use(express.cookieParser());

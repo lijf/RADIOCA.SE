@@ -37,13 +37,9 @@
             return db.get("case:" + theCase + ":firstpage", function(err, firstpage) {
               return db.hgetall("case:" + theCase, function(err, sendcase) {
                 if (!sendcase) sendcase = {};
-                if (sendcase.icds) {
-                  console.log(sendcase.icds);
-                  sendcase.icds = JSON.parse(sendcase.icds);
-                }
+                if (sendcase.icds) sendcase.icds = JSON.parse(sendcase.icds);
                 sendcase.firstpage = firstpage;
                 sendcases[iteration] = sendcase;
-                console.dir(sendcase);
                 if (!cases[iteration + 1]) {
                   return res.render("cases", {
                     title: "Cases",
@@ -64,7 +60,6 @@
   };
 
   render = function(req, res, theCase, editor) {
-    console.dir(theCase);
     return res.render(theCase.pagetype, {
       title: theCase.title || " - untitled",
       radios: theCase.radios || "",
@@ -103,10 +98,7 @@
         userid = "0";
       }
       theCase.mdhelp = data;
-      if (theCase.texts) {
-        theCase.texts = JSON.parse(theCase.texts);
-        console.dir(theCase.texts);
-      }
+      if (theCase.texts) theCase.texts = JSON.parse(theCase.texts);
       return db.hgetall("case:" + req.params.id, function(err, casedata) {
         theCase.modalities = casedata.modalities;
         theCase.description = casedata.description;
@@ -143,7 +135,6 @@
                         feedback.forEach(function(fb, fbID) {
                           return theCase.feedback[fbID] = fb;
                         });
-                        console.log(theCase);
                         if (!radioIDs[ID + 1]) {
                           return render(req, res, theCase, editor);
                         }
@@ -277,7 +268,6 @@
     db.zadd("casesLastEdit", data.lastEdit, data.cid);
     db.zadd("cases", data.created, data.cid);
     data.lastEdit = data.lastEdit.toString();
-    console.dir(data);
     if (data.texts) {
       db.hset("case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify(data.texts));
     }

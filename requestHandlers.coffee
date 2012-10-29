@@ -28,11 +28,11 @@ rendercases = (req, res, start, end) ->
             db.hgetall "case:" + theCase, (err, sendcase) ->
               sendcase = {} unless sendcase
               if sendcase.icds
-                console.log sendcase.icds
+                #console.log sendcase.icds
                 sendcase.icds = JSON.parse sendcase.icds
               sendcase.firstpage = firstpage
               sendcases[iteration] = sendcase
-              console.dir sendcase
+              #console.dir sendcase
               unless cases[iteration + 1]
                 res.render "cases",
                   title: "Cases"
@@ -44,7 +44,7 @@ rendercases = (req, res, start, end) ->
                   icds: ""
 
 render = (req, res, theCase, editor) ->
-  console.dir theCase
+  #console.dir theCase
   #console.log theCase.pagetype
   res.render theCase.pagetype,
     title: theCase.title or " - untitled"
@@ -82,7 +82,7 @@ rendercase = (req, res, theCase, editor) ->
     theCase.mdhelp = data
     if theCase.texts
       theCase.texts = JSON.parse theCase.texts
-      console.dir theCase.texts
+      #console.dir theCase.texts
     #db.get "case:" + req.params.id + ":stringified", (err, casedata_stringified) ->
 #      if casedata_stringified
 #        casedata = JSON.parse casedata_stringified
@@ -119,7 +119,7 @@ rendercase = (req, res, theCase, editor) ->
                     db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
                       feedback.forEach (fb, fbID) ->
                         theCase.feedback[fbID] = fb
-                      console.log theCase
+                      #console.log theCase
                       render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->
@@ -206,7 +206,7 @@ putPage = (req, res) ->
   db.zadd "cases", data.created, data.cid
   data.lastEdit = data.lastEdit.toString()
   #data_stringified = JSON.stringify data
-  console.dir data
+  #console.dir data
   #console.dir data_stringified
   #db.set "case:" + req.params.id + ":page:" + req.params.page + ":stringified", data_stringified
   #db.set "case:" + req.params.id + ":stringified", data_stringified

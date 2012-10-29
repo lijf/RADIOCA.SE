@@ -29,7 +29,7 @@ app.use express.bodyParser()
 app.enable("verbose errors")
 if "production" == app.settings.env
   app.disable("verbose errors")
-silent or app.use(express.logger('dev'))
+#silent or app.use(express.logger('dev'))
 app.use express.methodOverride()
 app.use express.cookieParser()
 app.use express.session(secret: "eventuallycloseduringnative")
