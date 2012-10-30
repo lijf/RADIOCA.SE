@@ -381,6 +381,18 @@
     });
   });
 
+  app.get("/dicom/:dicom", function(req, res) {
+    var dicom;
+    dicom = __dirname + "/dicom/" + req.params.dicom;
+    return fs.readFile(dicom, "binary", function(err, file) {
+      if (err) return res.send(444);
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/osirixzip");
+      res.write(file, "binary");
+      return res.end();
+    });
+  });
+
   app.get("/img/:img", function(req, res) {
     var image;
     image = __dirname + "/img/" + req.params.img;

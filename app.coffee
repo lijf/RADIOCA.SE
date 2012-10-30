@@ -120,6 +120,8 @@ app.post "/newcase", (req, res) ->
             #console.log "created case: " + cid
             res.send "/case/" + cid + "/1", 200
 
+  
+
 app.post "/icd", (req, res) ->
   body = req.body.qs
   body = '*' + body + '*'
@@ -290,6 +292,15 @@ app.get "/radio/:id", (req, res) ->
 
     res.partial "radio",
     object: radio
+
+app.get "/dicom/:dicom", (req, res) ->
+  dicom = __dirname + "/dicom/" + req.params.dicom
+  fs.readFile dicom, "binary", (err, file) ->
+    return res.send 444 if err
+    res.statusCode = 200
+    res.setHeader "Content-Type", "application/osirixzip"
+    res.write file, "binary"
+    res.end()
 
 app.get "/img/:img", (req, res) ->
   image = __dirname + "/img/" + req.params.img

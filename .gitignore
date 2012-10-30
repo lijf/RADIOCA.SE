@@ -6,6 +6,9 @@ verification-file-dl.html
 node_modules
 dump.rdb
 img
+before
+after
+dicom
 keys_file.js
 public/stylesheets/style.css
 public/googleebd05104a11efb9b.html 
