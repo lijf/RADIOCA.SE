@@ -173,7 +173,7 @@ getTitle = ->
 pageMeta = ->
   json = {}
   json.title = getTitle()
-  json.private = $("#private").is(":checked")
+#  json.private = $("#private").is(":checked")
   json.created = $("#created").val()
   json.pagetype = $("#meta_pagetype").html()
   json.nextpage = $("#meta_nextpage").html()
@@ -181,15 +181,23 @@ pageMeta = ->
   json
 
 deletepage = (lastpage) ->
-  $.ajax
-    type: "DELETE"
-    url: top.document.location.pathname
-    statusCode:
-      200: ->
-        if lastpage
+  if lastpage == 'last'
+    #alert lastpage
+    $.ajax
+      type: "DELETE"
+      url: "/case/" + $("#meta_cid").html() + "/lastpage"
+      statusCode:
+        200: ->
           window.location.replace '/cases/0/-1'
-        else
-          window.location.replace $("#prevpage").attr("href")
+  else
+    $.ajax
+      type: "DELETE"
+      url: top.document.location.pathname
+      statusCode:
+        200: (redir) ->
+          #alert(redir)
+          window.location.replace redir
+#          window.location.replace $("#prevpage").attr("href")
 
 spiderpage = ->
   json = pageMeta()

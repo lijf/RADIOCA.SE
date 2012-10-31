@@ -1,5 +1,5 @@
 (function() {
-  var cleanupCases, db, deleteCaseID, deletePage, deletePage2, form, formidable, newpage, postImage, postImage2, postNewpage, putPage, redis, removeCase, removeRadio2, render, renderRoot, rendercase, rendercases, url;
+  var cleanupCases, db, deleteCaseID, deletePage, deletePage2, form, formidable, postImage, postImage2, postNewpage, putPage, redis, removeCase, removeRadio2, render, renderRoot, rendercase, rendercases, url;
 
   formidable = require("formidable");
 
@@ -38,9 +38,11 @@
               return db.hgetall("case:" + theCase, function(err, sendcase) {
                 if (!sendcase) sendcase = {};
                 if (sendcase.icds) sendcase.icds = JSON.parse(sendcase.icds);
+                sendcase.cid = theCase;
                 sendcase.firstpage = firstpage;
                 sendcases[iteration] = sendcase;
                 if (!cases[iteration + 1]) {
+                  console.dir(sendcases);
                   return res.render("cases", {
                     title: "Cases",
                     signed_in: req.isAuthenticated(),
@@ -102,6 +104,8 @@
       return db.hgetall("case:" + req.params.id, function(err, casedata) {
         theCase.modalities = casedata.modalities;
         theCase.description = casedata.description;
+        theCase.creator = casedata.creator;
+        theCase.title = casedata.title;
         if (casedata.hidden === 'true' && !editor && username !== 'radioca1se') {
           res.redirect('/');
         }
@@ -184,7 +188,7 @@
     });
   };
 
-  deletePage = function(cid, page) {
+  deletePage = function(req, res, cid, page) {
     db.lrange("case:" + cid + ":page:" + page + ":radios", 0, -1, function(err, radioIDs) {
       var radioID, _i, _len, _results;
       if (!err) {
@@ -197,13 +201,22 @@
       }
     });
     return db.hgetall("case:" + cid + ":page:" + page, function(err, thePage) {
+      var redir;
       if (!err) {
         if (thePage.prevpage === "0") {
           db.set("case:" + cid + ":firstpage", thePage.nextpage);
+          redir = thePage.nextpage;
         }
-        db.hset("case:" + cid + ":page:" + thePage.prevpage, "nextpage", thePage.nextpage);
-        db.hset("case:" + cid + ":page:" + thePage.nextpage, "prevpage", thePage.prevpage);
-        return db.del("case:" + cid + ":page:" + page);
+        if (thePage.prevpage !== "0") {
+          db.hset("case:" + cid + ":page:" + thePage.prevpage, "nextpage", thePage.nextpage);
+          redir = thePage.prevpage;
+        }
+        if (thePage.nextpage !== "0") {
+          db.hset("case:" + cid + ":page:" + thePage.nextpage, "prevpage", thePage.prevpage);
+        }
+        db.del("case:" + cid + ":page:" + page);
+        console.log(redir);
+        return res.send(redir, 200);
       }
     });
   };
@@ -260,7 +273,7 @@
   };
 
   putPage = function(req, res) {
-    var data, icdsString;
+    var data, icdsString, savetext;
     data = req.body;
     data.cid = req.params.id;
     data.lastEdit = new Date().getTime();
@@ -268,12 +281,18 @@
     db.zadd("casesLastEdit", data.lastEdit, data.cid);
     db.zadd("cases", data.created, data.cid);
     data.lastEdit = data.lastEdit.toString();
+    db.hset("case:" + data.cid, "title", data.title);
     if (data.texts) {
-      db.hset("case:" + req.params.id + ":page:" + req.params.page, "texts", JSON.stringify(data.texts));
+      savetext = JSON.stringify(data.texts);
+      db.hset("case:" + req.params.id + ":page:" + req.params.page, "texts", savetext);
     }
     db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
-    db.hset("case:" + req.params.id, "modalities", data.modalities);
-    db.hset("case:" + req.params.id, "description", data.description);
+    if (data.modalities) {
+      db.hset("case:" + req.params.id, "modalities", data.modalities);
+    }
+    if (data.description) {
+      db.hset("case:" + req.params.id, "description", data.description);
+    }
     if (data.radios) {
       db.del("case:" + req.params.id + ":page:" + req.params.page + ":radios");
       data.radios.forEach(function(r, rID) {
@@ -303,28 +322,17 @@
       var prevpage;
       prevpage = req.params.page;
       return db.hget("case:" + cid + ":page:" + prevpage, "nextpage", function(err, nextpage) {
-        pagedata.prevpage = prevpage;
-        pagedata.nextpage = nextpage;
-        db.hmset("case:" + cid, pagedata);
-        db.hmset("case:" + cid + ":page:" + page, pagedata);
-        db.hset("case:" + cid + ":page:" + prevpage, "nextpage", page);
-        db.hset("case:" + cid + ":page:" + nextpage, "prevpage", page);
+        db.hset("case:" + cid + ":page:" + page, "nextpage", nextpage);
+        db.hset("case:" + cid + ":page:" + page, "prevpage", prevpage);
+        db.hset("case:" + cid + ":page:" + page, "pagetype", req.body.pagetype);
+        if (prevpage !== "0") {
+          db.hset("case:" + cid + ":page:" + prevpage, "nextpage", page);
+        }
+        if (nextpage !== "0") {
+          db.hset("case:" + cid + ":page:" + nextpage, "prevpage", page);
+        }
         return res.send("/case/" + cid + "/" + page, 200);
       });
-    });
-  };
-
-  newpage = function(req, res, cid, page, db, pagedata) {
-    var trypage;
-    trypage = "case:" + cid + ":page:" + page;
-    return db.get(trypage, function(err, data) {
-      if (data) {
-        page++;
-        return newpage(req, res, cid, page, db, pagedata);
-      } else {
-        db.hmset(trypage, pagedata);
-        return res.send("/case/" + cid + "/" + page, 200);
-      }
     });
   };
 
@@ -345,8 +353,6 @@
   exports.deletePage = deletePage;
 
   exports.rendercase = rendercase;
-
-  exports.newpage = newpage;
 
   exports.postImage2 = postImage2;
 

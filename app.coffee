@@ -102,23 +102,37 @@ app.post "/newcase", (req, res) ->
     if canAdd
       data = req.body
       data.creator = req.getAuthDetails().user.username
-      data.texts = [""]
+#      data.texts = JSON.stringfy '[""]'
+      data.modalities = "[]"
       data.created = new Date().getTime()
-      data.lastEdit = data.created
       data.listed = "true"
       data.nextpage = "0"
       data.prevpage = "0"
       db.incr "numberOfCases", (err, cid) ->
-        data.cid = cid
+        casepage = "case:" + cid + ":page:1"
+        db.hset "case:" + cid, "hidden", "false"
+        db.hset "case:" + cid, "title", data.title
+        db.hset "case:" + cid, "creator", data.creator
+        db.hset casepage, "cid", cid
+        db.hset casepage, "pagetype", data.pagetype
+        db.hset casepage, "creator", data.creator
+        db.hset casepage, "created", data.created
+        db.hset casepage, "lastEdit", data.created
+        db.hset casepage, "listed", data.listed
+        db.hset casepage, "nextpage", data.nextpage
+        db.hset casepage, "prevpage", data.prevpage
         db.incr "case:" + cid + ":pages"
-        db.zadd "casesLastEdit", data.lastEdit, cid
-        db.zadd "listed", data.created, cid  if data.listed is "true"
+        db.zadd "casesLastEdit", data.created, cid
+        db.zadd "listed", data.created, cid
         db.zadd "cases:" + data.creator, data.created, cid
         db.set "case:" + cid + ":firstpage", "1"
-        db.hmset "case:" + cid + ":page:1", data, (err, data) ->
-          db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
-            #console.log "created case: " + cid
-            res.send "/case/" + cid + "/1", 200
+        db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id
+        res.send "/case/" + cid + "/1", 200
+#        console.dir data
+#        db.hmset "case:" + cid + ":page:1", data, (err, data) ->
+#          db.sadd "case:" + cid + ":users", req.getAuthDetails().user.user_id, (err, data) ->
+#            #console.log "created case: " + cid
+#            res.send "/case/" + cid + "/1", 200
 
   
 
@@ -229,7 +243,7 @@ app.post "/hide/:id", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
     if owner || req.getAuthDetails().user.username == 'radioca1se'
-      db.hset "case:" + req.params.id, "hidden", true, (err) ->
+      db.hset "case:" + req.params.id, "hidden", "true", (err) ->
         if err
           console.log err
         else res.send "OK", 200
@@ -239,7 +253,7 @@ app.post "/show/:id", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, owner) ->
     if owner || req.getAuthDetails().user.username == 'radioca1se'
-      db.hset "case:" + req.params.id, "hidden", false, (err) ->
+      db.hset "case:" + req.params.id, "hidden", "false", (err) ->
         if err
           console.log err
         else res.send "OK", 200
@@ -268,19 +282,27 @@ app.get "/sys/admin", (req, res) ->
       user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
       icds: ""
 
+app.delete "/case/:id/lastpage", (req, res) ->
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
+    if editor
+      #console.log "editor - removing case"
+      requestHandlers.removeCase req, res
+      #res.send "OK", 200
+
 app.delete "/case/:id/:page", (req, res) ->
   return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
       #console.log "editor - removing page"
-      requestHandlers.deletePage req.params.id, req.params.page
-      res.send "OK", 200
+      requestHandlers.deletePage req, res, req.params.id, req.params.page
+      #res.send "OK", 200
 
 app.delete "/case/:id/:page/:radio", (req, res) ->
   db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
     if editor
       #console.log "editor - removing radio"
-      requestHandlers.removeRadio2 req.params.id, req.params.page, req.params.radio 
+      requestHandlers.removeRadio2 req.params.id, req.params.page, req.params.radio
       res.send "OK", 200
 
 # app.get "/radio/:id", (req, res) ->

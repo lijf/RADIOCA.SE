@@ -159,24 +159,32 @@
       if (canAdd) {
         data = req.body;
         data.creator = req.getAuthDetails().user.username;
-        data.texts = [""];
+        data.modalities = "[]";
         data.created = new Date().getTime();
-        data.lastEdit = data.created;
         data.listed = "true";
         data.nextpage = "0";
         data.prevpage = "0";
         return db.incr("numberOfCases", function(err, cid) {
-          data.cid = cid;
+          var casepage;
+          casepage = "case:" + cid + ":page:1";
+          db.hset("case:" + cid, "hidden", "false");
+          db.hset("case:" + cid, "title", data.title);
+          db.hset("case:" + cid, "creator", data.creator);
+          db.hset(casepage, "cid", cid);
+          db.hset(casepage, "pagetype", data.pagetype);
+          db.hset(casepage, "creator", data.creator);
+          db.hset(casepage, "created", data.created);
+          db.hset(casepage, "lastEdit", data.created);
+          db.hset(casepage, "listed", data.listed);
+          db.hset(casepage, "nextpage", data.nextpage);
+          db.hset(casepage, "prevpage", data.prevpage);
           db.incr("case:" + cid + ":pages");
-          db.zadd("casesLastEdit", data.lastEdit, cid);
-          if (data.listed === "true") db.zadd("listed", data.created, cid);
+          db.zadd("casesLastEdit", data.created, cid);
+          db.zadd("listed", data.created, cid);
           db.zadd("cases:" + data.creator, data.created, cid);
           db.set("case:" + cid + ":firstpage", "1");
-          return db.hmset("case:" + cid + ":page:1", data, function(err, data) {
-            return db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id, function(err, data) {
-              return res.send("/case/" + cid + "/1", 200);
-            });
-          });
+          db.sadd("case:" + cid + ":users", req.getAuthDetails().user.user_id);
+          return res.send("/case/" + cid + "/1", 200);
         });
       }
     });
@@ -228,7 +236,7 @@
       feedback.forEach(function(fb, fbID) {
         var fbi;
         fbi = JSON.parse(fb);
-        return feedbacktext += "<p><a href=https://twitter.com/intent/user?screen_name='" + fbi.user + "' title='Link to twitter'>@" + fbi.user + "</a> - " + fbi.feedback + "<br><span id='timestamp'>" + fbi.time;
+        return feedbacktext += "<p><a href=https://twitter.com/intent/user?screen_name='" + fbi.user + "' title='Link to twitter' target='_blank'>@" + fbi.user + "</a> - " + fbi.feedback + "<br><span id='timestamp'>" + fbi.time;
       });
       return res.send(200, feedbacktext);
     });
@@ -292,7 +300,7 @@
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
       if (owner || req.getAuthDetails().user.username === 'radioca1se') {
-        return db.hset("case:" + req.params.id, "hidden", true, function(err) {
+        return db.hset("case:" + req.params.id, "hidden", "true", function(err) {
           if (err) {
             return console.log(err);
           } else {
@@ -307,7 +315,7 @@
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, owner) {
       if (owner || req.getAuthDetails().user.username === 'radioca1se') {
-        return db.hset("case:" + req.params.id, "hidden", false, function(err) {
+        return db.hset("case:" + req.params.id, "hidden", "false", function(err) {
           if (err) {
             return console.log(err);
           } else {
@@ -348,12 +356,18 @@
     }
   });
 
+  app["delete"]("/case/:id/lastpage", function(req, res) {
+    if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
+    return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
+      if (editor) return requestHandlers.removeCase(req, res);
+    });
+  });
+
   app["delete"]("/case/:id/:page", function(req, res) {
     if (!req.isAuthenticated()) return res.send("FORBIDDEN", 403);
     return db.sismember("case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, function(err, editor) {
       if (editor) {
-        requestHandlers.deletePage(req.params.id, req.params.page);
-        return res.send("OK", 200);
+        return requestHandlers.deletePage(req, res, req.params.id, req.params.page);
       }
     });
   });

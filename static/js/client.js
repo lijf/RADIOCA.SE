@@ -227,7 +227,6 @@
     var json;
     json = {};
     json.title = getTitle();
-    json.private = $("#private").is(":checked");
     json.created = $("#created").val();
     json.pagetype = $("#meta_pagetype").html();
     json.nextpage = $("#meta_nextpage").html();
@@ -236,19 +235,27 @@
   };
 
   deletepage = function(lastpage) {
-    return $.ajax({
-      type: "DELETE",
-      url: top.document.location.pathname,
-      statusCode: {
-        200: function() {
-          if (lastpage) {
+    if (lastpage === 'last') {
+      return $.ajax({
+        type: "DELETE",
+        url: "/case/" + $("#meta_cid").html() + "/lastpage",
+        statusCode: {
+          200: function() {
             return window.location.replace('/cases/0/-1');
-          } else {
-            return window.location.replace($("#prevpage").attr("href"));
           }
         }
-      }
-    });
+      });
+    } else {
+      return $.ajax({
+        type: "DELETE",
+        url: top.document.location.pathname,
+        statusCode: {
+          200: function(redir) {
+            return window.location.replace(redir);
+          }
+        }
+      });
+    }
   };
 
   spiderpage = function() {

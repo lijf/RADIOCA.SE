@@ -1,0 +1,80 @@
+extends layout
+
+block mainContent
+  iframe.hidden(name="postframe", id="postframe", src="about:none")
+  #pageinfo
+    #meta_cid.hidden #{cid}
+    #meta_page.hidden #{page}
+    #meta_modalities.hidden #{modalities}
+    #meta_description.hidden #{description}
+    #meta_pagetype.hidden #{pagetype}
+    #meta_nextpage.hidden #{nextpage}
+    #meta_prevpage.hidden #{prevpage}
+    | by:
+    a(href='https://twitter.com/intent/user?screen_name=#{creator}', target='_blank', title='Link to twitter')
+      @#{creator}
+    | &#x2002;
+    - if (bookmarked)
+      img.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
+    - else 
+      img.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
+    span#lock
+      a.abutton#lock(title='Edit Page')
+        span#locked
+          img.control(src='/static/ico/pencil_bw.png')
+        span#open
+          img.control(src='/static/ico/tick_bw.png')
+    span#controls
+      img.control#help(src='/static/ico/question_bw.png')
+      img.control#savepage(src='/static/ico/disc_bw.png')
+      span#savepage_dialog(style='display:none')
+        button.rounded(id='savepage_confirm', type='button')
+          | Save page
+      img.control#deletepage(src='/static/ico/minus_bw.png')
+      span#deletepage_dialog(style='display:none')
+        button.rounded(id='deletepage_confirm', type='button')
+          | Delete Page
+      img.control#newpage(src='/static/ico/plus_bw.png')
+      img.control#boxit(src='/static/ico/box_bw.png')
+    #created(style='display:none')
+      | #{created}
+  #title
+    .txt
+      textarea.mdtxt(style='display:none')
+        ###{title}
+      .md.gray
+      img.control.textedit.session(src='/static/ico/pencil_bw.png')
+  a#prevpage(href='/case/#{cid}/#{prevpage}', pageno='#{prevpage}')
+    img(src='/static/ico/arrow-180.png')
+  a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
+    img(src='/static/ico/arrow.png')
+  block casepagecontent
+  #markdown-help(style='display:none')
+    img.control.textedit.session(src='/static/ico/pencil.png')
+    img.control.Cancel(src='/static/ico/cross-circle.png')
+    textarea.mdtxt(style='display:none')
+      | #{mdhelp}
+    .md
+    img.control#feedbackbutton(src='/static/ico/balloon_bw.png')
+  #feedbackarea(style='display:none')
+    #feedbacktext
+    textarea#feedbackbox
+    br
+    button#feedback_confirm(type='button')
+      | Send comment
+  #info(style='display:none')
+  script(type='text/javascript')
+    $(function(){
+      $("#{modalities}").each(function(){
+        $(this).attr("checked",true);
+      });
+      $("#{description}").each(function(){
+        $(this).attr("checked",true);
+      });
+      $("##{language}").attr("checked", true);
+      var cid = '#{cid}';
+      var page = '#{page}';
+      if(#{editor}=='1') {
+        $("#lock").show();
+        };
+    });
