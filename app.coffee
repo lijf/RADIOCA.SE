@@ -158,11 +158,12 @@ app.get "/case/:id/:page", (req, res) ->
 
 app.get "/case/:id/:page/feedback", (req, res) ->
   db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+    feedbacktext = ""
     pagefeedback = []
     feedback.forEach (fb, fbID) ->
-      pagefeedback[fbID] = JSON.parse fb
-    res.partial "feedback",
-    object: pagefeedback
+      fbi = JSON.parse fb
+      feedbacktext += "<p><a href=https://twitter.com/intent/user?screen_name='" + fbi.user + "' title='Link to twitter' target='_blank'>@" + fbi.user + "</a> - " + fbi.feedback + "<br><span id='timestamp'>" + fbi.time
+    res.send 200, feedbacktext
 
 app.post "/completed/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
@@ -282,16 +283,16 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
       requestHandlers.removeRadio2 req.params.id, req.params.page, req.params.radio 
       res.send "OK", 200
 
-app.get "/radio/:id", (req, res) ->
-  radio = {}
-  radio.ID = req.params.id
-  db.lrange "radio:" + req.params.id, 0, -1, (err, images) ->
-    radio.images = []
-    images.forEach (image, imgID) ->
-      radio.images[imgID] = image
-
-    res.partial "radio",
-    object: radio
+# app.get "/radio/:id", (req, res) ->
+#  radio = {}
+#  radio.ID = req.params.id
+#  db.lrange "radio:" + req.params.id, 0, -1, (err, images) ->
+#    radio.images = []
+#    images.forEach (image, imgID) ->
+#      radio.images[imgID] = image
+#
+#    res.partial "radio",
+#    object: radio
 
 app.get "/dicom/:dicom", (req, res) ->
   dicom = __dirname + "/dicom/" + req.params.dicom
@@ -301,6 +302,10 @@ app.get "/dicom/:dicom", (req, res) ->
     res.setHeader "Content-Type", "application/osirixzip"
     res.write file, "binary"
     res.end()
+
+app.post "/dicom/", (req, res) ->
+  return res.send 444 unless req.isAuthenticated()
+  requestHandlers.postDicoim req, res, db
 
 app.get "/img/:img", (req, res) ->
   image = __dirname + "/img/" + req.params.img

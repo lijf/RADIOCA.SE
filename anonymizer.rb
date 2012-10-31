@@ -5,7 +5,7 @@ output_path = "./after/" + ARGV[0]
 input_id = ARGV[0]
 Dir.mkdir input_path
 Dir.mkdir output_path
-`unzip #{input_id} -d #{input_path}`
+`unzip ./incoming/#{input_id}.zip -d #{input_path}`
 a.add_folder(input_path)
 a.write_path = output_path
 a.delete_private = true
@@ -169,5 +169,5 @@ a.print
 a.execute
 `zip -r #{input_id}a.osirixzip #{output_path}/*`
 `rm -r #{input_path} #{output_path}`
-`rm #{input_id}.zip`
+`rm ./incoming/#{input_id}.zip`
 puts "Anonymization done"

@@ -222,14 +222,15 @@
 
   app.get("/case/:id/:page/feedback", function(req, res) {
     return db.lrange("case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, function(err, feedback) {
-      var pagefeedback;
+      var feedbacktext, pagefeedback;
+      feedbacktext = "";
       pagefeedback = [];
       feedback.forEach(function(fb, fbID) {
-        return pagefeedback[fbID] = JSON.parse(fb);
+        var fbi;
+        fbi = JSON.parse(fb);
+        return feedbacktext += "<p><a href=https://twitter.com/intent/user?screen_name='" + fbi.user + "' title='Link to twitter'>@" + fbi.user + "</a> - " + fbi.feedback + "<br><span id='timestamp'>" + fbi.time;
       });
-      return res.partial("feedback", {
-        object: pagefeedback
-      });
+      return res.send(200, feedbacktext);
     });
   });
 
@@ -366,21 +367,6 @@
     });
   });
 
-  app.get("/radio/:id", function(req, res) {
-    var radio;
-    radio = {};
-    radio.ID = req.params.id;
-    return db.lrange("radio:" + req.params.id, 0, -1, function(err, images) {
-      radio.images = [];
-      images.forEach(function(image, imgID) {
-        return radio.images[imgID] = image;
-      });
-      return res.partial("radio", {
-        object: radio
-      });
-    });
-  });
-
   app.get("/dicom/:dicom", function(req, res) {
     var dicom;
     dicom = __dirname + "/dicom/" + req.params.dicom;
@@ -391,6 +377,11 @@
       res.write(file, "binary");
       return res.end();
     });
+  });
+
+  app.post("/dicom/", function(req, res) {
+    if (!req.isAuthenticated()) return res.send(444);
+    return requestHandlers.postDicoim(req, res, db);
   });
 
   app.get("/img/:img", function(req, res) {

@@ -46,26 +46,30 @@ block mainContent
     img(src='/static/ico/arrow-180.png')
   a#nextpage(href='/case/#{cid}/#{nextpage}')
     img(src='/static/ico/arrow.png')
-  #texts(style='width: 100%')
+  #texts
     - each t, i in texts
       br
-      a.toggletext Toggle textarea 
-      .txt.invisible
-        textarea.mdtxt(style='display:none')
-          | #{t}
-        .md
-        img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
-        br
-        img.control.textedit.session(src='/static/ico/pencil_bw.png')
-    br
-    img.control#addtext(style='display:none', src='/static/ico/plus_bw.png')
+      .text
+        a.toggletext  
+          .txt
+            textarea.mdtxt(style='display:none')
+              | #{t.caption} 
+            .md
+            img.control.textedit.session(src='/static/ico/pencil_bw.png')
+          img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
+        .txt.invisible
+          textarea.mdtxt(style='display:none')
+            | #{t.val}
+          .md
+          br
+          img.control.textedit.session(src='/static/ico/pencil_bw.png')
   #markdown-help(style='display:none')
     img.control.textedit.session(src='/static/ico/pencil.png')
     img.control.Cancel(src='/static/ico/cross-circle.png')
     textarea.mdtxt(style='display:none')
       | #{mdhelp}
     .md
-  img.control#feedbackbutton(src='/static/ico/balloon.png')
+  img.control#feedbackbutton(src='/static/ico/balloon_bw.png')
   #feedbackarea(style='display:none')
     #feedbacktext
     textarea#feedbackbox
