@@ -1,0 +1,217 @@
+!!!5
+html
+  head
+    meta(name='viewport', content='initial-scale=1.0, width=device-width')
+    title RADIOCA.SE - #{title}
+
+    link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
+    link(rel='stylesheet', href='/stylesheets/fonts.css')
+    link(rel='stylesheet', href='/stylesheets/reset.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src = '/static/js/jquery-1.7.min.js')
+    script(src = '/static/js/jquery-ui-1.8.16.custom.min.js')
+    script(src = '/auth/client')
+    //script(src = 'https://platform.twitter.com/widgets.js')
+    script(src = '/static/js/jquery.mousewheel.min.js')
+    script(src = '/static/js/Markdown.Converter.js')
+    script(src = '/static/js/Markdown.Sanitizer.js')
+    script(src = '/static/js/knockout-2.2.0.js')
+    //script(src = 'http://localhost:8124/debug.js')
+    script(src = '/static/js/ko_client.js')
+    //!= js('client')
+  body
+    #wrap
+      #sl
+        a(href='/cases/0/-1')
+          .orbitron.vertical RADIOCA.SE
+      #container
+        #usercontrols
+          a#sign_in
+            img#twitbutton(src='/static/img/sign-in-with-twitter-d.png')
+          #userinfo(style='display:none')
+            a(id='sign_out') sign out &nbsp;
+        block mainContent
+      #maximized
+      #horizon
+        #newcase_dialog.dialog_box(style='display:none')
+          | Create new case <br><br> / Choose page layout for first page <br>
+          #pagetype
+            img.pageimage#casestandardpage(src='/static/img/standardpage.svg', alt='Standard')
+            img.pageimage#casetextpage(src='/static/img/textpage.svg', alt='Textpage')
+            img.pageimage#caseimagepage(src='/static/img/imagepage.svg', alt='Imagepage')
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #newpage_dialog.dialog_box(style='display:none')
+          | Create new page <br> / Choose page layout
+          #pagetypes
+            img.pageimage#newpage_standard(src='/static/img/standardpage.svg', alt='Standard')
+            img.pageimage#newpage_text(src='/static/img/textpage.svg', alt='Textpage')
+            img.pageimage#newpage_image(src='/static/img/imagepage.svg', alt='Imagepage')
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #deletecase_dialog.dialog_box(style='display:none')
+          | Do you want to delete this case?
+          br
+          br
+          button.rounded#deletecase_confirm(type='button')
+            | Delete
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #boxit_dialog.dialog_box(style='display:none')
+          h5 Please check applicable modalities and areas and add ICD-code
+          //form#language_form
+          //  input.language#se(name='language', type='radio', value='se')
+          //  | Swedish
+          //  input.language#gb(name='language', type='radio', value='gb')
+          //  | English
+          //  input.language#es(name='language', type='radio', value='es')
+          //  | Spanish
+          //br
+          //br
+          form#modalities_form
+            input.modality#XR(type='checkbox', value='#XR') 
+            | XR 
+            input.modality#fluoro(type='checkbox', value='#fluro') 
+            | Fluoroscopy
+            input.modality#angio(type='checkbox', value='#angio') 
+            | Angiography
+            br
+            input.modality#CT(type='checkbox', value='#CT') 
+            | CT
+            input.modality#MR(type='checkbox', value='#MR') 
+            | MR
+            input.modality#US(type='checkbox', value='#US') 
+            | US 
+            input.modality#NM(type='checkbox', value='#NM')
+            | NM
+          br
+          br
+          form#description_form
+            input.description#neuro(type='checkbox', value='#neuro')
+            | Neuro
+            input.description#headNeck(type='checkbox', value='#H & N')
+            | H & N 
+            input.description#cardiothoracic(type='checkbox', value='#cardiothoracic')
+            | Cardiothoracic
+            br
+            input.description#abdominal(type='checkbox', value='#abdominal')
+            | Abdominal
+            input.description#interventional(type='checkbox', value='#interventional')
+            | Interventional
+            input.description#msk(type='checkbox', value='#msk')
+            | Msk
+            br
+            input.description#breast(type='checkbox', value='#breast')
+            | Breast
+            input.description#pediatric(type='checkbox', value='#pediatric')
+            | Pediatric
+            input.description#other(type='checkbox', value='#other')
+            | Other
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+          br
+          #icd
+            - each icd in icds
+              .ICDCode
+                a.icdt #{icd}
+                a.removeICD
+                  img.control(src='/static/ico/small_minus_bw.png')
+                br
+          br
+          form#icd_form
+            | Find ICD: 
+            input#icd_req(type='text', name='icd')
+            img.control#chooseICD(src="/static/ico/smallplus_bw.png")
+          br
+          #icd_res_wrap
+            #icd_res_box
+              table
+                tbody#icd_res
+
+        #addtext_dialog.dialog_box(style='display:none')
+          button.rounded#togglabletext Add textarea
+          a.Cancel
+            img.control(src='/static/ico/cross-circle_bw.png')
+        #addstack_dialog.dialog_box(style='display:none')
+          | Please choose image(s) to upload.
+          br
+          | If multiple images are uploaded together,
+          br
+          | they will be combined to a stack.
+          br
+          br
+          form#uploadform
+            .fileinputs
+              input.file(type='file', name='userfile', id='userfile', multiple='multiple')
+              .fakefile
+                input
+                button.rounded
+                  | Browse
+            input.input1.rounded(id='addstack_confirm', type='submit', value='Upload file(s)')
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #adddcm_dialog.dialog_box(style='display:none')
+          | Please choose DICOM set to upload,
+          br
+          | if a set is already connected to this image
+          | it will be replaced.
+          br
+          br
+          form#uploadformdcm
+            .fileinputs
+              input.file(type='file', name='userfiledcm', id='userfiledcm', multiple='multiple')
+              .fakefile
+                input
+                button.rounded
+                  | Browse
+            input.input1.rounded(id='adddcm_confirm', type='submit', value='Upload file(s)')
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #deletetext_dialog.dialog_box(style='display:none')
+          | Do you want to remove the selected text area from this page?
+          br
+          br
+          button.rounded#deletetext_confirm(type='button')
+            | Delete text
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #removeradio_dialog.dialog_box(style='display:none')
+          | Do you want to remove the selected stack/radio from this page?
+          br
+          br
+          button.rounded#removeradio_confirm(type='button')
+            | Remove radio
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #lastpage_dialog.dialog_box(style='display:none')
+          | This is the only page of this case, if you delete it the case will be removed
+          br
+          br
+          button.rounded#lastpage_confirm(type='button')
+            | Delete page & remove case
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #deleteradio_dialog.dialog_box(style='display:none')
+          | Do you want to delete the selected stack/radio from your collection?
+          br
+          br
+          button.rounded#deleteradio_confirm(type='button')
+            | Delete
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+    #footer
+      a(href='/')
+        | Home
+      | &#x2002;
+      a(href='/stat/about')
+        | About
+      | &#x2002;
+      a(href='mailto:info@radioca.se')
+        | Contact
+script(type='text/javascript')
+  $(function(){
+    var user = '#{user}';
+    if(#{signed_in}){
+      $('#sign_in').attr('id',"user_settings").html('\u25c4 #{user}');
+    }
+  });
