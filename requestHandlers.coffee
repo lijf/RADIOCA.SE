@@ -3,6 +3,8 @@ url = require("url")
 form = require("connect-form")
 redis = require("redis")
 db = redis.createClient(process.env.DB_PORT)
+sys = require("sys")
+exec = require("child_process").exec
 
 renderRoot = (req, res) ->
   res.render "index",
@@ -35,7 +37,7 @@ rendercases = (req, res, start, end) ->
               sendcases[iteration] = sendcase
               #console.dir sendcase
               unless cases[iteration + 1]
-                console.dir sendcases
+                #console.dir sendcases
                 res.render "cases",
                   title: "Cases"
                   signed_in: req.isAuthenticated()
@@ -131,7 +133,25 @@ postImage = (req, res, db) ->
     percent = (bytexReceived / bytesExpected * 100) or 0
     #console.log "Uploading: %" + percent + "\r"
 
-postImage2 = (req, res, db) ->
+putDicom = (req, res) ->
+  id = req.params.id
+  form = new formidable.IncomingForm()
+  files = []
+  fields = []
+  form.on("field", (field, value) ->
+    fields.push [field, value]
+  ).on("fileBegin", (field, file) ->
+    if file.type == "application/zip"
+      file.path = __dirname + "/incoming/" + req.params.id + ".zip"
+    files.push [field, file]
+  ).on "end", ->
+    anonymize = exec "rvm all do ruby anonymizer.rb " + req.params.id, (error, stdout, stderr) ->
+      console.log "error " + error
+      console.log "stdout " + stdout
+      console.log "stderr " + stderr
+      
+
+postImage2 = (req, res) ->
   d = new Date().getTime().toString()
   i = 0
   #console.log "postimage 2"
@@ -142,7 +162,7 @@ postImage2 = (req, res, db) ->
   form.on("field", (field, value) ->
     fields.push [ field, value ]
   ).on("fileBegin", (field, file) ->
-    if file.type = "image/jpeg"
+    if file.type == "image/jpeg"
       #console.log "image"
       file.path = __dirname + "/img/" + d + "." + i + ".jpg"
       db.rpush "radio:" + d, "/img/" + d + "." + i + ".jpg"
@@ -176,7 +196,7 @@ deletePage = (req, res, cid, page) ->
       unless thePage.nextpage == "0"
         db.hset "case:" + cid + ":page:" + thePage.nextpage, "prevpage", thePage.prevpage
       db.del "case:" + cid + ":page:" + page
-      console.log redir
+      #console.log redir
       res.send redir, 200
 
 removeRadio2 = (cid, page, radio) ->

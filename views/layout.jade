@@ -15,6 +15,7 @@ html
     script(src = '/static/js/jquery.mousewheel.min.js')
     script(src = '/static/js/Markdown.Converter.js')
     script(src = '/static/js/Markdown.Sanitizer.js')
+    script(src = '/static/js/knockout-2.2.0.js')
     //script(src = 'http://localhost:8124/debug.js')
     script(src = '/static/js/client.js')
     //!= js('client')
@@ -146,7 +147,24 @@ html
                 input
                 button.rounded
                   | Browse
-            input.input1(id='addstack_confirm', type='submit', value='Upload file(s)')
+            input.input1.rounded(id='addstack_confirm', type='submit', value='Upload file(s)')
+          a.Cancel
+            img.control(src="/static/ico/cross-circle_bw.png")
+        #adddcm_dialog.dialog_box(style='display:none')
+          | Please choose DICOM set to upload,
+          br
+          | if a set is already connected to this image
+          | it will be replaced.
+          br
+          br
+          form#uploadformdcm
+            .fileinputs
+              input.file(type='file', name='userfiledcm', id='userfiledcm', multiple='multiple')
+              .fakefile
+                input
+                button.rounded
+                  | Browse
+            input.input1.rounded(id='adddcm_confirm', type='submit', value='Upload file(s)')
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #deletetext_dialog.dialog_box(style='display:none')

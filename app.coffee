@@ -325,9 +325,9 @@ app.get "/dicom/:dicom", (req, res) ->
     res.write file, "binary"
     res.end()
 
-app.post "/dicom/", (req, res) ->
+app.put "/dicom/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
-  requestHandlers.postDicoim req, res, db
+  requestHandlers.putDicom req, res
 
 app.get "/img/:img", (req, res) ->
   image = __dirname + "/img/" + req.params.img
@@ -341,7 +341,7 @@ app.get "/img/:img", (req, res) ->
 app.post "/image/:id/:page", (req, res) ->
   #console.log "POST /image/ called"
   return res.send 444 unless req.isAuthenticated()
-  requestHandlers.postImage2 req, res, db
+  requestHandlers.postImage2 req, res
 
 console.log JSON.stringify process.env
 port = process.env.PORT

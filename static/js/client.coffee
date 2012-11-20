@@ -88,6 +88,7 @@ newcase = (type) ->
         alert "Error - Please log in"
 
 editfunctions = ->
+  $(".dcm_grey").toggle()
   $('#locked').toggle()
   $('#open').toggle()
   $('.removeradio').toggle()
@@ -614,13 +615,24 @@ $ ->
 
   ).on("click", ".toggletext", ->
     $(this).next().toggleClass('invisible')
+  
+  ).on("click", ".dcm", ->
+    $(this).parent().addClass "selected"
+    $("#adddcm_dialog").show()
+ 
+  ).on("click", "#adddcm_confirm", ->
+    $("#adddcm_dialog").hide()
+    userFileDcm = $("#userfiledcm").val()
+    $("#uploadformdcm").attr
+      action: "/dicom/" + $(".selected").attr("ID")
+      method: "PUT"
+      userfile: userFileDcm
+      enctype: "multipart/form-data"
+      encoding: "multipart/form-data"
+      target: "putdcm"
 
   ).on("click", "#addstack", ->
     $("#addstack_dialog").show()
-
-  ).on("click", "#addstack_cancel", ->
-    event.preventDefault()
-    $("#addstack_dialog").hide()
 
   ).on("click", "#addstack_confirm", ->
     $("#addstack_dialog").hide()
@@ -710,6 +722,11 @@ $ ->
           alert "FORBIDDEN"
           $(".selected").removeClass "selected"
           $("#removeradio_dialog").hide()
+  )
+
+  $('#putdcm').bind('load', ->
+    radioID = $("iframe")[2].contentDocument.body.innerHTML
+    alert radioID
   )
 
   $('#postframe').bind('load', -> #for some reason this could not be changed to an 'on' event - working with bind though

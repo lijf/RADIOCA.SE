@@ -2,6 +2,7 @@ extends layout
 
 block mainContent
   iframe.hidden(name="postframe", id="postframe", src="about:none")
+  iframe.hidden(name="putdcm", id="putdcm", src="about:none")
   #pageinfo
     #meta_cid.hidden #{cid}
     #meta_page.hidden #{page}
@@ -50,8 +51,8 @@ block mainContent
     img(src='/static/ico/arrow.png')
   block casepagecontent
   #markdown-help(style='display:none')
-    img.control.textedit.session(src='/static/ico/pencil.png')
-    img.control.Cancel(src='/static/ico/cross-circle.png')
+    img.control.textedit.session(src='/static/ico/pencil_bw.png')
+    img.control.Cancel(src='/static/ico/cross-circle_bw.png')
     textarea.mdtxt(style='display:none')
       | #{mdhelp}
     .md

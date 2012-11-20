@@ -28,6 +28,11 @@ block casepagecontent
             - each i in r.images
               img.stack_image(src='#{i}')
         img.control.removeradio(style='display:none', src='/static/ico/cross_bw.png')
+        .dcm.control
+          if (r.dcm)
+            img.dcm_yellow(src='/static/ico/dicom_yellow.svg')
+          else
+            img.dcm_grey(style='display:none', src='/static/ico/dicom.svg')
         .caption
           textarea.mdtxt(style='display:none')
             | #{r.caption}

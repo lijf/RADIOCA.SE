@@ -6,8 +6,8 @@ verification-file-dl.html
 node_modules
 dump.rdb
 img
-before
-after
+incoming
+afteranonymization
 dicom
 keys_file.js
 public/stylesheets/style.css
