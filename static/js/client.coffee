@@ -36,7 +36,7 @@ maximizeradio = (radio) ->
   $('#footer').hide()
   $('#maximized>.radio>.maximizeradio').hide()
   $('#maximized>.radio>.minimizeradio').show()
-  window.scrollTo(0,0)
+  #window.scrollTo(0,0)
 
 minimizeradio = (radio) ->
   radio.remove()
@@ -625,11 +625,13 @@ $ ->
     userFileDcm = $("#userfiledcm").val()
     $("#uploadformdcm").attr
       action: "/dicom/" + $(".selected").attr("ID")
-      method: "PUT"
-      userfile: userFileDcm
+      method: "POST"
+      userfiledcm: userFileDcm
       enctype: "multipart/form-data"
       encoding: "multipart/form-data"
-      target: "putdcm"
+      target: "postdcm"
+    
+    $("#uploadformdcm").submit()
 
   ).on("click", "#addstack", ->
     $("#addstack_dialog").show()

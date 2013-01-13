@@ -170,4 +170,5 @@ a.execute
 `zip -r #{input_id}a.osirixzip #{output_path}/*`
 `rm -r #{input_path} #{output_path}`
 `rm incoming/#{input_id}.zip`
+`mv #{input_id}a.osirixzip ./dicom/`
 puts "Anonymization done"

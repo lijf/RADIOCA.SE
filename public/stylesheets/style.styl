@@ -75,12 +75,16 @@
     right 0
 #maximized
     display none
-    position absolute
+    position fixed 
     width 90%
     max-width 90%
     max-height 90%
+    border solid 5px
+    background black
     top 5% 
     left 5%
+.author
+    vertical-align center
 #newcase > .control
     margin 10px
 .invisible
@@ -227,7 +231,7 @@ a
     cursor pointer
     position absolute
     top 5px
-    right -5px
+    left -5px
 .moveradiodown
     cursor pointer
     position absolute
@@ -333,8 +337,8 @@ span#controls
     margin-left 5px
 .dcm
     position absolute
-    top 5px
-    left -5px
+    bottom 75px
+    right -5px
 .dcm_grey
     width 24px
     height 24px

@@ -32,7 +32,7 @@ if "production" == app.settings.env
 #silent or app.use(express.logger('dev'))
 app.use express.methodOverride()
 app.use express.cookieParser()
-app.use express.session(secret: "eventuallycloseduringnative")
+app.use express.session(secret: process.env.SSECRET)
 app.use require("stylus").middleware(src: __dirname + "/public/")
 app.use require("connect-assets")()
 app.use easyoauth(require("./keys_file"))
@@ -325,9 +325,9 @@ app.get "/dicom/:dicom", (req, res) ->
     res.write file, "binary"
     res.end()
 
-app.put "/dicom/:id", (req, res) ->
+app.post "/dicom/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
-  requestHandlers.putDicom req, res
+  requestHandlers.postDicom req, res
 
 app.get "/img/:img", (req, res) ->
   image = __dirname + "/img/" + req.params.img

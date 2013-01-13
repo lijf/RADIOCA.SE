@@ -36,7 +36,7 @@ maximizeradio = (radio) ->
   $('#footer').hide()
   $('#maximized>.radio>.maximizeradio').hide()
   $('#maximized>.radio>.minimizeradio').show()
-  window.scrollTo(0,0)
+  #window.scrollTo(0,0)
 
 minimizeradio = (radio) ->
   radio.remove()

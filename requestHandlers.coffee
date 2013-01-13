@@ -133,7 +133,7 @@ postImage = (req, res, db) ->
     percent = (bytexReceived / bytesExpected * 100) or 0
     #console.log "Uploading: %" + percent + "\r"
 
-putDicom = (req, res) ->
+postDicom = (req, res) ->
   id = req.params.id
   form = new formidable.IncomingForm()
   files = []
