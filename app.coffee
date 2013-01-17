@@ -7,9 +7,11 @@ String.prototype.toProperCase = ->
 express = require("express")
 http = require("http")
 app = module.exports = express()
+#io = require("socket.io").listen(app)
 silent = 'test' == process.env.NODE_ENV
 formidable = require("formidable")
 exec = require("child_process").exec
+execFile = require("child_process").execFile
 spawn = require("child_process").spawn
 url = require("url")
 fs = require("fs")
@@ -25,7 +27,9 @@ app.set "views", __dirname + "/views"
 app.set "view engine", "jade"
 app.set "view options",
   layout: false
-app.use express.bodyParser()
+app.use express.json() # these two substitute bodyParser
+app.use express.urlencoded() # minus the multipart
+#app.use express.bodyParser()
 app.enable("verbose errors")
 if "production" == app.settings.env
   app.disable("verbose errors")
@@ -58,7 +62,7 @@ app.use (err, req, res, next) ->
   res.render "500"
     error: err
 
-#delete express.bodyParser.parse['multipart/form-data']
+#delete express.bodyParser().parse['multipart/form-data']
 
 #error = (err, req, res, next) ->
 #  console.error err.stack
@@ -317,7 +321,7 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
 #    object: radio
 
 app.get "/dicom/:dicom", (req, res) ->
-  dicom = __dirname + "/dicom/" + req.params.dicom
+  dicom = __dirname + "/dicom/" + req.params.dicom + "a.osirixzip"
   fs.readFile dicom, "binary", (err, file) ->
     return res.send 444 if err
     res.statusCode = 200
@@ -326,6 +330,33 @@ app.get "/dicom/:dicom", (req, res) ->
     res.end()
 
 app.post "/dicom/:id", (req, res) ->
+  id = req.params.id
+  form2 = new formidable.IncomingForm()
+  files = []
+  fields = []
+  form2.on("field", (field, value) ->
+    fields.push [field, value]
+    console.log field + " " + value
+  ).on("fileBegin", (field, file) ->
+    console.log file.type
+    console.log "fileBegin"
+    if file.type == "application/zip" || "application/octet-stream"
+      console.log "zip posted?"
+      file.path = __dirname + "/incoming/" + req.params.id + ".zip"
+    files.push [field, file]
+  ).on "end", ->
+    console.log "file recieved"
+    anonymize = exec "ruby -rubygems anonymizer.rb " + req.params.id, (error, stdout, stderr) ->
+      console.log "error " + error
+      console.log "stdout " + stdout
+      console.log "stderr " + stderr
+
+  form2.parse req, (err, fields, files) ->
+    if err
+      console.log err
+
+app.post "/dicom2/:id", (req, res) ->
+  console.log "POST DICOM called"
   return res.send 444 unless req.isAuthenticated()
   requestHandlers.postDicom req, res
 

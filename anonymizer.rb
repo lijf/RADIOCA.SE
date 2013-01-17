@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'dicom'
 a = DICOM::Anonymizer.new
 input_path = "./incoming/" + ARGV[0]
@@ -5,7 +6,7 @@ output_path = "./afteranonymization/" + ARGV[0]
 input_id = ARGV[0]
 Dir.mkdir input_path
 Dir.mkdir output_path
-`unzip #{input_id} -d #{input_path}`
+`unzip #{input_path}.zip -d #{input_path}`
 a.add_folder(input_path)
 a.write_path = output_path
 a.delete_private = true
@@ -170,5 +171,5 @@ a.execute
 `zip -r #{input_id}a.osirixzip #{output_path}/*`
 `rm -r #{input_path} #{output_path}`
 `rm incoming/#{input_id}.zip`
-`mv #{input_id}a.osirixzip ./dicom/`
+`mv -f #{input_id}a.osirixzip ./dicom/`
 puts "Anonymization done"

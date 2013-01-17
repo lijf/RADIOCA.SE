@@ -656,13 +656,13 @@
       $(this).parent().addClass("selected");
       return $("#adddcm_dialog").show();
     }).on("click", "#adddcm_confirm", function() {
-      var userFileDcm;
+      var dicom;
       $("#adddcm_dialog").hide();
-      userFileDcm = $("#userfiledcm").val();
+      dicom = $("#userFileDcm").val();
       $("#uploadformdcm").attr({
         action: "/dicom/" + $(".selected").attr("ID"),
         method: "POST",
-        userfiledcm: userFileDcm,
+        dicom: dicom,
         enctype: "multipart/form-data",
         encoding: "multipart/form-data",
         target: "postdcm"

@@ -268,6 +268,11 @@ $ ->
   $(".stack").children(":first-child").show()
   $('tbody tr').addClass('visible')
   zebrarows('tbody tr:odd td', 'odd')
+  #socket = io.connect('http://localhost')
+  #socket.on 'uploadprogress', (data) ->
+  #  alert data
+  #  progress = JSON.parse data
+  #  $('#progressbar').innerHTML progress.bytesReceived
   $("thead th.sortable").each (column) ->
     $(this).click ->
       findSortKey = ($cell) ->
@@ -620,17 +625,31 @@ $ ->
     $(this).parent().addClass "selected"
     $("#adddcm_dialog").show()
  
+#  ).on("click", "adddcm_confirm", (e) ->
+#    formdata = new FormData()
+#    xhr = new XMLHttpRequest()
+#    xhr.upload.onprogress = (evt) ->
+#      console.log("while sending and loading data.")
+#      if evt.lengthComputable
+#        console.log evt.loaded / evt.total * 100
+#    xhr.onloadend = (evt) ->
+#      console.log "when the request has completed (success / failure)"
+#    dicom = $("#userFileDcm").val()
+#    formdata.append "dicom", dicom
+#    xhr.open "POST", "/", true
+#    xhr.send formdata
   ).on("click", "#adddcm_confirm", ->
     $("#adddcm_dialog").hide()
-    userFileDcm = $("#userfiledcm").val()
+    dicom = $("#userFileDcm").val()
+    #alert dicom
     $("#uploadformdcm").attr
       action: "/dicom/" + $(".selected").attr("ID")
       method: "POST"
-      userfiledcm: userFileDcm
+      dicom: dicom
       enctype: "multipart/form-data"
       encoding: "multipart/form-data"
       target: "postdcm"
-    
+
     $("#uploadformdcm").submit()
 
   ).on("click", "#addstack", ->

@@ -133,30 +133,64 @@ postImage = (req, res, db) ->
     percent = (bytexReceived / bytesExpected * 100) or 0
     #console.log "Uploading: %" + percent + "\r"
 
+postDicomAlt = (req, res) ->
+  console.dir req.files
+  if req.files.dicom.type == "application/zip"
+    console.log "zip posted"
+    req.files.dicom.path = __dirname + "/incoming" + req.params.id + ".zip"
+
 postDicom = (req, res) ->
+  #console.log "postDicom"
   id = req.params.id
-  form = new formidable.IncomingForm()
+  form2 = new formidable.IncomingForm()
+  console.dir form2
   files = []
   fields = []
-  form.on("field", (field, value) ->
+  form2.on("field", (field, value) ->
     fields.push [field, value]
+    console.log field + " " + value
   ).on("fileBegin", (field, file) ->
+    console.log file.type
+    console.log "fileBegin"
     if file.type == "application/zip"
+      console.log "zip posted"
       file.path = __dirname + "/incoming/" + req.params.id + ".zip"
     files.push [field, file]
+#  ).on("progress", (bytesReceived, bytesExpected) ->
+#    console.log bytesReceived
+#    progress = {
+#      type: 'progress'
+#      bytesReceived: bytesReceived
+#      bytesExpected: bytesExpected
+#    }
+#    io.socket.emit "uploadprogress", JSON.stringify progress
   ).on "end", ->
+    console.log "file recieved"
     anonymize = exec "rvm all do ruby anonymizer.rb " + req.params.id, (error, stdout, stderr) ->
       console.log "error " + error
       console.log "stdout " + stdout
       console.log "stderr " + stderr
       
+  form.parse req, (err, fields, files) ->
+    if err
+      console.log err
+
+postImage2alt = (req,res) ->
+  d = new Date().getTime().toString()
+  i = 0
+  console.dir req.files
+  if req.files.image.type == "image/jpg"
+    req.files.image.path = __dirname + "/img/" + d + "." + i + ".jpg"
+    db.rpush "radio:" + d, "/img/" + d + "." + i ".jpg"
+    i++
+    files.push 
 
 postImage2 = (req, res) ->
   d = new Date().getTime().toString()
   i = 0
   #console.log "postimage 2"
   form = new formidable.IncomingForm()
-  #console.dir form
+  console.dir form
   files = []
   fields = []
   form.on("field", (field, value) ->
@@ -316,3 +350,4 @@ exports.postImage = postImage
 exports.cleanupCases = cleanupCases
 exports.rendercases = rendercases
 exports.renderRoot = renderRoot
+exports.postDicom = postDicom

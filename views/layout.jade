@@ -16,6 +16,7 @@ html
     script(src = '/static/js/Markdown.Converter.js')
     script(src = '/static/js/Markdown.Sanitizer.js')
     script(src = '/static/js/knockout-2.2.0.js')
+    //script(src = '/socket.io/socket.io.js')
     //script(src = 'http://localhost:8124/debug.js')
     script(src = '/static/js/client.js')
     //!= js('client')
@@ -153,13 +154,14 @@ html
         #adddcm_dialog.dialog_box(style='display:none')
           | Please choose DICOM set to upload,
           br
-          | if a set is already connected to this image
+          | If a set is already connected to this image
+          br
           | it will be replaced.
           br
           br
           form#uploadformdcm
             .fileinputs
-              input.file(type='file', name='userfiledcm', id='userfiledcm', multiple='multiple')
+              input.file(type='file', name='userFileDcm', id='userFileDcm', multiple='multiple')
               .fakefile
                 input
                 button.rounded
