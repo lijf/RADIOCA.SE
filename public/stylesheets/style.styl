@@ -89,6 +89,9 @@
     margin 10px
 .invisible
     display none
+.visible
+    vertical-align middle
+    height 24pt
 #db
     position fixed
     left -1px
@@ -337,9 +340,18 @@ span#controls
     margin-left 5px
 .dcm
     position absolute
-    bottom 75px
+    top 5px
     right -5px
 .dcm_grey
+    width 24px
+    height 24px
+.dcm_yellow
+    width 24px
+    height 24px
+.postdcm
+    position absolute 
+    top 0px
+    right 0px
     width 24px
     height 24px
 .dialog_box
@@ -421,7 +433,8 @@ span#controls
     float right
     clear both
 .txt
-    background-image url("/static/img/paper/Texture0213.jpg")
+    background-color #FFF8CC
+    //background-image url("/static/img/paper/Texture0213.jpg")
     position relative
     color #006
 .caption>.control
@@ -542,25 +555,26 @@ body
     line-height 1
     height 100%
     background-image url('/static/img/OffGray.jpg')
-    font-size 14px
+    font-size 12pt
 .gray
     color #aaa
-h1, h2, h3, h4, h5, p 
+h1, h2, h3, h4, h5 
     margin-bottom 24px
     padding 0
+    color #BBCCAA
 h1, h2, h3, h4, h5, .caption
     font-family verdana, helvetica, arial
 h1 
-    font-size 48px
+    font-size 4em
 h2 
-    font-size 36px
+    font-size 3em
     margin 24px 0 6px
 h3 
-    font-size 24px
+    font-size 2em
 h4 
-    font-size 21px
+    font-size 1.5em
 h5 
-    font-size 18px
+    font-size 1.3em
 a:hover
     text-shadow #ffcc00 0px 0px 10px
     //text-shadow #ff9933 0px 0px 10px
@@ -591,7 +605,7 @@ pre
 code 
     font-family Consolas, Monaco, Andale Mono, monospace
     line-height 1.5
-    font-size 13px
+    font-size 0.9em
 aside 
     display block
     float right

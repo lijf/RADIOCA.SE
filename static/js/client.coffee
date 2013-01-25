@@ -88,7 +88,8 @@ newcase = (type) ->
         alert "Error - Please log in"
 
 editfunctions = ->
-  $(".dcm_grey").toggle()
+  $(".postdcm").toggle()
+  $(".nodcm").toggle()
   $('#locked').toggle()
   $('#open').toggle()
   $('.removeradio').toggle()
@@ -621,23 +622,10 @@ $ ->
   ).on("click", ".toggletext", ->
     $(this).next().toggleClass('invisible')
   
-  ).on("click", ".dcm", ->
+  ).on("click", ".postdcm", ->
     $(this).parent().addClass "selected"
     $("#adddcm_dialog").show()
  
-#  ).on("click", "adddcm_confirm", (e) ->
-#    formdata = new FormData()
-#    xhr = new XMLHttpRequest()
-#    xhr.upload.onprogress = (evt) ->
-#      console.log("while sending and loading data.")
-#      if evt.lengthComputable
-#        console.log evt.loaded / evt.total * 100
-#    xhr.onloadend = (evt) ->
-#      console.log "when the request has completed (success / failure)"
-#    dicom = $("#userFileDcm").val()
-#    formdata.append "dicom", dicom
-#    xhr.open "POST", "/", true
-#    xhr.send formdata
   ).on("click", "#adddcm_confirm", ->
     $("#adddcm_dialog").hide()
     dicom = $("#userFileDcm").val()
@@ -651,6 +639,18 @@ $ ->
       target: "postdcm"
 
     $("#uploadformdcm").submit()
+
+  ).on("click", ".getdicom", (e) ->
+    e.preventDefault()
+    thisurl = $(this).attr('href')
+    $.ajax
+      action: thisurl
+      method: "GET"
+      statusCode:
+        403: ->
+          alert "DICOM cannot be downloaded - are you logged in?"
+        200: ->
+          $("#getdcm").attr("src",thisurl)
 
   ).on("click", "#addstack", ->
     $("#addstack_dialog").show()

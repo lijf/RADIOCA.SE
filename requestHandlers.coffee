@@ -114,19 +114,21 @@ rendercase = (req, res, theCase, editor) ->
               theCase.radios = []
               radioIDs.forEach (radioID, ID) ->
                 db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
-                  theCase.radios[ID] = []
-                  theCase.radios[ID].ID = radioID
-                  theCase.radios[ID].caption = caption  if caption
-                  db.lrange "radio:" + radioID, 0, -1, (err, images) ->
-                    theCase.radios[ID].images = []
-                    images.forEach (image, imgID) ->
-                      theCase.radios[ID].images[imgID] = image
-                    theCase.feedback = []
-                    db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
-                      feedback.forEach (fb, fbID) ->
-                        theCase.feedback[fbID] = fb
-                      #console.log theCase
-                      render req, res, theCase, editor  unless radioIDs[ID + 1]
+                  db.lindex "radio:" + radioID + ":dicom", -1, (err, dicom) ->
+                    theCase.radios[ID] = []
+                    theCase.radios[ID].ID = radioID
+                    theCase.radios[ID].caption = caption  if caption
+                    theCase.radios[ID].dcm = dicom if dicom
+                    db.lrange "radio:" + radioID, 0, -1, (err, images) ->
+                      theCase.radios[ID].images = []
+                      images.forEach (image, imgID) ->
+                        theCase.radios[ID].images[imgID] = image
+                      theCase.feedback = []
+                      db.lrange "case:" + req.params.id + ":page:" + req.params.page + ":feedback", 0, -1, (err, feedback) ->
+                        feedback.forEach (fb, fbID) ->
+                          theCase.feedback[fbID] = fb
+                        #console.log theCase
+                        render req, res, theCase, editor  unless radioIDs[ID + 1]
 
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->
@@ -139,42 +141,6 @@ postDicomAlt = (req, res) ->
     console.log "zip posted"
     req.files.dicom.path = __dirname + "/incoming" + req.params.id + ".zip"
 
-postDicom = (req, res) ->
-  #console.log "postDicom"
-  id = req.params.id
-  form2 = new formidable.IncomingForm()
-  console.dir form2
-  files = []
-  fields = []
-  form2.on("field", (field, value) ->
-    fields.push [field, value]
-    console.log field + " " + value
-  ).on("fileBegin", (field, file) ->
-    console.log file.type
-    console.log "fileBegin"
-    if file.type == "application/zip"
-      console.log "zip posted"
-      file.path = __dirname + "/incoming/" + req.params.id + ".zip"
-    files.push [field, file]
-#  ).on("progress", (bytesReceived, bytesExpected) ->
-#    console.log bytesReceived
-#    progress = {
-#      type: 'progress'
-#      bytesReceived: bytesReceived
-#      bytesExpected: bytesExpected
-#    }
-#    io.socket.emit "uploadprogress", JSON.stringify progress
-  ).on "end", ->
-    console.log "file recieved"
-    anonymize = exec "rvm all do ruby anonymizer.rb " + req.params.id, (error, stdout, stderr) ->
-      console.log "error " + error
-      console.log "stdout " + stdout
-      console.log "stderr " + stderr
-      
-  form.parse req, (err, fields, files) ->
-    if err
-      console.log err
-
 postImage2alt = (req,res) ->
   d = new Date().getTime().toString()
   i = 0
@@ -183,33 +149,34 @@ postImage2alt = (req,res) ->
     req.files.image.path = __dirname + "/img/" + d + "." + i + ".jpg"
     db.rpush "radio:" + d, "/img/" + d + "." + i ".jpg"
     i++
-    files.push 
+    files.push
 
 postImage2 = (req, res) ->
-  d = new Date().getTime().toString()
-  i = 0
-  #console.log "postimage 2"
-  form = new formidable.IncomingForm()
-  console.dir form
-  files = []
-  fields = []
-  form.on("field", (field, value) ->
-    fields.push [ field, value ]
-  ).on("fileBegin", (field, file) ->
-    if file.type == "image/jpeg"
-      #console.log "image"
-      file.path = __dirname + "/img/" + d + "." + i + ".jpg"
-      db.rpush "radio:" + d, "/img/" + d + "." + i + ".jpg"
-      i++
-    files.push [ field, file ]
-  ).on "end", ->
+  db.incr "images", (err, imageno) ->
+    d = new Date().getTime().toString() + imageno
+    i = 0
+    #console.log "postimage 2"
+    form = new formidable.IncomingForm()
+    console.dir form
+    files = []
+    fields = []
+    form.on("field", (field, value) ->
+      fields.push [ field, value ]
+    ).on("fileBegin", (field, file) ->
+      if file.type == "image/jpeg"
+        #console.log "image"
+        file.path = __dirname + "/img/" + d + "." + i + ".jpg"
+        db.rpush "radio:" + d, "/img/" + d + "." + i + ".jpg"
+        i++
+      files.push [ field, file ]
+    ).on "end", ->
 #    db.sadd "image:" + d, req.params.id
 #    db.sadd "radio:" + d + ":users", req.getAuthDetails().user_id
-    db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
-    db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
-    db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption"
-    res.send d, 200
-    #console.log "-> upload done"
+      db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
+      db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
+      db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption"
+      res.send d, 200
+      #console.log "-> upload done"
 
   form.parse req, (err, fields, files) ->
     if err
@@ -350,4 +317,4 @@ exports.postImage = postImage
 exports.cleanupCases = cleanupCases
 exports.rendercases = rendercases
 exports.renderRoot = renderRoot
-exports.postDicom = postDicom
+#exports.postDicom = postDicom

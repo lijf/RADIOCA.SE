@@ -309,19 +309,9 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
       requestHandlers.removeRadio2 req.params.id, req.params.page, req.params.radio
       res.send "OK", 200
 
-# app.get "/radio/:id", (req, res) ->
-#  radio = {}
-#  radio.ID = req.params.id
-#  db.lrange "radio:" + req.params.id, 0, -1, (err, images) ->
-#    radio.images = []
-#    images.forEach (image, imgID) ->
-#      radio.images[imgID] = image
-#
-#    res.partial "radio",
-#    object: radio
-
 app.get "/dicom/:dicom", (req, res) ->
-  dicom = __dirname + "/dicom/" + req.params.dicom + "a.osirixzip"
+  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  dicom = __dirname + "/dicom/" + req.params.dicom
   fs.readFile dicom, "binary", (err, file) ->
     return res.send 444 if err
     res.statusCode = 200
@@ -329,24 +319,30 @@ app.get "/dicom/:dicom", (req, res) ->
     res.write file, "binary"
     res.end()
 
-app.post "/dicom/:id", (req, res) ->
+app.post "/dicom/:imgid", (req, res) ->
+  dicomID = new Date().getTime().toString()
   id = req.params.id
   form2 = new formidable.IncomingForm()
   files = []
   fields = []
   form2.on("field", (field, value) ->
     fields.push [field, value]
-    console.log field + " " + value
+    #console.log field + " " + value
   ).on("fileBegin", (field, file) ->
-    console.log file.type
-    console.log "fileBegin"
+    #console.log file.type
+    #console.log "fileBegin"
     if file.type == "application/zip" || "application/octet-stream"
-      console.log "zip posted?"
-      file.path = __dirname + "/incoming/" + req.params.id + ".zip"
+      #console.log "zip posted?"
+      file.path = __dirname + "/incoming/" + dicomID + ".zip"
     files.push [field, file]
   ).on "end", ->
-    console.log "file recieved"
-    anonymize = exec "ruby -rubygems anonymizer.rb " + req.params.id, (error, stdout, stderr) ->
+    #console.log "file recieved"
+    anonymize = exec "ruby -rubygems anonymizer.rb " + dicomID, (error, stdout, stderr) ->
+      if error
+        return res.send 500
+      else
+        db.lpush "radio:" + req.params.imgid + ":dicom", dicomID
+        return res.send 200
       console.log "error " + error
       console.log "stdout " + stdout
       console.log "stderr " + stderr
@@ -354,11 +350,6 @@ app.post "/dicom/:id", (req, res) ->
   form2.parse req, (err, fields, files) ->
     if err
       console.log err
-
-app.post "/dicom2/:id", (req, res) ->
-  console.log "POST DICOM called"
-  return res.send 444 unless req.isAuthenticated()
-  requestHandlers.postDicom req, res
 
 app.get "/img/:img", (req, res) ->
   image = __dirname + "/img/" + req.params.img

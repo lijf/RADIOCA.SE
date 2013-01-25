@@ -117,7 +117,8 @@
   };
 
   editfunctions = function() {
-    $(".dcm_grey").toggle();
+    $(".postdcm").toggle();
+    $(".nodcm").toggle();
     $('#locked').toggle();
     $('#open').toggle();
     $('.removeradio').toggle();
@@ -652,7 +653,7 @@
       return $("#deletetext_dialog").hide();
     }).on("click", ".toggletext", function() {
       return $(this).next().toggleClass('invisible');
-    }).on("click", ".dcm", function() {
+    }).on("click", ".postdcm", function() {
       $(this).parent().addClass("selected");
       return $("#adddcm_dialog").show();
     }).on("click", "#adddcm_confirm", function() {
@@ -668,6 +669,22 @@
         target: "postdcm"
       });
       return $("#uploadformdcm").submit();
+    }).on("click", ".getdicom", function(e) {
+      var thisurl;
+      e.preventDefault();
+      thisurl = $(this).attr('href');
+      return $.ajax({
+        action: thisurl,
+        method: "GET",
+        statusCode: {
+          403: function() {
+            return alert("DICOM cannot be downloaded - are you logged in?");
+          },
+          200: function() {
+            return $("#getdcm").attr("src", thisurl);
+          }
+        }
+      });
     }).on("click", "#addstack", function() {
       return $("#addstack_dialog").show();
     }).on("click", "#addstack_confirm", function() {
