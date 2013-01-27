@@ -654,11 +654,12 @@
     }).on("click", ".toggletext", function() {
       return $(this).next().toggleClass('invisible');
     }).on("click", ".postdcm", function() {
-      $(this).parent().addClass("selected");
+      $(this).parent().parent().addClass("selected");
       return $("#adddcm_dialog").show();
     }).on("click", "#adddcm_confirm", function() {
       var dicom;
       $("#adddcm_dialog").hide();
+      $(".selected").removeClass("selected");
       dicom = $("#userFileDcm").val();
       $("#uploadformdcm").attr({
         action: "/dicom/" + $(".selected").attr("ID"),
@@ -671,20 +672,20 @@
       return $("#uploadformdcm").submit();
     }).on("click", ".getdicom", function(e) {
       var thisurl;
-      e.preventDefault();
       thisurl = $(this).attr('href');
-      return $.ajax({
+      $.ajax({
         action: thisurl,
         method: "GET",
         statusCode: {
-          403: function() {
-            return alert("DICOM cannot be downloaded - are you logged in?");
-          },
           200: function() {
             return $("#getdcm").attr("src", thisurl);
+          },
+          444: function() {
+            return alert("DICOM cannot be downloaded - are you logged in?");
           }
         }
       });
+      return false;
     }).on("click", "#addstack", function() {
       return $("#addstack_dialog").show();
     }).on("click", "#addstack_confirm", function() {

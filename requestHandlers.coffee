@@ -114,7 +114,7 @@ rendercase = (req, res, theCase, editor) ->
               theCase.radios = []
               radioIDs.forEach (radioID, ID) ->
                 db.get "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + radioID + ":caption", (err, caption) ->
-                  db.lindex "radio:" + radioID + ":dicom", -1, (err, dicom) ->
+                  db.lindex "radio:" + radioID + ":dicom", 0, (err, dicom) ->
                     theCase.radios[ID] = []
                     theCase.radios[ID].ID = radioID
                     theCase.radios[ID].caption = caption  if caption

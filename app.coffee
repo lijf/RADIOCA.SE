@@ -62,12 +62,6 @@ app.use (err, req, res, next) ->
   res.render "500"
     error: err
 
-#delete express.bodyParser().parse['multipart/form-data']
-
-#error = (err, req, res, next) ->
-#  console.error err.stack
-#  res.send 500
-
 db.on "error", (err) ->
   console.log "Redis Error " + err
 
@@ -222,10 +216,6 @@ app.post "/case/:id/:page/newpage", (req, res) ->
 app.post "/case/:id/:page/feedback", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   storefeedback = {}
-  #send a 403? (denied) unless user is in list of users permitted to create cases.
-  #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
-  #  if editor
-  #    requestHandlers.postNewpage req, res
   storefeedback.feedback = req.body.feedback
   storefeedback.uid = req.getAuthDetails().user.user_id
   storefeedback.user = req.getAuthDetails().user.username
@@ -310,7 +300,7 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
       res.send "OK", 200
 
 app.get "/dicom/:dicom", (req, res) ->
-  return res.send "FORBIDDEN", 403 unless req.isAuthenticated()
+  return res.send 444 unless req.isAuthenticated()
   dicom = __dirname + "/dicom/" + req.params.dicom
   fs.readFile dicom, "binary", (err, file) ->
     return res.send 444 if err
@@ -320,11 +310,13 @@ app.get "/dicom/:dicom", (req, res) ->
     res.end()
 
 app.post "/dicom/:imgid", (req, res) ->
+  return res.send 444 unless req.isAuthenticated()
   dicomID = new Date().getTime().toString()
-  id = req.params.id
+  #(exports? this).radioIDforDICOM = req.params.imgid
   form2 = new formidable.IncomingForm()
   files = []
   fields = []
+    
   form2.on("field", (field, value) ->
     fields.push [field, value]
     #console.log field + " " + value
@@ -336,8 +328,9 @@ app.post "/dicom/:imgid", (req, res) ->
       file.path = __dirname + "/incoming/" + dicomID + ".zip"
     files.push [field, file]
   ).on "end", ->
-    #console.log "file recieved"
-    anonymize = exec "ruby -rubygems anonymizer.rb " + dicomID, (error, stdout, stderr) ->
+    console.log "file recieved"
+    console.log req.params.imgid
+    exec "ruby -rubygems anonymizer.rb " + dicomID, (error, stdout, stderr) ->
       if error
         return res.send 500
       else
@@ -346,6 +339,7 @@ app.post "/dicom/:imgid", (req, res) ->
       console.log "error " + error
       console.log "stdout " + stdout
       console.log "stderr " + stderr
+      
 
   form2.parse req, (err, fields, files) ->
     if err
@@ -365,7 +359,7 @@ app.post "/image/:id/:page", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   requestHandlers.postImage2 req, res
 
-console.log JSON.stringify process.env
+#console.log JSON.stringify process.env
 port = process.env.PORT
 unless module.parent
   server = http.createServer(app).listen(port)

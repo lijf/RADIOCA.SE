@@ -623,11 +623,12 @@ $ ->
     $(this).next().toggleClass('invisible')
   
   ).on("click", ".postdcm", ->
-    $(this).parent().addClass "selected"
+    $(this).parent().parent().addClass "selected"
     $("#adddcm_dialog").show()
  
   ).on("click", "#adddcm_confirm", ->
     $("#adddcm_dialog").hide()
+    $(".selected").removeClass "selected"
     dicom = $("#userFileDcm").val()
     #alert dicom
     $("#uploadformdcm").attr
@@ -641,16 +642,16 @@ $ ->
     $("#uploadformdcm").submit()
 
   ).on("click", ".getdicom", (e) ->
-    e.preventDefault()
     thisurl = $(this).attr('href')
     $.ajax
       action: thisurl
       method: "GET"
       statusCode:
-        403: ->
-          alert "DICOM cannot be downloaded - are you logged in?"
         200: ->
           $("#getdcm").attr("src",thisurl)
+        444: ->
+          return alert "DICOM cannot be downloaded - are you logged in?"
+    return false
 
   ).on("click", "#addstack", ->
     $("#addstack_dialog").show()
