@@ -300,7 +300,7 @@ app.delete "/case/:id/:page/:radio", (req, res) ->
       res.send "OK", 200
 
 app.get "/dicom/:dicom", (req, res) ->
-  return res.send 444 unless req.isAuthenticated()
+  #return res.send 444 unless req.isAuthenticated()
   dicom = __dirname + "/dicom/" + req.params.dicom
   fs.readFile dicom, "binary", (err, file) ->
     return res.send 444 if err

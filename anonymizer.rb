@@ -400,8 +400,8 @@ a.uids = {"0020,9161"=>1,"0008,010D"=>2,"0008,9123"=>3,"0018,1002"=>4,"0020,9164
 # write to separate path, delete all private tags
 #a.print
 a.execute
-`zip -r #{input_id}a.osirixzip #{output_path}/*`
+`zip -r #{input_id}a.zip #{output_path}/*`
 `rm -r #{input_path} #{output_path}`
 `rm incoming/#{input_id}.zip`
-`mv -f #{input_id}a.osirixzip ./dicom/`
+`mv -f #{input_id}a.zip ./dicom/`
 puts "Anonymization done"
