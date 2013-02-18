@@ -9,6 +9,17 @@ String.prototype.toProperCase = ->
   this.replace(/\w\S*/g, (txt) ->
     txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())
 
+changeZoomLevel = (width) ->
+  sViewport = '<meta name="viewport" content="width=' + width + '">'
+  jViewport = $('meta[name="viewport"]')
+  if jViewport.length > 0
+    jViewport.replaceWith sViewport
+  else
+    $('head').append sViewport
+
+isiPhone = ->
+  return ((navigator.platform.indexOf "iPhone" !=  -1) || (navigator.platform.indexOf "iPod" != -1)) 
+
 findICD = (icdquery) ->
   json = {}
   json.qs = icdquery
@@ -139,7 +150,7 @@ touchscroll = ->
             visimg.prev().show()
             visimg.hide()
             visimg = visimg.prev()
-          else if parseInt(touch.pageY, 10) < lastY and visimg.next().length > 0
+          else if parseInt(touch.pageY, 10) < lastY and visimg.nextAll().length > 2
             visimg.next().show()
             visimg.hide()
             visimg = visimg.next()
@@ -154,7 +165,7 @@ touchscroll = ->
             visimg.prev().show()
             visimg.hide()
             visimg = visimg.prev()
-          else if parseInt(touch.pageY, 10) < lastY and visimg.next().length > 0
+          else if parseInt(touch.pageY, 10) < lastY and visimg.nextAll().length > 2
             visimg.next().show()
             visimg.hide()
             visimg = visimg.next()
@@ -411,8 +422,13 @@ $ ->
   ).on("click", "#toggleDiagnosis", ->
     $('.diagnosis').toggleClass('invisible')
     if $('.diagnosis').hasClass 'invisible'
-    then $(this).text "Show dx"
-    else $(this).text "Hide dx"
+      $(this).text "Show dx"
+#      if isiPhone()
+#        changeZoomLevel "320"
+    else
+      $(this).text "Hide dx"
+#      if isiPhone()
+#        changeZoomLevel "320"
 
   ).on("focus", "#filter", ->
     if $(this).val()=='Type to filter' then $(this).val('')
@@ -450,7 +466,7 @@ $ ->
     delta = e.originalEvent.wheelDelta || e.originalEvent.detail
     #if !delta
     #  delta = e.originalEvent.detail
-    if delta > 0 and image.next().length > 0
+    if delta > 0 and image.nextAll().length > 2
       image.next().show()
       image.hide()
     else if delta < 0 and image.prev().length > 0
@@ -628,18 +644,28 @@ $ ->
  
   ).on("click", "#adddcm_confirm", ->
     $("#adddcm_dialog").hide()
-    $(".selected").removeClass "selected"
+    #alert "/dicom" + document.location.pathname + "/" + $(".selected").attr("ID")
     dicom = $("#userFileDcm").val()
     #alert dicom
+    #alert document.location
     $("#uploadformdcm").attr
-      action: "/dicom/" + $(".selected").attr("ID")
+      action: "/dicom" + document.location.pathname + "/" + $(".selected").attr("ID")
       method: "POST"
       dicom: dicom
       enctype: "multipart/form-data"
       encoding: "multipart/form-data"
       target: "postdcm"
+      statusCode:
+        200: ->
+          alert "Upload Done"
+        444: ->
+          alert "Server dropped connection - are you logged in?"
+        500 :->
+          alert "Internal server error"
+          
 
     $("#uploadformdcm").submit()
+    $(".selected").removeClass "selected"
 
   ).on("click", ".getdicom", (e) ->
     thisurl = $(this).attr('href')

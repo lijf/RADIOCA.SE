@@ -7,12 +7,12 @@ block casepagecontent
         .stack(tabindex='-1')
           - each i in r.images
             img.stack_image(src='#{i}')
+          img.control.moveradioup(style='display:none', src='/static/ico/arrow-090_bw.png')
+          img.control.moveradiodown(style='display:none', src='/static/ico/arrow-270_bw.png')
         .caption
           textarea.mdtxt(style='display:none')
             | #{r.caption}
           .md
           img.control.textedit.session(src='/static/ico/pencil_bw.png')
         img.control.removeradio(style='display:none', src='/static/ico/cross_bw.png')
-        img.control.moveradioup(style='display:none', src='/static/ico/arrow-090_bw.png')
-        img.control.moveradiodown(style='display:none', src='/static/ico/arrow-270_bw.png')
     img.control#addstack(style='display:none', src='/static/ico/plus_bw.png')

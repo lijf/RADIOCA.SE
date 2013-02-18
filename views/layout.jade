@@ -27,8 +27,15 @@ html
           .orbitron.vertical RADIOCA.SE
       #container
         #usercontrols
-          a#sign_in
-            img#twitbutton(src='/static/img/sign-in-with-twitter-d.png')
+          a#sign_in 
+            .sign_in_with_twitter
+              button
+                .icon
+                | Sign in with twitter
+                //span.arista twitter
+            //#twitbutton
+            //  #sign_in_with_twitter
+            //img#twitbutton(src='/static/img/sign-in-with-twitter-d.png')
           #userinfo(style='display:none')
             a(id='sign_out') sign out &nbsp;
         block mainContent

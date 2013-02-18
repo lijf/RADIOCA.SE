@@ -309,7 +309,7 @@ app.get "/dicom/:dicom", (req, res) ->
     res.write file, "binary"
     res.end()
 
-app.post "/dicom/:imgid", (req, res) ->
+app.post "/dicom/case/:case/:page/:imgid", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   dicomID = new Date().getTime().toString()
   #(exports? this).radioIDforDICOM = req.params.imgid
@@ -330,7 +330,7 @@ app.post "/dicom/:imgid", (req, res) ->
   ).on "end", ->
     console.log "file recieved"
     console.log req.params.imgid
-    exec "ruby -rubygems anonymizer.rb " + dicomID, (error, stdout, stderr) ->
+    exec "ruby -rubygems anonymizer.rb " + dicomID + " " + req.params.case + " " + req.params.page + " " + req.params.imgid, (error, stdout, stderr) ->
       if error
         return res.send 500
       else

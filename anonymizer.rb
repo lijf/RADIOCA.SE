@@ -4,6 +4,10 @@ a = DICOM::Anonymizer.new
 input_path = "./incoming/" + ARGV[0]
 output_path = "./afteranonymization/" + ARGV[0]
 input_id = ARGV[0]
+case_id = ARGV[1]
+page_no = ARGV[2]
+stack_id = ARGV[3]
+patient_name = "www.radioca.se/case/" + case_id
 Dir.mkdir input_path
 Dir.mkdir output_path
 `unzip #{input_path}.zip -d #{input_path}`
@@ -289,7 +293,7 @@ a.delete_tag("0010,0032") # Patient's Birth Time
 a.delete_tag("0038,0400") # Patient's Institution Residence
 a.delete_tag("0010,0050") # Patient's Insurance Plan Code Sequence
 a.delete_tag("0010,1060") # Patient's Mother's Birth Name 
-a.set_tag("0010,0010", :value => "0") # Patient's Name 
+a.set_tag("0010,0010", :value => patient_name) # Patient's Name 
 a.delete_tag("0010,0101") # Patient's Primary Language Code Sequence
 a.delete_tag("0010,0102") # Patient's Primary Language Modifier Code Sequence
 a.delete_tag("0010,21F0") # Patient's Religious Preference
@@ -377,7 +381,7 @@ a.delete_tag("0008,1010") # Station Name
 a.delete_tag("0032,4000") # Study Comments
 a.set_tag("0008,0020", :value => "0") # Study Date 
 a.delete_tag("0008,1030") # Study Description
-a.set_tag("0020,0010", :value => "0") # Study ID 
+a.set_tag("0020,0010", :value => page_no + "_" + stack_id) # Study ID 
 a.delete_tag("0032,0012") # Study ID Issuer
 a.set_tag("0008,0030", :value => "0") # Study Time
 a.delete_tag("4000,4000") # Text Comments 

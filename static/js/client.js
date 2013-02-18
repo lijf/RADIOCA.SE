@@ -1,5 +1,5 @@
 (function() {
-  var authcallback, change_url, converter, deletepage, editfunctions, filter2, findICD, flickY, getTitle, getfeedback, icdquery, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
+  var authcallback, changeZoomLevel, change_url, converter, deletepage, editfunctions, filter2, findICD, flickY, getTitle, getfeedback, icdquery, isiPhone, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
 
   lastY = 0;
 
@@ -15,6 +15,21 @@
     return this.replace(/\w\S*/g, function(txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
+  };
+
+  changeZoomLevel = function(width) {
+    var jViewport, sViewport;
+    sViewport = '<meta name="viewport" content="width=' + width + '">';
+    jViewport = $('meta[name="viewport"]');
+    if (jViewport.length > 0) {
+      return jViewport.replaceWith(sViewport);
+    } else {
+      return $('head').append(sViewport);
+    }
+  };
+
+  isiPhone = function() {
+    return (navigator.platform.indexOf("iPhone" !== -1)) || (navigator.platform.indexOf("iPod" !== -1));
   };
 
   findICD = function(icdquery) {
@@ -180,7 +195,7 @@
               visimg.prev().show();
               visimg.hide();
               visimg = visimg.prev();
-            } else if (parseInt(touch.pageY, 10) < lastY && visimg.next().length > 0) {
+            } else if (parseInt(touch.pageY, 10) < lastY && visimg.nextAll().length > 2) {
               visimg.next().show();
               visimg.hide();
               visimg = visimg.next();
@@ -198,7 +213,7 @@
               visimg.prev().show();
               visimg.hide();
               visimg = visimg.prev();
-            } else if (parseInt(touch.pageY, 10) < lastY && visimg.next().length > 0) {
+            } else if (parseInt(touch.pageY, 10) < lastY && visimg.nextAll().length > 2) {
               visimg.next().show();
               visimg.hide();
               visimg = visimg.next();
@@ -507,7 +522,7 @@
       e.stopPropagation();
       image = $(this).find('.stack_image:visible');
       delta = e.originalEvent.wheelDelta || e.originalEvent.detail;
-      if (delta > 0 && image.next().length > 0) {
+      if (delta > 0 && image.nextAll().length > 2) {
         image.next().show();
         return image.hide();
       } else if (delta < 0 && image.prev().length > 0) {
@@ -659,17 +674,18 @@
     }).on("click", "#adddcm_confirm", function() {
       var dicom;
       $("#adddcm_dialog").hide();
-      $(".selected").removeClass("selected");
+      alert("/dicom" + document.location.pathname + "/" + $(".selected").attr("ID"));
       dicom = $("#userFileDcm").val();
       $("#uploadformdcm").attr({
-        action: "/dicom/" + $(".selected").attr("ID"),
+        action: "/dicom" + document.location.pathname + "/" + $(".selected").attr("ID"),
         method: "POST",
         dicom: dicom,
         enctype: "multipart/form-data",
         encoding: "multipart/form-data",
         target: "postdcm"
       });
-      return $("#uploadformdcm").submit();
+      $("#uploadformdcm").submit();
+      return $(".selected").removeClass("selected");
     }).on("click", ".getdicom", function(e) {
       var thisurl;
       thisurl = $(this).attr('href');
