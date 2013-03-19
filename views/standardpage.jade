@@ -31,7 +31,7 @@ block casepagecontent
         .caption
         - if (r.dcm)
           .dcm.control
-            a.getdicom(href="osirix://?methodName=downloadURL&URL='http://dev.radioca.se/dicom/" + r.dcm + "a.zip'", target="_self")
+            a.getdicom(href="osirix://?methodName=downloadURL&URL='http://radioca.se/dicom/" + r.dcm + "a.zip'", target="_self")
               img.dcm_yellow(src='/static/ico/dicom_orange.svg')
             .postdcm(style='display:none')
         - else
