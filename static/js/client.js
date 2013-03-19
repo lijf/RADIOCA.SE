@@ -674,7 +674,6 @@
     }).on("click", "#adddcm_confirm", function() {
       var dicom;
       $("#adddcm_dialog").hide();
-      alert("/dicom" + document.location.pathname + "/" + $(".selected").attr("ID"));
       dicom = $("#userFileDcm").val();
       $("#uploadformdcm").attr({
         action: "/dicom" + document.location.pathname + "/" + $(".selected").attr("ID"),
@@ -682,7 +681,18 @@
         dicom: dicom,
         enctype: "multipart/form-data",
         encoding: "multipart/form-data",
-        target: "postdcm"
+        target: "postdcm",
+        statusCode: {
+          200: function() {
+            return alert("Upload Done");
+          },
+          444: function() {
+            return alert("Server dropped connection - are you logged in?");
+          },
+          500: function() {
+            return alert("Internal server error");
+          }
+        }
       });
       $("#uploadformdcm").submit();
       return $(".selected").removeClass("selected");
