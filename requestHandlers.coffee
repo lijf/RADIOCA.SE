@@ -254,7 +254,7 @@ putPage = (req, res) ->
   if data.radios
     db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->
-      db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
+      // db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
       db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id
   #console.log "saved page"
   if data.icds
