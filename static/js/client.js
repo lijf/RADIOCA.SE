@@ -316,6 +316,7 @@
   converter = Markdown.getSanitizingConverter();
 
   authcallback = function(data) {
+    alert(data);
     return $.ajax({
       url: "/signed_in",
       statusCode: {
