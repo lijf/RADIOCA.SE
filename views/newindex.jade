@@ -1,0 +1,27 @@
+extends layout
+
+block mainContent
+  #indexhorizon
+    .big_logo.orbitron RADIOCASE
+    - each r in radios
+      #frontradio
+        .radio(id='frontpageRadio') 
+          .stack(tabindex='-1')
+            - if (r.images)
+              - each i in r.images
+                img.stack_image(src='#{i}')
+          a#list_cases(href='/cases/0/-1') 
+            h4.orbitron List cases
+  script(type='text/javascript')
+    $(function(){
+      // Hides small logo
+      $('#sl').hide();
+      $('.sign_in_with_twitter').hide();
+      setInterval(function(){
+        visimg = $('#frontradio > .radio > .stack > .stack_image:visible:first');
+        if (visimg.next().length){
+          visimg.next().show();
+          visimg.hide();
+        }
+        }, 350)
+      });

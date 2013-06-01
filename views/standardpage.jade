@@ -29,6 +29,10 @@ block casepagecontent
               img.stack_image(src='#{i}')
         img.control.removeradio(style='display:none', src='/static/ico/cross_bw.png')
         .caption
+          textarea.mdtxt(style='display:none')
+            | #{r.caption}
+          .md
+          img.control.textedit.session(src='/static/ico/pencil_bw.png')
         - if (r.dcm)
           .dcm.control
             a.getdicom(href="osirix://?methodName=downloadURL&URL='http://radioca.se/dicom/" + r.dcm + "a.zip'", target="_self")
@@ -38,9 +42,5 @@ block casepagecontent
           .dcm.nodcm.control(style='display:none')
             img.dcm_grey(src='/static/ico/dicom.svg')
             .postdcm(style='display:none')
-          textarea.mdtxt(style='display:none')
-            | #{r.caption}
-          .md
-          img.control.textedit.session(src='/static/ico/pencil_bw.png')
         br
     img.control#addstack(style='display:none', src='/static/ico/plus_bw.png')

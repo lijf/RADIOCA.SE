@@ -23,6 +23,7 @@ db = redis.createClient(process.env.DB_PORT)
 icd = redis.createClient(4444)
 util = require("util")
 easyoauth = require("easy-oauth")
+toobusy = require("toobusy")
 app.set "views", __dirname + "/views"
 app.set "view engine", "jade"
 app.set "view options",
@@ -44,6 +45,11 @@ app.use app.router
 #app.use error
 app.use express.favicon(__dirname + "/public/favicon.ico")
 app.use express.static(__dirname + "/public")
+
+app.use (req,res, next) ->
+  if toobusy()
+    res.send 503, "I'm busy right now, sorry."
+  else next()
 
 app.use (req,res,next) ->
   res.status(404)
@@ -67,7 +73,10 @@ db.on "error", (err) ->
 
 app.get "/", (req, res) ->
   if req.isAuthenticated() then res.redirect "/cases/0/-1"
-  else requestHandlers.renderRoot req, res
+  else requestHandlers.renderNewRoot req, res
+
+app.get "/newindex", (req, res) ->
+  requestHandlers.renderNewRoot req, res
 
 app.get "/signed_in", (req, res) ->
   userdata = req.getAuthDetails()
@@ -183,8 +192,8 @@ app.post "/completed/:id", (req, res) ->
   #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
   #  if editor
   #    requestHandlers.postNewpage req, res
-  db.sadd "completed:" + req.getAuthDetails().user_id, req.params.id
-  db.sadd "case:" + req.params.id + ":completed", req.getAuthDetails().user_id
+  db.sadd "completed:" + req.getAuthDetails().user.user_id, req.params.id
+  db.sadd "case:" + req.params.id + ":completed", req.getAuthDetails().user.user_id
 
 app.post "/rmcompleted/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
@@ -192,19 +201,19 @@ app.post "/rmcompleted/:id", (req, res) ->
   #db.sismember "case:" + req.params.id + ":users", req.getAuthDetails().user.user_id, (err, editor) ->
   #  if editor
   #    requestHandlers.postNewpage req, res
-  db.srem "completed:" + req.getAuthDetails().user_id, req.params.id
-  db.srem "case:" + req.params.id + ":completed", req.getAuthDetails().user_id
+  db.srem "completed:" + req.getAuthDetails().user.user_id, req.params.id
+  db.srem "case:" + req.params.id + ":completed", req.getAuthDetails().user.user_id
 
 app.post "/bookmark/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
-  db.sadd "bookmarks:" + req.getAuthDetails().user_id, req.params.id
-  db.sadd "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id
+  db.sadd "bookmarks:" + req.getAuthDetails().user.user_id, req.params.id
+  db.sadd "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user.user_id
   res.send 200
 
 app.post "/rmbookmark/:id", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
-  db.srem "bookmarks:" + req.getAuthDetails().user_id, req.params.id
-  db.srem "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user_id
+  db.srem "bookmarks:" + req.getAuthDetails().user.user_id, req.params.id
+  db.srem "case:" + req.params.id + ":bookmarked", req.getAuthDetails().user.user_id
   res.send 200
 
 app.post "/case/:id/:page/newpage", (req, res) ->
@@ -353,6 +362,7 @@ app.get "/img/:img", (req, res) ->
     res.setHeader "Content-Type", "image/jpeg"
     res.write file, "binary"
     res.end()
+
 
 app.post "/image/:id/:page", (req, res) ->
   #console.log "POST /image/ called"

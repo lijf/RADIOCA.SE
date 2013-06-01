@@ -1,5 +1,5 @@
 (function() {
-  var authcallback, changeZoomLevel, change_url, converter, deletepage, editfunctions, filter2, findICD, flickY, getTitle, getfeedback, icdquery, isiPhone, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
+  var authcallback, changeZoomLevel, change_url, converter, deletepage, editfunctions, filter2, findICD, flickY, getTitle, getfeedback, icdquery, isiPhone, lastY, maximizeradio, minimizeradio, newcase, newpage, pageMeta, playradio, rendermd, samp, savepage, sessionButton, spiderpage, touchscroll, visimg, zebrarows;
 
   lastY = 0;
 
@@ -178,6 +178,14 @@
     });
   };
 
+  playradio = function() {
+    return setInterval(function() {
+      visimg = $('#frontradio > .radio > .stack > .stack_image:visible');
+      visimg.next().show();
+      return visimg.prev().hide();
+    }, 500);
+  };
+
   touchscroll = function() {
     return $(".stack > .stack_image").each(function() {
       this.ontouchstart = function(e) {
@@ -194,10 +202,12 @@
             if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
               visimg.prev().show();
               visimg.hide();
+              visimg.next().hide();
               visimg = visimg.prev();
             } else if (parseInt(touch.pageY, 10) < lastY && visimg.nextAll().length > 2) {
               visimg.next().show();
               visimg.hide();
+              visimg.prev().hide();
               visimg = visimg.next();
             }
             return lastY = parseInt(touch.pageY, 10);
@@ -212,10 +222,12 @@
             if (parseInt(touch.pageY, 10) > lastY && visimg.prev().length > 0) {
               visimg.prev().show();
               visimg.hide();
+              visimg.next().hide();
               visimg = visimg.prev();
             } else if (parseInt(touch.pageY, 10) < lastY && visimg.nextAll().length > 2) {
               visimg.next().show();
               visimg.hide();
+              visimg.prev().hide();
               visimg = visimg.next();
             }
             return lastY = parseInt(touch.pageY, 10);
@@ -316,7 +328,6 @@
   converter = Markdown.getSanitizingConverter();
 
   authcallback = function(data) {
-    alert(data);
     return $.ajax({
       url: "/signed_in",
       statusCode: {
@@ -389,9 +400,13 @@
       });
     });
     $(document).on("mouseover", ".control", function() {
-      return $(this).attr('src', $(this).attr('src').slice(0, -7) + '.png');
+      if ($(this).attr('src').slice(-7, -1) === '_bw.pn') {
+        return $(this).attr('src', $(this).attr('src').slice(0, -7) + '.png');
+      }
     }).on("mouseout", ".control", function() {
-      return $(this).attr('src', $(this).attr('src').slice(0, -4) + '_bw.png');
+      if ($(this).attr('src').slice(-7, -1) !== '_bw.pn') {
+        return $(this).attr('src', $(this).attr('src').slice(0, -4) + '_bw.png');
+      }
     }).on("dblclick", ".radio", function() {
       if ($("#maximized").is(":visible")) {
         return minimizeradio($(this));
@@ -434,8 +449,8 @@
         url: "/bookmark/" + $(this).attr("ID"),
         statusCode: {
           200: function() {
-            star.removeClass('bookmark');
             star.addClass('rmbookmark');
+            star.removeClass('bookmark');
             return star.attr('src', '/static/ico/star.png');
           },
           444: function() {
@@ -451,8 +466,8 @@
         url: "/rmbookmark/" + $(this).attr("ID"),
         statusCode: {
           200: function() {
-            star.removeClass('rmbookmark');
             star.addClass('bookmark');
+            star.removeClass('rmbookmark');
             return star.attr('src', '/static/ico/star-empty.png');
           },
           444: function() {
@@ -517,19 +532,17 @@
       return rendermd();
     }).on("blur", ".mdtxt", function() {
       return event.preventDefault();
-    }).on("mousewheel", ".stack", function(e) {
-      var delta, image;
-      e.preventDefault();
-      e.stopPropagation();
+    }).on("mousewheel", ".stack", function(e, delta) {
+      var image;
       image = $(this).find('.stack_image:visible');
-      delta = e.originalEvent.wheelDelta || e.originalEvent.detail;
       if (delta > 0 && image.nextAll().length > 2) {
         image.next().show();
-        return image.hide();
+        image.hide();
       } else if (delta < 0 && image.prev().length > 0) {
         image.prev().show();
-        return image.hide();
+        image.hide();
       }
+      return false;
     }).on("click", "#user_settings", function() {
       return $("#userinfo").toggle("slide", {
         direction: "right"
@@ -776,9 +789,15 @@
         }
       });
     }).on("click", ".moveradioup", function() {
-      return $(this).parent().insertBefore($(this).parent().prev());
+      if ($(this).parent().parent().prev().length) {
+        $(this).parent().parent().insertBefore($(this).parent().parent().prev());
+        return $(this).trigger("mouseout");
+      }
     }).on("click", ".moveradiodown", function() {
-      return $(this).parent().insertAfter($(this).parent().next());
+      if ($(this).parent().parent().next().length) {
+        $(this).parent().parent().insertAfter($(this).parent().parent().next());
+        return $(this).trigger("mouseout");
+      }
     }).on("click", ".removeradio", function() {
       $(this).parent().addClass("selected");
       return $("#removeradio_dialog").show();

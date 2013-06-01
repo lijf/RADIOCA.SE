@@ -14,7 +14,7 @@ block mainContent
     #meta_prevpage.hidden #{prevpage} 
     span.author by:
     a.author(href='https://twitter.com/intent/user?screen_name=#{creator}', target='_blank', title='Link to twitter')
-      @#{creator}
+      | @#{creator}
     | &#x2002;
     - if (bookmarked)
       img.rmbookmark(ID='#{cid}', src='/static/ico/star.png')

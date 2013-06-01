@@ -13,6 +13,22 @@ renderRoot = (req, res) ->
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
     icds: ""
 
+renderNewRoot = (req, res) ->
+  index = {}
+  index.radios = []
+  index.radios[0] = []
+  db.lrange "radio:1329820725600", 0, -1, (err, images) ->
+    index.radios[0].images = []
+    images.forEach (image, imgID) ->
+      index.radios[0].images[imgID] = image
+      console.dir index.radios
+    res.render "newindex",
+      title: "Home"
+      signed_in: req.isAuthenticated()
+      user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+      icds: ""
+      radios: index.radios or ""
+
 rendercases = (req, res, start, end) ->
   if req.isAuthenticated()
     userid = req.getAuthDetails().user_id
@@ -129,6 +145,11 @@ rendercase = (req, res, theCase, editor) ->
                           theCase.feedback[fbID] = fb
                         #console.log theCase
                         render req, res, theCase, editor  unless radioIDs[ID + 1]
+
+#backgroundRadios = (req,res) ->
+#  db.lrange "radios", "0", "-1", (err, radios) ->
+#    Math.random() * radios.length
+      
 
 postImage = (req, res, db) ->
   req.form.on "progress", (bytesReceived, bytesExpected) ->
@@ -254,6 +275,7 @@ putPage = (req, res) ->
   if data.radios
     db.del "case:" + req.params.id + ":page:" + req.params.page + ":radios"
     data.radios.forEach (r, rID) ->
+      console.log r.caption
       if r.caption
         db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + r.id + ":caption", r.caption
       db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", r.id
@@ -318,4 +340,5 @@ exports.postImage = postImage
 exports.cleanupCases = cleanupCases
 exports.rendercases = rendercases
 exports.renderRoot = renderRoot
+exports.renderNewRoot = renderNewRoot
 #exports.postDicom = postDicom

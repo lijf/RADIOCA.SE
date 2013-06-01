@@ -135,6 +135,13 @@ getfeedback = ->
       403: ->
         document.location = '/'
         
+playradio = -> 
+  setInterval ->
+    visimg = $('#frontradio > .radio > .stack > .stack_image:visible')
+    visimg.next().show()
+    visimg.prev().hide()
+  , 500
+
 touchscroll = ->
   $(".stack > .stack_image").each ->
     @ontouchstart = (e) ->
@@ -149,10 +156,12 @@ touchscroll = ->
           if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
             visimg.prev().show()
             visimg.hide()
+            visimg.next().hide()
             visimg = visimg.prev()
           else if parseInt(touch.pageY, 10) < lastY and visimg.nextAll().length > 2
             visimg.next().show()
             visimg.hide()
+            visimg.prev().hide()
             visimg = visimg.next()
           return lastY = parseInt(touch.pageY, 10)
       if e.targetTouches.length is 3
@@ -164,10 +173,12 @@ touchscroll = ->
           if parseInt(touch.pageY, 10) > lastY and visimg.prev().length > 0
             visimg.prev().show()
             visimg.hide()
+            visimg.next().hide()
             visimg = visimg.prev()
           else if parseInt(touch.pageY, 10) < lastY and visimg.nextAll().length > 2
             visimg.next().show()
             visimg.hide()
+            visimg.prev().hide()
             visimg = visimg.next()
           return lastY = parseInt(touch.pageY, 10)
 
@@ -251,7 +262,7 @@ sessionButton = (user) ->
 converter = Markdown.getSanitizingConverter()
 
 authcallback = (data) ->
-  alert data
+  #alert data
   $.ajax
     url: "/signed_in"
     statusCode:
@@ -325,10 +336,14 @@ $ ->
   $(document
   
   ).on("mouseover", ".control", ->
-    $(this).attr 'src', $(this).attr('src').slice(0,-7) + '.png'
+    #alert $(this).attr('src').slice(-7,-1)
+    if $(this).attr('src').slice(-7,-1) == '_bw.pn'
+      $(this).attr 'src', $(this).attr('src').slice(0,-7) + '.png'
 
   ).on("mouseout", ".control", ->
-    $(this).attr 'src', $(this).attr('src').slice(0,-4) + '_bw.png'
+    #alert $(this).attr('src').slice(-7,-1)
+    unless $(this).attr('src').slice(-7,-1) == '_bw.pn'
+      $(this).attr 'src', $(this).attr('src').slice(0,-4) + '_bw.png'
 
   ).on("dblclick", ".radio", ->
     if ($("#maximized").is(":visible")) then minimizeradio($(this)) else maximizeradio($(this))
@@ -373,8 +388,8 @@ $ ->
       url: "/bookmark/" + $(this).attr("ID")
       statusCode:
         200: ->
-          star.removeClass('bookmark')
           star.addClass('rmbookmark')
+          star.removeClass('bookmark')
           star.attr('src', '/static/ico/star.png')
         444: ->
           alert "Error, are you logged in?"
@@ -386,8 +401,8 @@ $ ->
       url: "/rmbookmark/" + $(this).attr("ID")
       statusCode:
         200: ->
-          star.removeClass('rmbookmark')
           star.addClass('bookmark')
+          star.removeClass('rmbookmark')
           star.attr('src','/static/ico/star-empty.png')
         444: ->
           alert "Error, are you logged in?"
@@ -460,19 +475,15 @@ $ ->
   ).on("blur", ".mdtxt", ->
     event.preventDefault()
   
-  ).on("mousewheel", ".stack", (e) ->
-    e.preventDefault()
-    e.stopPropagation()
+  ).on("mousewheel", ".stack", (e, delta) ->
     image = $(this).find('.stack_image:visible')
-    delta = e.originalEvent.wheelDelta || e.originalEvent.detail
-    #if !delta
-    #  delta = e.originalEvent.detail
     if delta > 0 and image.nextAll().length > 2
       image.next().show()
       image.hide()
     else if delta < 0 and image.prev().length > 0
       image.prev().show()
       image.hide()
+    return false
 
   ).on("click", "#user_settings", ->
     $("#userinfo").toggle("slide", {direction: "right"}, 300)
@@ -740,10 +751,14 @@ $ ->
           $("#deletecase_dialog").hide()
   
   ).on("click", ".moveradioup", ->
-    $(this).parent().insertBefore($(this).parent().prev())
+    if $(this).parent().parent().prev().length
+      $(this).parent().parent().insertBefore($(this).parent().parent().prev())
+      $(this).trigger "mouseout"
 
   ).on("click", ".moveradiodown", ->
-    $(this).parent().insertAfter($(this).parent().next())
+    if $(this).parent().parent().next().length
+      $(this).parent().parent().insertAfter($(this).parent().parent().next())
+      $(this).trigger "mouseout"
   
   ).on("click", ".removeradio", ->
     $(this).parent().addClass "selected"

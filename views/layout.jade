@@ -2,7 +2,7 @@
 html
   head
     meta(name='viewport', content='initial-scale=1.0, width=device-width')
-    title RADIOCA.SE - #{title}
+    title RADIOCASE - #{title}
 
     link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
     link(rel='stylesheet', href='/stylesheets/fonts.css')
@@ -12,7 +12,7 @@ html
     script(src = '/static/js/jquery-ui-1.8.16.custom.min.js')
     script(src = '/auth/client')
     //script(src = 'https://platform.twitter.com/widgets.js')
-    script(src = '/static/js/jquery.mousewheel.min.js')
+    script(src = '/static/js/jquery.mousewheel.js')
     script(src = '/static/js/Markdown.Converter.js')
     script(src = '/static/js/Markdown.Sanitizer.js')
     script(src = '/static/js/knockout-2.2.0.js')
@@ -24,9 +24,9 @@ html
     #wrap
       #sl
         a(href='/cases/0/-1')
-          .orbitron.vertical RADIOCA.SE
+          .orbitron.vertical RADIOCASE
       #container
-        #usercontrols
+        #usercontrols.rounded
           a#sign_in 
             .sign_in_with_twitter
               button

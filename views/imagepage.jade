@@ -14,5 +14,15 @@ block casepagecontent
             | #{r.caption}
           .md
           img.control.textedit.session(src='/static/ico/pencil_bw.png')
+        - if (r.dcm)
+          .dcm.control
+            a.getdicom(href="osirix://?methodName=downloadURL&URL='http://radioca.se/dicom/" + r.dcm + "a.zip'", target="_self")
+              img.dcm_yellow(src='/static/ico/dicom_orange.svg')
+            .postdcm(style='display:none')
+        - else
+          .dcm.nodcm.control(style='display:none')
+            img.dcm_grey(src='/static/ico/dicom.svg')
+            .postdcm(style='display:none')
+          img.control.textedit.session(src='/static/ico/pencil_bw.png')
         img.control.removeradio(style='display:none', src='/static/ico/cross_bw.png')
     img.control#addstack(style='display:none', src='/static/ico/plus_bw.png')
