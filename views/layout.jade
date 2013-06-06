@@ -22,11 +22,42 @@ html
     //!= js('client')
   body
     #wrap
-      #sl
-        a(href='/cases/0/-1')
-          .orbitron.vertical RADIOCASE
-      #container
-        #usercontrols.rounded
+      #header
+        #sl
+          a(href='/')
+            .orbitron RADIOCASE
+        - if (creator)
+          span.author 
+            | by:
+            a(href='https://twitter.com/intent/user?screen_name=#{creator}', target='_blank', title='Link to twitter')
+              | @#{creator}
+            | &#x2002;
+            - if (bookmarked)
+              img.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
+            - else 
+              img.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
+          span#lock
+            a.abutton#lock(title='Edit Page')
+              span#locked
+                img.control(src='/static/ico/pencil_bw.png')
+              span#open
+                img.control(src='/static/ico/tick_bw.png')
+          span#controls
+            img.control#help(src='/static/ico/question_bw.png')
+            img.control#savepage(src='/static/ico/disc_bw.png')
+            span#savepage_dialog(style='display:none')
+              button.rounded(id='savepage_confirm', type='button')
+                | Save page
+            img.control#deletepage(src='/static/ico/minus_bw.png')
+            span#deletepage_dialog(style='display:none')
+              button.rounded(id='deletepage_confirm', type='button')
+                | Delete Page
+            img.control#newpage(src='/static/ico/plus_bw.png')
+            img.control#boxit(src='/static/ico/box_bw.png')
+        - if (created)
+          #created(style='display:none')
+            | #{created}
+        #usercontrols
           a#sign_in 
             .sign_in_with_twitter
               button
@@ -38,7 +69,7 @@ html
             //img#twitbutton(src='/static/img/sign-in-with-twitter-d.png')
           #userinfo(style='display:none')
             a(id='sign_out') sign out &nbsp;
-        block mainContent
+      block mainContent
       #maximized
       #horizon
         #newcase_dialog.dialog_box(style='display:none')
@@ -204,15 +235,15 @@ html
             | Delete
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
-    #footer
-      a(href='/')
-        | Home
-      | &#x2002;
-      a(href='/stat/about')
-        | About
-      | &#x2002;
-      a(href='mailto:info@radioca.se')
-        | Contact
+      #footer
+        a(href='/cases/0/-1')
+          | Cases
+        | &#x2002;
+        a(href='/stat/about')
+          | About
+        | &#x2002;
+        a(href='mailto:info@radioca.se')
+          | Contact
 script(type='text/javascript')
   $(function(){
     var user = '#{user}';

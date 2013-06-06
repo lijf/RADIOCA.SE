@@ -438,11 +438,11 @@ $ ->
   ).on("click", "#toggleDiagnosis", ->
     $('.diagnosis').toggleClass('invisible')
     if $('.diagnosis').hasClass 'invisible'
-      $(this).text "Show dx"
+      $(this).text ">"
 #      if isiPhone()
 #        changeZoomLevel "320"
     else
-      $(this).text "Hide dx"
+        $(this).text "<"
 #      if isiPhone()
 #        changeZoomLevel "320"
 

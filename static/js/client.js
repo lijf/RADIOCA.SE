@@ -505,9 +505,9 @@
     }).on("click", "#toggleDiagnosis", function() {
       $('.diagnosis').toggleClass('invisible');
       if ($('.diagnosis').hasClass('invisible')) {
-        return $(this).text("Show dx");
+        return $(this).text(">");
       } else {
-        return $(this).text("Hide dx");
+        return $(this).text("<");
       }
     }).on("focus", "#filter", function() {
       if ($(this).val() === 'Type to filter') return $(this).val('');

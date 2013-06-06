@@ -14,14 +14,17 @@ block mainContent
             h4.orbitron List cases
   script(type='text/javascript')
     $(function(){
-      // Hides small logo
       $('#sl').hide();
+      $('#footer').hide();
       $('.sign_in_with_twitter').hide();
-      setInterval(function(){
-        visimg = $('#frontradio > .radio > .stack > .stack_image:visible:first');
+      visimg = $('#frontradio > .radio > .stack > .stack_image:visible:first');
+      $(window).load(function(){
+        return setInterval(function(){
         if (visimg.next().length){
           visimg.next().show();
           visimg.hide();
+          visimg = visimg.next();
         }
         }, 350)
+      });
       });

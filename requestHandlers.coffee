@@ -12,6 +12,8 @@ renderRoot = (req, res) ->
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
     icds: ""
+    creator: ""
+    created: ""
 
 renderNewRoot = (req, res) ->
   index = {}
@@ -28,6 +30,8 @@ renderNewRoot = (req, res) ->
       user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
       icds: ""
       radios: index.radios or ""
+      creator: ""
+      created: ""
 
 rendercases = (req, res, start, end) ->
   if req.isAuthenticated()
@@ -62,6 +66,8 @@ rendercases = (req, res, start, end) ->
                   bookmarks: bookmarks
                   completed: completed
                   icds: ""
+                  creator: ""
+                  created: ""
 
 render = (req, res, theCase, editor) ->
   #console.dir theCase

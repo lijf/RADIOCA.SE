@@ -1,46 +1,47 @@
 extends casepage
 
 block casepagecontent
-  #texts
-    - each t, i in texts
-      br
-      .text
-        a.toggletext  
-          .txt
+  #casepagecontent
+    #texts
+      - each t, i in texts
+        br
+        .text
+          a.toggletext  
+            .txt
+              textarea.mdtxt(style='display:none')
+                | #{t.caption} 
+              .md
+              img.control.textedit.session(src='/static/ico/pencil_bw.png')
+            img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
+          .txt.invisible
             textarea.mdtxt(style='display:none')
-              | #{t.caption} 
+              | #{t.val}
+            .md
+            br
+            img.control.textedit.session(src='/static/ico/pencil_bw.png')
+      br
+      img.control#addtext(style='display:none', src='/static/ico/plus_bw.png')
+    #radios
+      - each r in radios
+        .radio(id='#{r.ID}')
+          .stack(tabindex='-1')
+            - if (r.images)
+              - each i in r.images
+                img.stack_image(src='#{i}')
+          img.control.removeradio(style='display:none', src='/static/ico/cross_bw.png')
+          .caption
+            textarea.mdtxt(style='display:none')
+              | #{r.caption}
             .md
             img.control.textedit.session(src='/static/ico/pencil_bw.png')
-          img.control.deletetext.session(style='display:none', src='/static/ico/cross_bw.png')
-        .txt.invisible
-          textarea.mdtxt(style='display:none')
-            | #{t.val}
-          .md
+          - if (r.dcm)
+            .dcm.control
+              a.getdicom(href="osirix://?methodName=downloadURL&URL='http://radioca.se/dicom/" + r.dcm + "a.zip'", target="_self")
+                img.dcm_yellow(src='/static/ico/dicom_orange.svg')
+              .postdcm(style='display:none')
+          - else
+            .dcm.nodcm.control(style='display:none')
+              img.dcm_grey(src='/static/ico/dicom.svg')
+              .postdcm(style='display:none')
           br
-          img.control.textedit.session(src='/static/ico/pencil_bw.png')
-    br
-    img.control#addtext(style='display:none', src='/static/ico/plus_bw.png')
-  #radios
-    - each r in radios
-      .radio(id='#{r.ID}')
-        .stack(tabindex='-1')
-          - if (r.images)
-            - each i in r.images
-              img.stack_image(src='#{i}')
-        img.control.removeradio(style='display:none', src='/static/ico/cross_bw.png')
-        .caption
-          textarea.mdtxt(style='display:none')
-            | #{r.caption}
-          .md
-          img.control.textedit.session(src='/static/ico/pencil_bw.png')
-        - if (r.dcm)
-          .dcm.control
-            a.getdicom(href="osirix://?methodName=downloadURL&URL='http://radioca.se/dicom/" + r.dcm + "a.zip'", target="_self")
-              img.dcm_yellow(src='/static/ico/dicom_orange.svg')
-            .postdcm(style='display:none')
-        - else
-          .dcm.nodcm.control(style='display:none')
-            img.dcm_grey(src='/static/ico/dicom.svg')
-            .postdcm(style='display:none')
-        br
-    img.control#addstack(style='display:none', src='/static/ico/plus_bw.png')
+      img.control#addstack(style='display:none', src='/static/ico/plus_bw.png')

@@ -1,16 +1,32 @@
-#caselist
-    margin-top 0.5em
+td 
+    padding-right 1em
+th
+    padding-right 5px
+th#toggleDiagnosis
+    cursor pointer
+th#toggleDiagnosis:hover
+    color white
+#header
+    position fixed
+    width 100%
+    height 1.5em
+    background black
+    z-index 10
 .blackshadow
     black -2px 2px 3px
 .orange
     color #ff9900
 .bookmark
+    position absolute
+    top -5px
     cursor pointer
-    float left
-    clear left
+    //float left
+    //clear left
 .rmbookmark
-    float left
-    clear left
+    position absolute
+    top -5px
+    //float left
+    //clear left
     cursor pointer
 .sign_in_with_twitter .icon
     background transparent url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAiCAYAAAAd6YoqAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NEY1RkNEQkY1MThFMTFFMDg0OTdCQjJGMUY4MjVBNDAiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NEY1RkNEQzA1MThFMTFFMDg0OTdCQjJGMUY4MjVBNDAiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0RjVGQ0RCRDUxOEUxMUUwODQ5N0JCMkYxRjgyNUE0MCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0RjVGQ0RCRTUxOEUxMUUwODQ5N0JCMkYxRjgyNUE0MCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuikUpQAAAL6SURBVHjazNlNSFRRFMDxGbM0LfrQSoSsCJUog1oUmBFp0MeiUqKkRUEFQdEmisBFRdSmiAhatCiQBFuUEX2JrSpKUgIzCvuALHJjpWUjjSnO7X/rCCYz8959c2deB34w48y79x3ve+/eeyaolAr4FEEsRw/2YRYOYhq6EDJqTSfik73oQrf6G+/xVV5XmbYX9GlE9uPCqPdhfMQ7XMV1DJk0mObweQ6mW07iwJgkdPxCN97iC8YZt+owZNvwHUcx28LllINPyjmeY41J205fWIKINN6Pa6iWE/KSyHnlPnS/FzHDRiLavSidfMY5zDdIokJ5i0YEbSSiRyUUo5M+nEaBi3aalPc4ZSORkXslFKcjndAVLItxfKVKPLbaSEQrRYdDZ8OojzJCDywk8hrZiSQyEQ14gx6XnXaiWI4vxICyE9WxzjPNxRM6LMuGIoM5ZS4eYzPKkWFpDlod4+9Zbmf2XbjsoeOfGLA4qbZhJ75hEgpRhXaTJcoZHAr4HxFZvkyQhWcr1puutRbKSnULZvqUyDB68Uz+uQ91cumGjbzCfSz2MZE+1KMBnSjWo2M6IrVyjf5PoZM5bprIblzy8aSVjMgPWfLX4cafTZiHhV+N8i9aMEXmNisbq6XYjhJ5nZuiEdFTwJ6o++YEd4gb5aZLT1EiG9CYjETuSuOpiGaUyX1ivNV1ig8pnARPxEoiYOGSqJEnyErMQ36SEjmLpri1JS6tBZ7qSP+GXlDeksnJdrSjVNZtcYsPuTiMTR4exZNxbFRtynboOleZyZ49D62oRZGLA7OkiNaWxDmj120SY+eRPLSgAE9wBy+kpBmRPcUcrMJa+V6yQte2KuU8PNW1dFXktvI3nqLE9DKP9cER2X+nMgZxEhleambxPqyUwnIqQhcWyhOpYjp9QVct1qE5CSc/hDqpzmQmWo51u0QZjwrs0NtKTE3gRu7ATdkcvbT2Y4uHtVa+VEZWYJEUFrKRKQmPLCnCol9+MtB760eyRR20/Zj7LcAATi6n5ZtkolEAAAAASUVORK5CYII=") no-repeat 0 0
@@ -69,11 +85,6 @@
 #icd_res_box
     overflow auto
     max-height 100px
-#toggleDiagnosis
-    position absolute
-    top 5px
-    right 50%
-    margin-right -37px
 tbody > tr > td.diagnosis
     font-size 0.8em
 #addtext
@@ -99,8 +110,11 @@ tbody > tr > td.diagnosis
     top 5% 
     left 5%
 .author
-    vertical-align top 
-    float left
+    position fixed
+    left 120px
+    top 4px
+    //vertical-align top 
+    //float left
 #newcase > .control
     margin 10px
 .invisible
@@ -117,17 +131,16 @@ tbody > tr > td.diagnosis
 #usercontrols
     font-size 1em
     position absolute
-    top 10px
-    right 5%
+    top 5px
+    right 0
 #wrap
     min-height 100%
     position relative
 #markdown-help .textedit
     margin 0
-input#filter:focus
-    width 12em
 input#filter
     //background #3ea8bb -webkit-gradient(linear, left bottom, left top, color-stop(0, #222), color-stop(0.81, #444))
+    z-index 100
     background-color #aaa
     //border 1px solid #094b60
     -moz-border-radus 4px
@@ -135,10 +148,13 @@ input#filter
     font-size 1em 
     //font-family "Lucida Grande" "Lucida Sans Unicode"
     //height 2em
-    padding 2px
-    position absolute
-    top 5px
-    left 5% 
+    //padding 2px
+    //position absolute
+    //left 5% 
+    position fixed
+    top 0
+    left 50%
+    margin-left -74px
     width 9em
     color #222
     font-family monospace
@@ -210,12 +226,12 @@ th.sorted-desc
 #nextpage
     position fixed
     right 2px
-    bottom 2px
+    bottom -3px
     z-index 10000
 #prevpage
     position fixed
     left 2px
-    bottom 2px
+    bottom -3px
     z-index 10000
 .language
     margin 10px
@@ -232,7 +248,7 @@ th.sorted-desc
     margin-left -10px
 .control
     cursor pointer 
-    margin 0 10px
+    margin 0 7px
 button
     //height 21px
     //vertical-align top
@@ -302,12 +318,16 @@ a
 //    height 24px
 span#lock
     display none
-    float left
+    //float left
+    position absolute
+    left 240px
 span#open
     display none
 span#controls
     display none
-    float left
+    //float left
+    position absolute
+    left 274px
 #disclaimer
     clear both
 #timestamp
@@ -383,9 +403,12 @@ span#controls
     font-family "Damion"
     text-shadow #a00 0.5px -2px 5px
 #sl
-    position fixed
-    top 50px
-    left -45px
+    position absolute
+    top 5px
+    left 2px
+    //position fixed
+    //top 50px
+    //left -45px
 #indexhorizon
     top 6em
     left 0px
@@ -439,17 +462,19 @@ span#controls
     border-style solid
     border-color #f8b03b
 #casestable
-    width 100%
-    margin-top 2em
+    margin auto
 #footer
-    position relative
+    //position absolute
+    position fixed
+    bottom 0
     background-color black
-    margin-top -25px
+    //margin-top -25px
     height 20px
     text-align center
-    clear both
+    //clear both
     width 100% 
     padding-top 5px
+    //padding-bottom 25px
 #session
     float right
     height 20px
@@ -493,11 +518,16 @@ span#controls
 .deletecase
     cursor pointer
     vertical-align middle
+#casepagecontent
+    height 100%
+    width 100%
 #cases
     line-height 135%
     width 100%
-    float left
+    height 100%
+    //float left
     text-align center
+    padding-top 25px
 #texts
     margin-top -15px
     width 50%
@@ -518,7 +548,15 @@ span#controls
     position absolute
     right 0
     bottom 0
-@media screen and (max-width: 450px)
+@media screen and (max-width: 500px)
+    span#lock 
+        top 25px
+        left 0px
+    span#controls
+        top 25px
+        left 34px
+    #header
+        position static
     .big_logo
         right 0%
         font-size 2.5em
@@ -530,20 +568,28 @@ span#controls
     #db
         display none
     input#filter
-       left 0px
-       margin-top 2em
-       width 9em
+       //margin-top 1.7em
+       width 100%
+       left 0
+       margin-left 0
+       //top 0
+       height 1em
+       bottom 25px
+       top auto
+       z-index 100
     button#toggleDiagnosis
        margin-top 2em
        right 0
        margin-right 0
-    #caselist
-        margin-top 5em
-        font-size .7em
-    #markdown-help
-        width 100%
     #sl
         display none
+    .author
+        position static
+    #caselist
+        font-size .7em
+        //padding-top 5em
+    #markdown-help
+        width 100%
     #centereddiv
         left 0
     #container
@@ -567,6 +613,9 @@ span#controls
         margin-top 25px
     #usercontrols
         right 0
+    //#footer
+    //    position static
+    //    padding-bottom 25px
 @media screen and (max-width: 585px)
     #list_cases
         font-size 11pt

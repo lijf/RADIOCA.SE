@@ -12,34 +12,6 @@ block mainContent
     #meta_pagetype.hidden #{pagetype}
     #meta_nextpage.hidden #{nextpage}
     #meta_prevpage.hidden #{prevpage} 
-    span.author by:
-    a.author(href='https://twitter.com/intent/user?screen_name=#{creator}', target='_blank', title='Link to twitter')
-      | @#{creator}
-    | &#x2002;
-    - if (bookmarked)
-      img.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
-    - else 
-      img.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
-    span#lock
-      a.abutton#lock(title='Edit Page')
-        span#locked
-          img.control(src='/static/ico/pencil_bw.png')
-        span#open
-          img.control(src='/static/ico/tick_bw.png')
-    span#controls
-      img.control#help(src='/static/ico/question_bw.png')
-      img.control#savepage(src='/static/ico/disc_bw.png')
-      span#savepage_dialog(style='display:none')
-        button.rounded(id='savepage_confirm', type='button')
-          | Save page
-      img.control#deletepage(src='/static/ico/minus_bw.png')
-      span#deletepage_dialog(style='display:none')
-        button.rounded(id='deletepage_confirm', type='button')
-          | Delete Page
-      img.control#newpage(src='/static/ico/plus_bw.png')
-      img.control#boxit(src='/static/ico/box_bw.png')
-    #created(style='display:none')
-      | #{created}
   #title
     .txt
       textarea.mdtxt(style='display:none')

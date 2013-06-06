@@ -3,8 +3,6 @@ extends layout
 block mainContent
   #cases
     input.rounded#filter(type='text', name='filter', value='Type to filter')
-    button.rounded#toggleDiagnosis(type='button')
-      | Show dx
     #caselist
       table#casestable
         thead
@@ -15,10 +13,10 @@ block mainContent
             th.sortable.title Title
             th.sortable.diagnosis.invisible Diagnosis
             th.invisible Creator
-            th 
+            th            
             th
             th
-            th
+            th#toggleDiagnosis(title="Show/hide dx") >
         tbody
           - each c in cases
             - if (c.hidden == 'false' || c.creator == user || user == 'radioca1se' )
@@ -52,6 +50,7 @@ block mainContent
       br
       img.control#newcase(src='/static/ico/plus_bw.png')
   script(type='text/javascript')
+    $('#sl').show();
     var bookmarks = [#{bookmarks}];
     var completed = [#{completed}];
     for (var i = 0; i < completed.length; i++){
