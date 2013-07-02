@@ -59,13 +59,13 @@ app.use (req,res,next) ->
 
     return
   if req.accepts("json")
-    res.send eror: "Not found"
+    res.send error: "Not found"
     return
   res.type("txt").send "Not found"
 
 app.use (err, req, res, next) ->
   res.status err.status or 500
-  res.render "500"
+  res.render "500",
     error: err
 
 db.on "error", (err) ->

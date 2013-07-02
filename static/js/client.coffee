@@ -262,7 +262,7 @@ sessionButton = (user) ->
 converter = Markdown.getSanitizingConverter()
 
 authcallback = (data) ->
-  #alert data
+  alert data
   $.ajax
     url: "/signed_in"
     statusCode:

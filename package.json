@@ -2,18 +2,18 @@
     "name": "express-radiocase",
     "version": "0.0.1",
     "dependencies": {
-        "stylus": ">=0.13.7",
-        "jade": ">=0.15.3",
-        "express": ">=2.5.1",
-        "formidable": ">=1.0.7",
-        "zip": ">=0.0.4",
-        "redis": ">=0.6.7",
-        "oauth": ">=0.9.5",
-        "easy-oauth": ">=0.2.0",
-        "markdown": ">=0.2.1",
-        "connect-form": ">=0.2.1",
-        "redback": ">=0.2.7",
-        "toobusy": ">=0.2.3",
-        "connect-assets": ">=2.3.3"
+        "stylus": "*",
+        "jade": "*",
+        "express": "*",
+        "formidable": "*",
+        "zip": "*",
+        "redis": "*",
+        "oauth": "*",
+        "easy-oauth": "*",
+        "markdown": "*",
+        "connect-form": "*",
+        "redback": "*",
+        "toobusy": "*",
+        "connect-assets": "*"
     }
 }
