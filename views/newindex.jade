@@ -13,9 +13,9 @@ block mainContent
           a#list_cases(href='/cases/0/-1') 
             h4.orbitron List cases
   script(type='text/javascript')
-    $(function(){
+    $(document).ready(function(){
       $('#sl').hide();
-      $('#footer').hide();
+      //$('#footer').hide();
       $('.sign_in_with_twitter').hide();
       visimg = $('#frontradio > .radio > .stack > .stack_image:visible:first');
       $(window).load(function(){

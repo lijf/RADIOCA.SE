@@ -153,14 +153,13 @@ html
             - each icd in icds
               .ICDCode
                 a.icdt #{icd}
-                a.removeICD
-                  img.control(src='/static/ico/small_minus_bw.png')
+                img.removeICD.control(src='/static/ico/minus_bw.png')
                 br
           br
           form#icd_form
             | Find ICD: 
             input#icd_req(type='text', name='icd')
-            img.control#chooseICD(src="/static/ico/smallplus_bw.png")
+            img.control#chooseICD(src="/static/ico/plus_bw.png")
           br
           #icd_res_wrap
             #icd_res_box
@@ -173,20 +172,22 @@ html
             img.control(src='/static/ico/cross-circle_bw.png')
         #addstack_dialog.dialog_box(style='display:none')
           | Please choose image(s) to upload.
-          br
           | If multiple images are uploaded together,
-          br
           | they will be combined to a stack.
           br
           br
           form#uploadform
-            .fileinputs
-              input.file(type='file', name='userfile', id='userfile', multiple='multiple')
-              .fakefile
-                input
-                button.rounded
-                  | Browse
-            input.input1.rounded(id='addstack_confirm', type='submit', value='Upload file(s)')
+            //.fileinputs
+            //  input.file(type='file', name='userfile', id='userfile', multiple='multiple')
+            //  .fakefile
+            //    input
+            //    button.rounded
+            //      | Browse
+            div(style='position:relative;')
+              #file(style='position:absolute;') 
+                | Click here to select a file
+                input(type='file', name='userfile', multiple='multiple', style='opacity:0; z-index:1;', onchange='document.getElementById("file").innerHTML = this.value;')
+            input.input1#addstack_confirm(type='submit', value='Upload file(s)')
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #adddcm_dialog.dialog_box(style='display:none')

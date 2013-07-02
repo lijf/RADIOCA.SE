@@ -72,8 +72,8 @@ db.on "error", (err) ->
   console.log "Redis Error " + err
 
 app.get "/", (req, res) ->
-  if req.isAuthenticated() then res.redirect "/cases/0/-1"
-  else requestHandlers.renderNewRoot req, res
+  #if req.isAuthenticated() then res.redirect "/cases/0/-1"
+  requestHandlers.renderNewRoot req, res
 
 app.get "/newindex", (req, res) ->
   requestHandlers.renderNewRoot req, res
@@ -102,6 +102,8 @@ app.get "/stat/:pagename", (req, res) -> # this may be to much of a 'catch all'
     signed_in: req.isAuthenticated()
     user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
     icds: ""
+    creator: ""
+    created: ""
 
 app.post "/newcase", (req, res) ->
   db.sismember "userCanAdd", req.getAuthDetails().user.user_id, (err, canAdd) ->

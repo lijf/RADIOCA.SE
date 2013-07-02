@@ -495,7 +495,7 @@
         });
       }
     }).on("click", "#chooseICD", function() {
-      return $("#icd").append("<div class='ICDCode'><a class='icdt'>" + $("#icd_req").val() + "</a><a class='removeICD'><img class='control' src='/static/ico/small_minus_bw.png'></a></div><br>");
+      return $("#icd").append("<div class='ICDCode'><a class='icdt'>" + $("#icd_req").val() + "</a><img class='removeICD control' src='/static/ico/small_minus_bw.png'></a></div><br>");
     }).on("click", ".removeICD", function() {
       return $(this).parent().remove();
     }).on("click", ".icdt", function() {

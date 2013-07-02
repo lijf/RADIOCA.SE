@@ -424,7 +424,7 @@ $ ->
         filter2('.icdcode', query)
 
   ).on("click", "#chooseICD", ->
-    $("#icd").append("<div class='ICDCode'><a class='icdt'>" + $("#icd_req").val() + "</a><a class='removeICD'><img class='control' src='/static/ico/small_minus_bw.png'></a></div><br>")
+    $("#icd").append("<div class='ICDCode'><a class='icdt'>" + $("#icd_req").val() + "</a><img class='removeICD control' src='/static/ico/small_minus_bw.png'></a></div><br>")
 
   ).on("click", ".removeICD", ->
     $(this).parent().remove()

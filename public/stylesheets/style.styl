@@ -1,7 +1,5 @@
 td 
     padding-right 1em
-th
-    padding-right 5px
 th#toggleDiagnosis
     cursor pointer
 th#toggleDiagnosis:hover
@@ -78,6 +76,9 @@ th#toggleDiagnosis:hover
     position absolute
     top -12px
     left -24px
+#markdown-help>.Cancel
+    top 0px
+    left -7px
 #icd_req
     width 55%
     background-color #FFFFFF
@@ -152,10 +153,11 @@ input#filter
     //position absolute
     //left 5% 
     position fixed
-    top 0
+    top 2px
     left 50%
-    margin-left -74px
-    width 9em
+    margin-left -125px
+    width 250px
+    height 15px
     color #222
     font-family monospace
 input.rounded
@@ -166,7 +168,7 @@ input.rounded
     padding 2px
 .rounded
     font-family monospace
-    background #3ea8bb -webkit-gradient(linear, left bottom, left top, color-stop(0, #222), color-stop(0.81, #444))
+    background #000 -webkit-gradient(linear, left bottom, left top, color-stop(0, #222), color-stop(0.81, #444))
     //background #222
     //border 1px solid #094b60
     -moz-border-radus 4px
@@ -237,15 +239,15 @@ th.sorted-desc
     margin 10px
     white-space nowrap
 .modality
-    margin 10px    
+    margin 10px 5px
     white-space nowrap
 .description
-    margin 10px
+    margin 10px 5px
     white-space nowrap
 #modalities_form
-    margin-left -10px
+    margin-left -6px
 #description_form
-    margin-left -10px
+    margin-left -6px
 .control
     cursor pointer 
     margin 0 7px
@@ -270,6 +272,7 @@ a
     float left
     width 100%
     position relative
+    margin 2px
 .radioimagepage
     width 50%
 #help_cancel
@@ -279,6 +282,7 @@ a
     right 5px
 .text
     position relative
+    margin 0 2px 0 4px
 .deletetext
     cursor pointer
     position absolute
@@ -295,6 +299,15 @@ a
     bottom 5px
     left 0px
     margin-left 0px
+#addstack_confirm
+    width 69px
+    left 80px
+    position absolute
+    top 0
+.removeICD
+    margin-bottom -6px
+#chooseICD
+    margin-bottom -6px
 .moveradioup
     cursor pointer
     position absolute
@@ -383,7 +396,6 @@ span#controls
     background-color black
     width 100%
     padding-left 5px
-    padding-top 5px
 .big_logo
     font-weight bold
     font-size 4em
@@ -392,9 +404,9 @@ span#controls
     z-index 10000
     right 15%
 #frontradio
-    width 100%
     max-width 512px
     max-height 512px
+    overflow hidden
     margin auto
 .orbitron
     font-family "Orbitron"
@@ -448,7 +460,7 @@ span#controls
 .dialog_box
     -moz-border-radus 10px
     -webkit-border-radius 10px
-    font-size 0.9em
+    //font-size 0.9em
     border-radius 10px
     width 320px
     position absolute
@@ -457,7 +469,7 @@ span#controls
     top -25%
     visibility visible
     background #222
-    padding 8px
+    padding 7px
     border 2px
     border-style solid
     border-color #f8b03b
@@ -489,11 +501,15 @@ span#controls
 #imagepageradios
     width 100%
 .selected
-    border-color #f00
-    border solid
+    border-color #559dc9
+    border-style solid
+    border-width 2px
+    margin 0
 .selectedtext
-    border-color #f00
-    border solid
+    border-color #559dc9
+    border-style solid
+    border-width 2px
+    margin -2px 0 -2px 2px
 .stack
     position relative
     overflow hidden
@@ -573,7 +589,6 @@ span#controls
        left 0
        margin-left 0
        //top 0
-       height 1em
        bottom 25px
        top auto
        z-index 100
@@ -647,28 +662,32 @@ textarea
     //background-image url("/static/img/paper/Texture0213.jpg")
     color #006
     position absolute
-    width 45%
-    top 40px
-    left 5%
-    z-index 10000
+    width 50%
+    top 25px
+    left 0
+    //z-index 10000
 #editbar
     height 20px
     overflow hidden
     width 12em
 #uploadform
     position relative
+    top 2px
 .fileinputs
     position relative
 .fakefile
     position absolute
-    top -5px
-    left 0px
+    top 0
     z-index 1
+    width 70px
+    height 22px
 .file
     position relative
     -moz-opacity 0
     opacity 0
     z-index 2
+    width 70px
+    height 22px
 button
     cursor pointer
     vertical-align top
@@ -679,6 +698,10 @@ input
     border 0
     background-color #222
     color #aaa
+    width 70px
+    position absolute
+    padding 0
+    height 22px
 .hidden
     width 0px
     height 0px
