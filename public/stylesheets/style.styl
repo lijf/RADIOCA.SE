@@ -153,22 +153,19 @@ input#filter
     //position absolute
     //left 5% 
     position fixed
-    top 2px
+    top 0
     left 50%
     margin-left -125px
     width 250px
     height 15px
     color #222
     font-family monospace
-input.rounded
-    //-moz-border-radus 10px
-    //-webkit-border-radius 10px
-    //border-radius 10px
-    background #aaa
-    padding 2px
 .rounded
     font-family monospace
-    background #000 -webkit-gradient(linear, left bottom, left top, color-stop(0, #222), color-stop(0.81, #444))
+    padding 2px
+    border-style solid
+    border-width 2px
+    //background #000 -webkit-gradient(linear, left bottom, left top, color-stop(0, #222), color-stop(0.81, #444))
     //background #222
     //border 1px solid #094b60
     -moz-border-radus 4px
@@ -299,9 +296,16 @@ a
     bottom 5px
     left 0px
     margin-left 0px
+#userfile
+    width 100%
+    left 0
+#addstack
+    padding-bottom 25px
+#addstack_dialog
+    padding 7px 7px 28px 7px
 #addstack_confirm
     width 69px
-    left 80px
+    right 0
     position absolute
     top 0
 .removeICD
@@ -678,9 +682,6 @@ textarea
 .fakefile
     position absolute
     top 0
-    z-index 1
-    width 70px
-    height 22px
 .file
     position relative
     -moz-opacity 0

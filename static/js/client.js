@@ -333,7 +333,6 @@
   converter = Markdown.getSanitizingConverter();
 
   authcallback = function(data) {
-    alert(data);
     return $.ajax({
       url: "/signed_in",
       statusCode: {
@@ -341,7 +340,7 @@
           return window.location.pathname = window.location.pathname;
         },
         200: function() {
-          return window.location.pathname = window.location.pathname;
+          return $("#sign_in").attr('id', 'user_settings').html(" \u25c4 " + data.user.username);
         },
         403: function(data) {
           return alert("not allowed - if you feel that this is an error, please write to info@radioca.se");
@@ -741,7 +740,7 @@
     }).on("click", "#addstack", function() {
       return $("#addstack_dialog").show();
     }).on("click", "#addstack_confirm", function() {
-      var userFile;
+      var d, userFile;
       $("#addstack_dialog").hide();
       userFile = $("#userfile").val();
       $("#uploadform").attr({
@@ -753,7 +752,8 @@
         target: "postframe"
       });
       $("#uploadform").submit();
-      $("<div class=\"radio\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "edit caption </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
+      d = new Date().getTime().toString() + imageno;
+      $("<div class=\"radio\" id=\"temp" + d + "\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "edit caption </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
       $(".radio:last", top.document).append($("<img class=\"control removeradio\" src=\'/static/ico/cross.png\'>"));
       return $(".caption:last", top.document).append($("<img class=\"control textedit\" src=\'/static/ico/pencil.png\' style=\'display:inline\'>"));

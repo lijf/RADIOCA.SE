@@ -184,24 +184,21 @@ html
             //    button.rounded
             //      | Browse
             div(style='position:relative;')
-              #file(style='position:absolute;') 
-                | Click here to select a file
-                input(type='file', name='userfile', multiple='multiple', style='opacity:0; z-index:1;', onchange='document.getElementById("file").innerHTML = this.value;')
-            input.input1#addstack_confirm(type='submit', value='Upload file(s)')
+              //input#file(type='text', style='position:absolute;', value='Select file(s)') 
+              //input#userfile(type='file', name='userfile', multiple='multiple', style='opacity:0; z-index:1;', onchange='if(this.value.length){document.getElementById("file").value = this.value; document.getElementById("addstack_confirm").className = "input1 rounded"}else{document.getElementById("file").value = "Select files(s)"; document.getElementById=("addstack_confirm").className = "input1 rounded invisible"}')
+            input#userfile(type='file', name='userFile', multiple='multiple')
+            input.rounded#addstack_confirm(type='submit', value='Upload file(s)')
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #adddcm_dialog.dialog_box(style='display:none')
           | Please choose DICOM set to upload, if a set is already connected to this image it will be replaced.
-          br
-          br
           form#uploadformdcm
             .fileinputs
               input.file(type='file', name='userFileDcm', id='userFileDcm', multiple='multiple')
               .fakefile
-                input
                 button.rounded
                   | Browse
-            input.input1.rounded(id='adddcm_confirm', type='submit', value='Upload file(s)')
+            input.input1.rounded#adddcm_confirm(type='submit', value='Upload file(s)')
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
         #deletetext_dialog.dialog_box(style='display:none')
