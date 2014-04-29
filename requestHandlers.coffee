@@ -33,6 +33,24 @@ renderNewRoot = (req, res) ->
       creator: ""
       created: ""
 
+renderNewRoot2 = (req, res) ->
+  index = {}
+  index.radios = []
+  index.radios[0] = []
+  db.lrange "radio:1329820725600", 0, -1, (err, images) ->
+    index.radios[0].images = []
+    images.forEach (image, imgID) ->
+      index.radios[0].images[imgID] = image
+      console.dir index.radios
+    res.render "newindex2",
+      title: "Home"
+      signed_in: req.isAuthenticated()
+      user: (if req.isAuthenticated() then req.getAuthDetails().user.username else "0")
+      icds: ""
+      radios: index.radios or ""
+      creator: ""
+      created: ""
+      
 rendercases = (req, res, start, end) ->
   if req.isAuthenticated()
     userid = req.getAuthDetails().user_id
@@ -40,7 +58,7 @@ rendercases = (req, res, start, end) ->
     userid = "0"
   db.zrange "listed", start, end, (err, cases) ->
     if err or !cases[0]
-      return res.send "Error", 444
+      return res.send 444, "Error!"
     #console.log cases[0]
     sendcases = []
     db.smembers "bookmarks:" + userid, (err, bookmarks) ->
@@ -202,7 +220,7 @@ postImage2 = (req, res) ->
       db.rpush "case:" + req.params.id + ":page:" + req.params.page + ":radios", d
       db.rpush "user:" + req.getAuthDetails().user.username + ":radios", d
       db.set "case:" + req.params.id + ":page:" + req.params.page + ":radio:" + d + ":caption", "edit caption"
-      res.send d, 200
+      res.send 200, {d}
       #console.log "-> upload done"
 
   form.parse req, (err, fields, files) ->
@@ -225,7 +243,7 @@ deletePage = (req, res, cid, page) ->
         db.hset "case:" + cid + ":page:" + thePage.nextpage, "prevpage", thePage.prevpage
       db.del "case:" + cid + ":page:" + page
       #console.log redir
-      res.send redir, 200
+      res.send 200, redir
 
 removeRadio2 = (cid, page, radio) ->
   db.del "case:" + cid + ":page:" + page + ":radio:" + radio + ":caption"
@@ -292,7 +310,7 @@ putPage = (req, res) ->
       db.rpush "case:" + req.params.id + ":icds", i.code
     icdsString = JSON.stringify data.icds
     db.hset "case:" + req.params.id, "icds", icdsString
-  res.send "OK", 200
+  res.send 200, "OK"
 
 postNewpage = (req, res) ->
   cid = req.params.id
@@ -316,7 +334,7 @@ postNewpage = (req, res) ->
         db.hset "case:" + cid + ":page:" + prevpage, "nextpage", page
       unless nextpage == "0"
         db.hset "case:" + cid + ":page:" + nextpage, "prevpage", page
-      res.send "/case/" + cid + "/" + page, 200
+      res.send 200, "/case/" + cid + "/" + page
 
 #newpage = (req, res, cid, page, db, pagedata) ->
 #  trypage = "case:" + cid + ":page:" + page
@@ -333,7 +351,7 @@ removeCase = (req, res) ->
   #console.log "removeCase called"
   db.zrem "listed", cid
   db.rpush "removedCases", cid
-  return res.send "OK, removed case", 200
+  return res.send 200, "OK, removed case"
     
 exports.removeCase = removeCase
 exports.postNewpage = postNewpage
@@ -347,4 +365,6 @@ exports.cleanupCases = cleanupCases
 exports.rendercases = rendercases
 exports.renderRoot = renderRoot
 exports.renderNewRoot = renderNewRoot
+exports.renderNewRoot2 = renderNewRoot2
+exports.removeRadio2 = removeRadio2
 #exports.postDicom = postDicom

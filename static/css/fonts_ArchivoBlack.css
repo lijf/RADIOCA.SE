@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'Archivo Black';
+  src: url('/static/fonts/ArchivoBlack-Regular.eot');
+  src: url('/static/fonts/ArchivoBlack-Regular.eot#iefix') format('embedded-opentype'),
+       url('/static/fonts/ArchivoBlack-Regular.woff') format('woff'),
+       url('/static/fonts/ArchivoBlack-Regular.ttf') format('truetype'),
+       url('/static/fonts/ArchivoBlack-Regular.svg#ArchivoBlack') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

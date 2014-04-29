@@ -12,6 +12,7 @@
         "easy-oauth": "*",
         "markdown": "*",
         "connect-form": "*",
+	"redis": "*",
         "redback": "*",
         "toobusy": "*",
         "connect-assets": "*"

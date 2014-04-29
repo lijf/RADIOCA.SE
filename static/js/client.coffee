@@ -18,7 +18,7 @@ changeZoomLevel = (width) ->
     $('head').append sViewport
 
 isiPhone = ->
-  return ((navigator.platform.indexOf "iPhone" !=  -1) || (navigator.platform.indexOf "iPod" != -1)) 
+  return ((navigator.platform.indexOf "iPhone" !=  -1) || (navigator.platform.indexOf "iPod" != -1))
 
 findICD = (icdquery) ->
   json = {}
@@ -456,6 +456,7 @@ $ ->
       $(this).val('')
       # we want each row to be visible because if nothing is entered then all rows are matched
       $('tbody tr').removeClass('visible').show().addClass('visible')
+      #zebrarows('tbody tr:odd td', 'odd')
     # if there is text, let's filter
     else
       #$('tbody tr').removeClass('visible').show().addClass('visible')
@@ -464,6 +465,7 @@ $ ->
       #console.log querys
       querys.forEach (query) ->
         filter2('tbody tr.visible', query )
+        #zebrarows ".visible:even td", "odd"
 
   ).on("click", ".textedit", ->
     src = if $(this).attr('src') == '/static/ico/pencil.png' then '/static/ico/tick.png' else '/static/ico/pencil.png'
@@ -486,7 +488,8 @@ $ ->
     return false
 
   ).on("click", "#user_settings", ->
-    $("#userinfo").toggle("slide", {direction: "right"}, 300)
+    #$("#sign_out").toggle("slide", {direction: "right"}, 200)
+    $("#sign_out").toggle()
 
   ).on("click", "#sign_in", ->
     (openEasyOAuthBox "twitter", authcallback)
@@ -673,7 +676,7 @@ $ ->
         444: ->
           alert "Server dropped connection - are you logged in?"
         500 :->
-          alert "Internal server error"
+          alert "Internal server error - maybe the server is busy"
           
 
     $("#uploadformdcm").submit()
@@ -706,7 +709,7 @@ $ ->
       target: "postframe"
 
     $("#uploadform").submit()
-    d = new Date().getTime().toString() + imageno
+    d = new Date().getTime().toString()
     $("<div class=\"radio\" id=\"temp" + d + "\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "edit caption </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore "#addstack"
     rendermd()
     $(".radio:last", top.document).append $("<img class=\"control removeradio\" src=\'/static/ico/cross.png\'>")
@@ -795,7 +798,8 @@ $ ->
   )
 
   $('#postframe').bind('load', -> #for some reason this could not be changed to an 'on' event - working with bind though
-    radioID = $("iframe")[1].contentDocument.body.innerHTML
+    alert "radio uploaded!"
+    radioID = $("#postframe")[0].contentDocument.body.innerHTML
     $(".radio:last", top.document).attr "ID", radioID
     $.ajax
       type: "GET"

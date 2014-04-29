@@ -1,13 +1,10 @@
 extends layout
 
 block mainContent
-  #topleftdiv
-  #about
-    | <span class=orbitron> RADIOCASE </span> -  a database for radiological cases 
-    br 
-    br
-    h5
-      | Cheat-sheet
+  #aboutpage
+    p
+      | <span class="ArchivoBlack orange"> RADIOCASE </span> -  a database for radiological cases 
+    h5.ArchivoBlack Cheat-sheet
     br
     table#cheatsheet
       tr
@@ -67,15 +64,11 @@ block mainContent
           img(src='/static/ico/balloon.png')
         td Feedback
     br
-    hr
-    br
-    ul
-      li To filter and only show your favorites type #fav into the box at the case list. 
-      li Type your username into the box to filter and only show your own cases.
-    br
-    br
-    | Please see 
-    a(href="/stat/colophon") colophon
-    |  for the techical stuff and 
-    a(href="/stat/disclaimer") disclaimer
-    |  for the rest.
+    p
+      | Type #fav into the box at the case list to only show your favorites. 
+    p 
+      | Type your username into the box to only show your own cases.
+    p 
+      | Please see <a href="/stat/colophon">colophon</a> for the technical stuff and <a href="/stat/disclaimer">disclaimer</a> for the rest.
+  script(type='text/javascript')
+    $('#sl').html("<a class='orange ArchivoBlack' href='/'>&laquo RADIOCASE</a>");

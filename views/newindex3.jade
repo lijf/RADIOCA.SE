@@ -1,0 +1,13 @@
+extends layout
+
+block mainContent
+  #indexhorizon
+    img#longlogo(src='static/img/cases_logo.svg')
+    img#compactlogo.hidden(src='static/img/cases_logo_compact.svg')
+    img(src='static/img/radiocases_round-02_700.png')
+  script(type='text/javascript')
+    $(document).ready(function(){
+      $('#sl').hide();
+      $('#footer').hide();
+      $('.sign_in_with_twitter').hide();
+      });

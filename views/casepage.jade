@@ -18,10 +18,10 @@ block mainContent
         ###{title}
       .md.gray
       img.control.textedit.session(src='/static/ico/pencil_bw.png')
-  a#prevpage(href='/case/#{cid}/#{prevpage}', pageno='#{prevpage}')
-    img(src='/static/ico/arrow-180.png')
-  a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
-    img(src='/static/ico/arrow.png')
+  //a#prevpage(href='/case/#{cid}/#{prevpage}', pageno='#{prevpage}')
+  //  img(src='/static/ico/arrow-180.png')
+  //a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
+  //  img(src='/static/ico/arrow.png')
   block casepagecontent
   #markdown-help(style='display:none')
     img.control.textedit.session(src='/static/ico/pencil_bw.png')
@@ -38,8 +38,13 @@ block mainContent
       | Send comment
   #info(style='display:none')
   #progressbar
-  script(type='text/javascript')
+  //  img(src='/static/ico/arrow-180.png')
+  //a#nextpage(href='/case/#{cid}/#{nextpage}', pageno='#{nextpage}')
+  //  img(src='/static/ico/arrow.png')
+  script.
     $(function(){
+      $("<a id='prevpage' href='/case/#{cid}/#{prevpage}' pageno='#{prevpage}'><img src='/static/ico/arrow-180.png'></a>").insertBefore(".author");
+      $("<a id='nextpage' href='/case/#{cid}/#{nextpage}' pageno='#{nextpage}'><img src='/static/ico/arrow.png'></a>").insertAfter("#controls");
       $("#{modalities}").each(function(){
         $(this).attr("checked",true);
       });

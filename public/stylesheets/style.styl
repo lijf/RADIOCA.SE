@@ -1,3 +1,56 @@
+#aboutpage
+    position absolute
+    top 50px
+    right 50%
+    margin-right -260px
+#about
+    position fixed
+    bottom 25%
+    left 33%
+    margin-left 75px
+    font-size 1.5em
+    background-color black
+    width 100%
+    padding 1px 0px 4px 6px
+textarea
+    width 99%
+    line-height 1.2
+    //font-family DejaVuSansMono, monospace
+    font-family Asap
+    font-size 100%
+//.md
+//    //padding 10px 30px
+#editbar
+    height 20px
+    overflow hidden
+    width 12em
+#uploadform
+    position relative
+    top 2px
+.fileinputs
+    position relative
+.fakefile
+    position absolute
+    top 0
+.file
+    position relative
+    -moz-opacity 0
+    opacity 0
+    z-index 2
+    width 70px
+    height 22px
+button
+    cursor pointer
+    vertical-align top
+    border 0
+    background-color #222
+    color #aaa
+input
+    border 0
+    background-color #222
+    color #aaa
+    padding 0
+    height 22px
 td 
     padding-right 1em
 th#toggleDiagnosis
@@ -5,15 +58,30 @@ th#toggleDiagnosis
 th#toggleDiagnosis:hover
     color white
 #header
-    position fixed
+    position static
     width 100%
     height 1.5em
     background black
     z-index 10
+    vertical-align middle
+#markdown-help
+    background-color #FFF8CC
+    //background-image url("/static/img/paper/Texture0213.jpg")
+    color #006
+    position absolute
+    width 50%
+    top 25px
+    left 0
+    padding 10px 2px
+    margin-top 10px
+    //z-index 10000
 .blackshadow
     black -2px 2px 3px
+.center
+    text-align center
 .orange
-    color #ff9900
+    color #f8b03b
+    //color #ff9900
 .bookmark
     position absolute
     top -5px
@@ -26,6 +94,10 @@ th#toggleDiagnosis:hover
     //float left
     //clear left
     cursor pointer
+.sign_in_with_twitter
+    position absolute
+    top 3px
+    right 0
 .sign_in_with_twitter .icon
     background transparent url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAiCAYAAAAd6YoqAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NEY1RkNEQkY1MThFMTFFMDg0OTdCQjJGMUY4MjVBNDAiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NEY1RkNEQzA1MThFMTFFMDg0OTdCQjJGMUY4MjVBNDAiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0RjVGQ0RCRDUxOEUxMUUwODQ5N0JCMkYxRjgyNUE0MCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0RjVGQ0RCRTUxOEUxMUUwODQ5N0JCMkYxRjgyNUE0MCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuikUpQAAAL6SURBVHjazNlNSFRRFMDxGbM0LfrQSoSsCJUog1oUmBFp0MeiUqKkRUEFQdEmisBFRdSmiAhatCiQBFuUEX2JrSpKUgIzCvuALHJjpWUjjSnO7X/rCCYz8959c2deB34w48y79x3ve+/eeyaolAr4FEEsRw/2YRYOYhq6EDJqTSfik73oQrf6G+/xVV5XmbYX9GlE9uPCqPdhfMQ7XMV1DJk0mObweQ6mW07iwJgkdPxCN97iC8YZt+owZNvwHUcx28LllINPyjmeY41J205fWIKINN6Pa6iWE/KSyHnlPnS/FzHDRiLavSidfMY5zDdIokJ5i0YEbSSiRyUUo5M+nEaBi3aalPc4ZSORkXslFKcjndAVLItxfKVKPLbaSEQrRYdDZ8OojzJCDywk8hrZiSQyEQ14gx6XnXaiWI4vxICyE9WxzjPNxRM6LMuGIoM5ZS4eYzPKkWFpDlod4+9Zbmf2XbjsoeOfGLA4qbZhJ75hEgpRhXaTJcoZHAr4HxFZvkyQhWcr1puutRbKSnULZvqUyDB68Uz+uQ91cumGjbzCfSz2MZE+1KMBnSjWo2M6IrVyjf5PoZM5bprIblzy8aSVjMgPWfLX4cafTZiHhV+N8i9aMEXmNisbq6XYjhJ5nZuiEdFTwJ6o++YEd4gb5aZLT1EiG9CYjETuSuOpiGaUyX1ivNV1ig8pnARPxEoiYOGSqJEnyErMQ36SEjmLpri1JS6tBZ7qSP+GXlDeksnJdrSjVNZtcYsPuTiMTR4exZNxbFRtynboOleZyZ49D62oRZGLA7OkiNaWxDmj120SY+eRPLSgAE9wBy+kpBmRPcUcrMJa+V6yQte2KuU8PNW1dFXktvI3nqLE9DKP9cER2X+nMgZxEhleambxPqyUwnIqQhcWyhOpYjp9QVct1qE5CSc/hDqpzmQmWo51u0QZjwrs0NtKTE3gRu7ATdkcvbT2Y4uHtVa+VEZWYJEUFrKRKQmPLCnCol9+MtB760eyRR20/Zj7LcAATi6n5ZtkolEAAAAASUVORK5CYII=") no-repeat 0 0
     height 2em
@@ -75,10 +147,10 @@ th#toggleDiagnosis:hover
 .Cancel
     position absolute
     top -12px
-    left -24px
+    left -16px
 #markdown-help>.Cancel
-    top 0px
-    left -7px
+    top -12px
+    left -4px
 #icd_req
     width 55%
     background-color #FFFFFF
@@ -111,9 +183,8 @@ tbody > tr > td.diagnosis
     top 5% 
     left 5%
 .author
-    position fixed
-    left 120px
-    top 4px
+    position absolute
+    left 30px
     //vertical-align top 
     //float left
 #newcase > .control
@@ -128,36 +199,30 @@ tbody > tr > td.diagnosis
     left -1px
     top 127px
 #user_settings
-    float right 
+    display inline-block
 #usercontrols
     font-size 1em
     position absolute
-    top 5px
-    right 0
+    top 3px
+    right 2px
 #wrap
     min-height 100%
     position relative
 #markdown-help .textedit
     margin 0
 input#filter
-    //background #3ea8bb -webkit-gradient(linear, left bottom, left top, color-stop(0, #222), color-stop(0.81, #444))
-    z-index 100
     background-color #aaa
-    //border 1px solid #094b60
     -moz-border-radus 4px
     -webkit-border-radius 4px
-    font-size 1em 
-    //font-family "Lucida Grande" "Lucida Sans Unicode"
-    //height 2em
-    //padding 2px
-    //position absolute
-    //left 5% 
     position fixed
-    top 0
-    left 50%
-    margin-left -125px
-    width 250px
-    height 15px
+    width 100%
+    left 0
+    margin-left 0
+    bottom 0px
+    top auto
+    z-index 100
+input#filter
+    font-size 1em 
     color #222
     font-family monospace
 .rounded
@@ -206,12 +271,12 @@ th.sorted-asc
     color white
     background-image url("/static/ico/control-270.png")
     background-repeat no-repeat
-    background-position 50% 100%
+    background-position 50% 115%
 th.sorted-desc
     color white
     background-image url("/static/ico/control-090.png")
     background-repeat no-repeat
-    background-position 50% 100%
+    background-position 50% 115%
 .hidecase
     cursor pointer
     vertical-align middle
@@ -223,31 +288,29 @@ th.sorted-desc
     margin-top -6px
     margin-bottom -4px
 #nextpage
-    position fixed
+    position absolute
     right 2px
-    bottom -3px
     z-index 10000
+    top 1px
 #prevpage
-    position fixed
+    position absolute
     left 2px
-    bottom -3px
     z-index 10000
+    top 1px
 .language
     margin 10px
     white-space nowrap
+#modalities_form
+    margin 0 5px
+#description_form
+    margin 0 5px
 .modality
-    margin 10px 5px
     white-space nowrap
 .description
-    margin 10px 5px
     white-space nowrap
-#modalities_form
-    margin-left -6px
-#description_form
-    margin-left -6px
 .control
     cursor pointer 
-    margin 0 7px
+    margin 0 3px
 button
     //height 21px
     //vertical-align top
@@ -325,6 +388,7 @@ a
     margin-right 2%
     cursor pointer
 #cheatsheet
+    width 100%
     td,th
         padding 5px
 #feedbackbutton
@@ -337,16 +401,21 @@ span#lock
     display none
     //float left
     position absolute
-    left 240px
+    left 110px
+    top 0px
 span#open
     display none
 span#controls
     display none
     //float left
     position absolute
-    left 274px
+    left 138px
+    top 0px
 #disclaimer
-    clear both
+    position absolute
+    top 50px
+    right 50%
+    margin-right -260px
 #timestamp
     font-family helvetica arial
     font-size 0.9em
@@ -356,7 +425,11 @@ span#controls
 #feedbackarea > textarea
     width 100%
 #colophon
-    clear both
+    position absolute
+    top 50px
+    right 50%
+    margin-right -260px
+    padding-bottom 50px
 #topleftdiv
     float left
     height 25px
@@ -386,21 +459,20 @@ span#controls
     padding-bottom 50px
 #indexpage
     text-align center
-#userinfo
-    float left
 .session
     font-family helvetica, arial
     cursor pointer
 #list_cases
     position fixed
-    bottom 30%
+    bottom 35%
     left 33%
     margin-left 75px
     font-size 1.5em
     background-color black
     width 100%
-    padding-left 5px
+    padding 1px 0px 4px 6px
 .big_logo
+    font-family "Archivo Black"
     font-weight bold
     font-size 4em
     margin-top -1em
@@ -414,25 +486,36 @@ span#controls
     margin auto
 .orbitron
     font-family "Orbitron"
-    color #f8b03b
 .damion
     font-family "Damion"
     text-shadow #a00 0.5px -2px 5px
 #sl
     position absolute
-    top 5px
+    top 3px
     left 2px
     //position fixed
     //top 50px
     //left -45px
+#leftarrow
+    height 20px
+    position absolute
+    top -4px
+#list_cases
+    z-index 10
+#fparrow
+    height 50px
 #indexhorizon
     top 6em
     left 0px
     width 100%
-    height 1px
+    //height 1px
     overflow visible
     display block
     position fixed 
+.ArchivoBlack
+    font-family "Archivo Black"
+.clutchee
+    font-family clutchee
 #horizon
     top 10%
     left 0px
@@ -485,8 +568,8 @@ span#controls
     bottom 0
     background-color black
     //margin-top -25px
-    height 20px
-    text-align center
+    height 22px
+    //text-align center
     //clear both
     width 100% 
     padding-top 5px
@@ -529,7 +612,7 @@ span#controls
     visibility hidden
 .caption>.md
     background none
-    margin-top -15px
+    //margin-top -15px
     color #888
 .casesh1
     text-align center
@@ -568,15 +651,11 @@ span#controls
     position absolute
     right 0
     bottom 0
-@media screen and (max-width: 500px)
-    span#lock 
-        top 25px
-        left 0px
-    span#controls
-        top 25px
-        left 34px
-    #header
-        position static
+@media screen and (max-width: 620px)
+    #colophon
+        right 0
+        margin-right 0
+        width 100%
     .big_logo
         right 0%
         font-size 2.5em
@@ -587,23 +666,10 @@ span#controls
         top 10px
     #db
         display none
-    input#filter
-       //margin-top 1.7em
-       width 100%
-       left 0
-       margin-left 0
-       //top 0
-       bottom 25px
-       top auto
-       z-index 100
     button#toggleDiagnosis
        margin-top 2em
        right 0
        margin-right 0
-    #sl
-        display none
-    .author
-        position static
     #caselist
         font-size .7em
         //padding-top 5em
@@ -616,6 +682,8 @@ span#controls
     #session
         top 5px
         margin 0 auto
+    .radio
+        margin 0
     #radios
         width 100%
     #texts
@@ -630,16 +698,21 @@ span#controls
         left 0
     #title
         margin-top 25px
-    #usercontrols
+    #disclaimer
+        margin-right 0
         right 0
-    //#footer
-    //    position static
-    //    padding-bottom 25px
+        width 100%
 @media screen and (max-width: 585px)
+    #about
+        font-size 11pt
     #list_cases
         font-size 11pt
     .big_logo
         right 0%
+    #aboutpage
+        width 100%
+        right 0
+        margin-right 0
 @media screen and (min-width: 1024px)
     .radioimagepage
         width 33%
@@ -651,58 +724,6 @@ span#controls
         width 65%
 #readme
     padding 5%
-#about
-    clear left
-    padding 5%
-textarea
-    width 99%
-    line-height 1.2
-    font-family DejaVuSansMono, monospace
-    font-size 100%
-.md
-    padding 10px 30px
-#markdown-help
-    background-color #FFF8CC
-    //background-image url("/static/img/paper/Texture0213.jpg")
-    color #006
-    position absolute
-    width 50%
-    top 25px
-    left 0
-    //z-index 10000
-#editbar
-    height 20px
-    overflow hidden
-    width 12em
-#uploadform
-    position relative
-    top 2px
-.fileinputs
-    position relative
-.fakefile
-    position absolute
-    top 0
-.file
-    position relative
-    -moz-opacity 0
-    opacity 0
-    z-index 2
-    width 70px
-    height 22px
-button
-    cursor pointer
-    vertical-align top
-    border 0
-    background-color #222
-    color #aaa
-input
-    border 0
-    background-color #222
-    color #aaa
-    width 70px
-    position absolute
-    padding 0
-    height 22px
 .hidden
     width 0px
     height 0px
@@ -710,7 +731,7 @@ input
 html
     height 100%
 body
-    font-family DejaVuSansMono, Monospace, Helvetica, Arial
+    font-family Asap, Helvetica, Arial
     //font-family Georgia, Palatino, serif
     color #aaa
     background-color #333
@@ -722,9 +743,8 @@ body
     color #aaa
 h1, h2, h3, h4, h5 
     padding 0
-    color #F8B03B
-h1, h2, h3, h4, h5, .caption
-    font-family verdana, helvetica, arial
+h1, h2, h3, h4, h5
+    font-family "Archivo Black", helvetica, arial
 h1 
     font-size 4em
 h2 
@@ -763,7 +783,7 @@ p, ul, ol
     max-width: 540px
 pre 
     padding 0px 24px
-    max-width 800px
+    max-width 500px
     white-space pre-wrap
 code 
     font-family Consolas, Monaco, Andale Mono, monospace

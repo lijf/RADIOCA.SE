@@ -4,8 +4,10 @@ html
     meta(name='viewport', content='initial-scale=1.0, width=device-width')
     title RADIOCASE - #{title}
 
-    link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/stylesheets/fonts.css')
+    //link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
+    link(href='http://fonts.googleapis.com/css?family=Asap:400,700,700italic,400italic&subset=latin,latin-ext', rel='stylesheet', type='text/css')
+    link(rel='stylesheet', href='/static/css/fonts_ArchivoBlack.css')
+    //link(href='http://fonts.googleapis.com/css?family=Archivo+Black:400&subset=latin,latin-ext', rel='stylesheet', type='text/css')
     link(rel='stylesheet', href='/stylesheets/reset.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src = '/static/js/jquery-1.7.min.js')
@@ -23,52 +25,16 @@ html
   body
     #wrap
       #header
-        #sl
-          a(href='/')
-            .orbitron RADIOCASE
-        - if (creator)
-          span.author 
-            | by:
-            a(href='https://twitter.com/intent/user?screen_name=#{creator}', target='_blank', title='Link to twitter')
-              | @#{creator}
-            | &#x2002;
-            - if (bookmarked)
-              img.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
-            - else 
-              img.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
-          span#lock
-            a.abutton#lock(title='Edit Page')
-              span#locked
-                img.control(src='/static/ico/pencil_bw.png')
-              span#open
-                img.control(src='/static/ico/tick_bw.png')
-          span#controls
-            img.control#help(src='/static/ico/question_bw.png')
-            img.control#savepage(src='/static/ico/disc_bw.png')
-            span#savepage_dialog(style='display:none')
-              button.rounded(id='savepage_confirm', type='button')
-                | Save page
-            img.control#deletepage(src='/static/ico/minus_bw.png')
-            span#deletepage_dialog(style='display:none')
-              button.rounded(id='deletepage_confirm', type='button')
-                | Delete Page
-            img.control#newpage(src='/static/ico/plus_bw.png')
-            img.control#boxit(src='/static/ico/box_bw.png')
-        - if (created)
-          #created(style='display:none')
-            | #{created}
-        #usercontrols
+        span#sl
+          a.ArchivoBlack.orange(href='/cases/0/-1') 
+            | &laquo CASES
+        span#usercontrols
+          a(id='sign_out', style="display:none") sign out &nbsp;
           a#sign_in 
             .sign_in_with_twitter
               button
                 .icon
                 | Sign in with twitter
-                //span.arista twitter
-            //#twitbutton
-            //  #sign_in_with_twitter
-            //img#twitbutton(src='/static/img/sign-in-with-twitter-d.png')
-          #userinfo(style='display:none')
-            a(id='sign_out') sign out &nbsp;
       block mainContent
       #maximized
       #horizon
@@ -106,7 +72,7 @@ html
           //  input.language#es(name='language', type='radio', value='es')
           //  | Spanish
           //br
-          //br
+          br
           form#modalities_form
             input.modality#XR(type='checkbox', value='#XR') 
             | XR 
@@ -123,7 +89,6 @@ html
             | US 
             input.modality#NM(type='checkbox', value='#NM')
             | NM
-          br
           br
           form#description_form
             input.description#neuro(type='checkbox', value='#neuro')
@@ -234,15 +199,38 @@ html
           a.Cancel
             img.control(src="/static/ico/cross-circle_bw.png")
       #footer
-        a(href='/cases/0/-1')
-          | Cases
-        | &#x2002;
-        a(href='/stat/about')
-          | About
-        | &#x2002;
-        a(href='mailto:info@radioca.se')
-          | Contact
-script(type='text/javascript')
+        - if (creator)
+          span.author 
+            | by:
+            a(href='https://twitter.com/intent/user?screen_name=#{creator}', target='_blank', title='Link to twitter')
+              | @#{creator}
+            | &#x2002;
+            - if (bookmarked)
+              img.rmbookmark(ID='#{cid}', src='/static/ico/star.png')
+            - else 
+              img.bookmark(ID='#{cid}', src='/static/ico/star-empty.png')
+          span#lock
+            a.abutton#lock(title='Edit Page')
+              span#locked
+                img.control(src='/static/ico/pencil_bw.png')
+              span#open
+                img.control(src='/static/ico/tick_bw.png')
+          span#controls
+            img.control#help(src='/static/ico/question_bw.png')
+            img.control#savepage(src='/static/ico/disc_bw.png')
+            span#savepage_dialog(style='display:none')
+              button.rounded(id='savepage_confirm', type='button')
+                | Save page
+            img.control#deletepage(src='/static/ico/minus_bw.png')
+            span#deletepage_dialog(style='display:none')
+              button.rounded(id='deletepage_confirm', type='button')
+                | Delete Page
+            img.control#newpage(src='/static/ico/plus_bw.png')
+            img.control#boxit(src='/static/ico/box_bw.png')
+        - if (created)
+          #created(style='display:none')
+            | #{created}
+script.
   $(function(){
     var user = '#{user}';
     if(#{signed_in}){

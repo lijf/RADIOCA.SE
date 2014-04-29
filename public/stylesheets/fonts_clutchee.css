@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'Clutchee';
+  src: url('static/fonts/clutchee.eot');
+  src: url('static/fonts/clutchee.eot#iefix') format('embedded-opentype'),
+       url('static/fonts/clutchee.woff') format('woff'),
+       url('static/fonts/clutchee.ttf') format('truetype'),
+       url('static/fonts/clutchee.svg#Clutchee') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

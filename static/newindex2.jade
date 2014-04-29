@@ -1,0 +1,32 @@
+extends layout
+
+block mainContent
+  #indexhorizon
+    .big_logo
+      img#longlogo(src='static/img/cases_logo.svg')
+      img#compactlogo.invisible(src='static/img/cases_logo_compact.svg')
+    - each r in radios
+      #frontradio
+        .radio(id='frontpageRadio') 
+          .stack(tabindex='-1')
+            - if (r.images)
+              - each i in r.images
+                img.stack_image(src='#{i}')
+          a#list_cases(href='/cases/0/-1') 
+            h4.orbitron List cases
+  script(type='text/javascript')
+    $(document).ready(function(){
+      $('#sl').hide();
+      //$('#footer').hide();
+      $('.sign_in_with_twitter').hide();
+      visimg = $('#frontradio > .radio > .stack > .stack_image:visible:first');
+      $(window).load(function(){
+        return setInterval(function(){
+        if (visimg.next().length){
+          visimg.next().show();
+          visimg.hide();
+          visimg = visimg.next();
+        }
+        }, 350)
+      });
+      });

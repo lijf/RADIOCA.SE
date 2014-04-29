@@ -6,7 +6,7 @@ block mainContent
     #caselist
       table#casestable
         thead
-          tr.orbitron 
+          tr 
             //th.sortable Last Edit
             th.sortable Modalities
             th.sortable Area
@@ -51,8 +51,9 @@ block mainContent
                       img.deletecase(ID='#{c.cid}', src='/static/ico/minus.png')
       br
       img.control#newcase(src='/static/ico/plus_bw.png')
-  script(type='text/javascript')
-    $('#sl').show();
+  script.
+    $('#sl').html("<a class='orange ArchivoBlack' href='/'>&laquo RADIOCASE</a>");
+    $('#footer').hide();
     var bookmarks = [#{bookmarks}];
     var completed = [#{completed}];
     for (var i = 0; i < completed.length; i++){

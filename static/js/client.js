@@ -555,9 +555,7 @@
       }
       return false;
     }).on("click", "#user_settings", function() {
-      return $("#userinfo").toggle("slide", {
-        direction: "right"
-      }, 300);
+      return $("#sign_out").toggle();
     }).on("click", "#sign_in", function() {
       return openEasyOAuthBox("twitter", authcallback);
     }).on("click", "#sign_out", function() {
@@ -715,7 +713,7 @@
             return alert("Server dropped connection - are you logged in?");
           },
           500: function() {
-            return alert("Internal server error");
+            return alert("Internal server error - maybe the server is busy");
           }
         }
       });
@@ -752,7 +750,7 @@
         target: "postframe"
       });
       $("#uploadform").submit();
-      d = new Date().getTime().toString() + imageno;
+      d = new Date().getTime().toString();
       $("<div class=\"radio\" id=\"temp" + d + "\"><div class=\"stack\"></div>" + "<div class=\"caption\">" + "<textarea class=\"mdtxt\" style=\"display:none\">" + "edit caption </textarea>" + "<div class=\"md\"></div></div></div>").insertBefore("#addstack");
       rendermd();
       $(".radio:last", top.document).append($("<img class=\"control removeradio\" src=\'/static/ico/cross.png\'>"));
@@ -848,7 +846,8 @@
     });
     $('#postframe').bind('load', function() {
       var radioID;
-      radioID = $("iframe")[1].contentDocument.body.innerHTML;
+      alert("radio uploaded!");
+      radioID = $("#postframe")[0].contentDocument.body.innerHTML;
       $(".radio:last", top.document).attr("ID", radioID);
       return $.ajax({
         type: "GET",

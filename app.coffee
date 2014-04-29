@@ -25,9 +25,10 @@ util = require("util")
 easyoauth = require("easy-oauth")
 toobusy = require("toobusy")
 app.set "views", __dirname + "/views"
+app.engine "jade", require("jade").__express
 app.set "view engine", "jade"
-app.set "view options",
-  layout: false
+#app.set "view options",
+#  layout: false
 app.use express.json() # these two substitute bodyParser
 app.use express.urlencoded() # minus the multipart
 #app.use express.bodyParser()
@@ -37,7 +38,8 @@ if "production" == app.settings.env
 #silent or app.use(express.logger('dev'))
 app.use express.methodOverride()
 app.use express.cookieParser()
-app.use express.session(secret: process.env.SSECRET)
+#app.use express.session(secret: process.env.SSECRET)
+app.use express.session(secret: 'ssecret')
 app.use require("stylus").middleware(src: __dirname + "/public/")
 app.use require("connect-assets")()
 app.use easyoauth(require("./keys_file"))
@@ -75,12 +77,15 @@ app.get "/", (req, res) ->
   #if req.isAuthenticated() then res.redirect "/cases/0/-1"
   requestHandlers.renderNewRoot req, res
 
+app.get "/newindex2", (req, res) ->
+  requestHandlers.renderNewRoot2 req,res
+
 app.get "/newindex", (req, res) ->
   requestHandlers.renderNewRoot req, res
 
 app.get "/signed_in", (req, res) ->
   userdata = req.getAuthDetails()
-  #console.log userdata
+  console.log userdata
   db.sismember "users", userdata.user.user_id (err, registered) ->
     if registered
       db.set "user:" + userdata.user.user_id, JSON.stringify userdata
@@ -372,7 +377,7 @@ app.post "/image/:id/:page", (req, res) ->
   requestHandlers.postImage2 req, res
 
 #console.log JSON.stringify process.env
-port = process.env.PORT
+port = process.env.PORT || 3333
 unless module.parent
   server = http.createServer(app).listen(port)
   silent or console.log "Express server listening on port %d in %s mode", server.address().port, app.settings.env
