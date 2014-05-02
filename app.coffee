@@ -5,47 +5,58 @@ String.prototype.toProperCase = ->
     txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
 
 express = require("express")
+#Cookies = require("cookies")
 http = require("http")
-app = module.exports = express()
+https = require("https")
+#app = require("connect")
+app = express()
 #io = require("socket.io").listen(app)
 silent = 'test' == process.env.NODE_ENV
-formidable = require("formidable")
+#formidable = require("formidable")
+multiparty = require("multiparty")
 exec = require("child_process").exec
 execFile = require("child_process").execFile
 spawn = require("child_process").spawn
 url = require("url")
 fs = require("fs")
 requestHandlers = require("./requestHandlers")
+favicon = require("static-favicon")
 sys = require("sys")
 util = require("util")
 redis = require("redis")
-db = redis.createClient(process.env.DB_PORT)
+session = require("express-session")
+#db = redis.createClient(process.env.DB_PORT)
+db = redis.createClient(6379)
 icd = redis.createClient(4444)
 util = require("util")
-easyoauth = require("easy-oauth")
+#easyoauth = require("easy-oauth")
+#everyauth = require("everyauth")
+passport = require("passport")
 toobusy = require("toobusy")
 app.set "views", __dirname + "/views"
 app.engine "jade", require("jade").__express
 app.set "view engine", "jade"
+
 #app.set "view options",
 #  layout: false
-app.use express.json() # these two substitute bodyParser
-app.use express.urlencoded() # minus the multipart
+app.use require("body-parser")()
+app.use require("method-override")()
+#app.use express.json() # these two substitute bodyParser
+#app.use express.urlencoded() # minus the multipart
 #app.use express.bodyParser()
 app.enable("verbose errors")
 if "production" == app.settings.env
   app.disable("verbose errors")
 #silent or app.use(express.logger('dev'))
-app.use express.methodOverride()
-app.use express.cookieParser()
+app.use require("cookie-parser")()
 #app.use express.session(secret: process.env.SSECRET)
-app.use express.session(secret: 'ssecret')
+app.use session({secret: 'ssecret', key: 'dog', cookie: {secure: true}})
 app.use require("stylus").middleware(src: __dirname + "/public/")
 app.use require("connect-assets")()
-app.use easyoauth(require("./keys_file"))
-app.use app.router
+#app.use easyoauth(require("./keys_file"))
+#app.use app.router
 #app.use error
-app.use express.favicon(__dirname + "/public/favicon.ico")
+app.use favicon(__dirname + "/public/favicon.ico")
 app.use express.static(__dirname + "/public")
 
 app.use (req,res, next) ->
@@ -53,17 +64,17 @@ app.use (req,res, next) ->
     res.send 503, "I'm busy right now, sorry."
   else next()
 
-app.use (req,res,next) ->
-  res.status(404)
-  if req.accepts("html")
-    res.render "404",
-      url: req.url
-
-    return
-  if req.accepts("json")
-    res.send error: "Not found"
-    return
-  res.type("txt").send "Not found"
+#app.use (req,res,next) ->
+#  res.status(404)
+#  if req.accepts("html")
+#    res.render "404",
+#      url: req.url
+#
+#    return
+#  if req.accepts("json")
+#    res.send error: "Not found"
+#    return
+#  res.type("txt").send "Not found"
 
 app.use (err, req, res, next) ->
   res.status err.status or 500
@@ -75,6 +86,7 @@ db.on "error", (err) ->
 
 app.get "/", (req, res) ->
   #if req.isAuthenticated() then res.redirect "/cases/0/-1"
+  console.log "root"
   requestHandlers.renderNewRoot req, res
 
 app.get "/newindex2", (req, res) ->
@@ -329,7 +341,8 @@ app.post "/dicom/case/:case/:page/:imgid", (req, res) ->
   return res.send 444 unless req.isAuthenticated()
   dicomID = new Date().getTime().toString()
   #(exports? this).radioIDforDICOM = req.params.imgid
-  form2 = new formidable.IncomingForm()
+  #form2 = new formidable.IncomingForm()
+  form2 = new multiparty.Form()
   files = []
   fields = []
     

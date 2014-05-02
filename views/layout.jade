@@ -1,12 +1,24 @@
-!!!5
+doctype html
 html
   head
+    script.
+        WebFontConfig = {
+            google: { families: [ 'Asap::latin,latin-ext','Archivo+Black::latin,latin-ext' ] }
+          };
+          (function() {
+            var wf = document.createElement('script');
+            wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+              '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.type = 'text/javascript';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+          })();
     meta(name='viewport', content='initial-scale=1.0, width=device-width')
     title RADIOCASE - #{title}
-
     //link(href='http://fonts.googleapis.com/css?family=Orbitron:400,500|Dancing+Script|Damion', rel='stylesheet', type='text/css')
-    link(href='http://fonts.googleapis.com/css?family=Asap:400,700,700italic,400italic&subset=latin,latin-ext', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/static/css/fonts_ArchivoBlack.css')
+    //link(href='http://fonts.googleapis.com/css?family=Asap:400,700,700italic,400italic&subset=latin,latin-ext', rel='stylesheet', type='text/css')
+    //link(rel='stylesheet', href='/static/css/fonts_ArchivoBlack.css')
     //link(href='http://fonts.googleapis.com/css?family=Archivo+Black:400&subset=latin,latin-ext', rel='stylesheet', type='text/css')
     link(rel='stylesheet', href='/stylesheets/reset.css')
     link(rel='stylesheet', href='/stylesheets/style.css')

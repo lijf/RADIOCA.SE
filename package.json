@@ -2,19 +2,23 @@
     "name": "express-radiocase",
     "version": "0.0.1",
     "dependencies": {
+        "passport": "*",
+        "connect": "*",
+        "express-session": "*",
+        "cookie-parser": "*",
+        "method-override": "*",
+        "static-favicon": "*",
+        "body-parser": "*",
         "stylus": "*",
         "jade": "*",
         "express": "*",
-        "formidable": "*",
         "zip": "*",
         "redis": "*",
-        "oauth": "*",
-        "easy-oauth": "*",
         "markdown": "*",
-        "connect-form": "*",
-	"redis": "*",
+	    "redis": "*",
         "redback": "*",
         "toobusy": "*",
-        "connect-assets": "*"
+        "connect-assets": "*",
+        "multiparty": "*"
     }
 }

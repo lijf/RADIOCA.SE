@@ -1,8 +1,10 @@
-formidable = require("formidable")
+#formidable = require("formidable")
 url = require("url")
-form = require("connect-form")
+#form = require("connect-form")
+multiparty = require("multiparty")
 redis = require("redis")
-db = redis.createClient(process.env.DB_PORT)
+db = redis.createClient(6379)
+#db = redis.createClient(process.env.DB_PORT)
 sys = require("sys")
 exec = require("child_process").exec
 
@@ -201,6 +203,7 @@ postImage2 = (req, res) ->
     d = new Date().getTime().toString() + imageno
     i = 0
     #console.log "postimage 2"
+    form = new multiparty.Form()
     form = new formidable.IncomingForm()
     console.dir form
     files = []
