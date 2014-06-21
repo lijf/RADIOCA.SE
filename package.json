@@ -19,6 +19,7 @@
         "redback": "*",
         "toobusy": "*",
         "connect-assets": "*",
-        "multiparty": "*"
+        "multiparty": "*",
+        "easy-oauth": "*"
     }
 }
